@@ -1,0 +1,5 @@
+die_id,die_name,layer_index,area_mm2,initial_temp_c,nominal_power_w,dwr_length_bits
+0,die0_logic_base,0,45.0,25.0,0.35,256
+1,die1_memory,1,40.0,25.0,0.28,192
+2,die2_logic,2,42.0,25.0,0.33,224
+3,die3_sensor_io,3,38.0,25.0,0.24,160

@@ -1,0 +1,21 @@
+simulation:
+  time_step_s: 0.001
+  clock_hz: 50000000
+
+thermal:
+  ambient_temp_c: 25.0
+  thermal_resistance_c_per_w: 2.2
+  thermal_capacitance_j_per_c: 0.35
+  max_temp_c: 85.0
+
+voltage:
+  nominal_voltage_v: 0.80
+  pdn_resistance_ohm: 0.045
+  max_ir_drop_v: 0.08
+
+access:
+  ptap_width_bits: 1
+  stap_count: 4
+  fpp_enabled: true
+  fpp_lanes: 2
+  fpp_lane_width_bits: 1
