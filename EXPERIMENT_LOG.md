@@ -333,3 +333,247 @@ pytest: 36 passed, 1 warning
 
 Notes:
 This experiment only changes the FPP lane count in the stress config copy. It does not modify scheduler algorithms, thermal limits, voltage limits, or workload tasks.
+
+## Experiment 010: Voltage Limit Sweep
+
+Date:
+2026-05-15
+
+Commit:
+TBD
+
+Commands:
+
+```bash
+pytest
+python experiments/run_case_4die.py
+python experiments/run_case_4die_stress.py
+python experiments/sweep_fpp_lanes.py
+python experiments/sweep_voltage_limits.py
+```
+
+Purpose:
+Evaluate how the shared-PDN IR-drop limit affects serial, bandwidth-greedy, and PTV-aware scheduling on the 4-die stress workload.
+
+Base config:
+
+```text
+configs/case_4die_stress.yaml
+```
+
+Sweep values:
+
+```text
+voltage.max_ir_drop_v = [0.10, 0.15, 0.20, 0.30, 0.50] V
+```
+
+Output files:
+
+```text
+results/sweeps/voltage_limits/voltage_limit_sweep_summary.csv
+results/sweeps/voltage_limits/tat_vs_voltage_limit.svg
+results/sweeps/voltage_limits/peak_ir_drop_vs_voltage_limit.svg
+results/sweeps/voltage_limits/voltage_violations_vs_voltage_limit.svg
+```
+
+Key observations:
+- Serial and bandwidth-greedy schedules do not change with voltage limit because these baselines do not use voltage constraints during scheduling.
+- Bandwidth-greedy keeps TAT = 0.0168 s and peak_ir_drop = 0.571875 V across the sweep; voltage violations decrease as the limit is relaxed.
+- PTV-aware increases TAT when the voltage limit is tighter and relaxes toward greedy as the voltage limit increases.
+- At 0.10 V, the limit is too tight for some individual tasks, so PTV-aware still records voltage violations: 27 samples versus greedy's 86 samples. It also inserts 320 dummy cycles.
+- For voltage limits 0.15 V and above, PTV-aware records voltage_violation_count = 0.
+- PTV-aware voltage_violation_count is no greater than bandwidth-greedy for every swept limit.
+
+Result:
+Passed.
+
+Test result:
+pytest: 41 passed, 1 warning
+
+Notes:
+This experiment only changes `voltage.max_ir_drop_v` in a copied stress config. It does not modify scheduler algorithms, thermal limits, FPP lane count, or workload tasks.
+
+## Experiment 011: Thermal Limit Sweep
+
+Date:
+2026-05-15
+
+Commit:
+TBD
+
+Commands:
+
+```bash
+pytest
+python experiments/run_case_4die.py
+python experiments/run_case_4die_stress.py
+python experiments/sweep_fpp_lanes.py
+python experiments/sweep_voltage_limits.py
+python experiments/sweep_thermal_limits.py
+```
+
+Purpose:
+Evaluate how the thermal limit affects serial, bandwidth-greedy, and PTV-aware scheduling on the 4-die stress workload.
+
+Base config:
+
+```text
+configs/case_4die_stress.yaml
+```
+
+Sweep values:
+
+```text
+thermal.max_temp_c = [25.5, 26.0, 26.5, 27.0, 28.0] C
+```
+
+Output files:
+
+```text
+results/sweeps/thermal_limits/thermal_limit_sweep_summary.csv
+results/sweeps/thermal_limits/tat_vs_thermal_limit.svg
+results/sweeps/thermal_limits/peak_temperature_vs_thermal_limit.svg
+results/sweeps/thermal_limits/temperature_violations_vs_thermal_limit.svg
+results/sweeps/thermal_limits/dummy_cycles_vs_thermal_limit.svg
+```
+
+Key observations:
+- Serial and bandwidth-greedy schedules do not change with thermal limit because these baselines do not use thermal constraints during scheduling.
+- Greedy temperature violations decrease as the limit is relaxed: 89 at 25.5 C, 74 at 26.0 C, and 0 at 26.5 C or higher.
+- PTV-aware keeps temperature_violation_count = 0 for 26.0 C and above.
+- The 25.5 C point is over-constrained: initial die temperatures are about 25.55 C, already above the limit. PTV-aware records 117 temperature-violation samples and inserts 63 dummy cycles.
+- PTV-aware TAT is 0.0524 s at 25.5 C and 0.0386 s for 26.0 C and above.
+
+Result:
+Passed.
+
+Test result:
+pytest: 46 passed, 1 warning
+
+Notes:
+This experiment only changes `thermal.max_temp_c` in a copied stress config. It does not modify scheduler algorithms, voltage limits, FPP lane count, or workload tasks. The current thermal model is a simplified per-die RC model without die-to-die thermal coupling.
+
+## Experiment 012: Richer Synthetic Workload and Workload Scale Sweep
+
+Date:
+2026-05-15
+
+Commit:
+TBD
+
+Commands:
+
+```bash
+pytest
+python experiments/run_case_4die.py
+python experiments/run_case_4die_stress.py
+python experiments/sweep_fpp_lanes.py
+python experiments/sweep_voltage_limits.py
+python experiments/sweep_thermal_limits.py
+python experiments/sweep_workload_scale.py
+```
+
+Purpose:
+Generate deterministic synthetic workloads at multiple die counts and task densities, then compare serial, bandwidth-greedy, and PTV-aware scheduling behavior as workload scale increases.
+
+Generated workload dimensions:
+
+```text
+die_count = [4, 8, 12]
+task_density = [small, medium, large]
+```
+
+Output files:
+
+```text
+results/sweeps/workload_scale/workload_scale_summary.csv
+results/sweeps/workload_scale/tat_vs_workload_scale.svg
+results/sweeps/workload_scale/peak_ir_drop_vs_workload_scale.svg
+results/sweeps/workload_scale/peak_temperature_vs_workload_scale.svg
+results/sweeps/workload_scale/voltage_violations_vs_workload_scale.svg
+results/sweeps/workload_scale/temperature_violations_vs_workload_scale.svg
+results/sweeps/workload_scale/task_count_vs_workload_scale.svg
+```
+
+Key observations:
+- Task count increases with both die count and density: 4-small has 19 tasks, while 12-large has 142 tasks.
+- Bandwidth-greedy is consistently fastest but has increasing voltage violations as workload scale grows. Greedy voltage violations increase from 18 for 4-small to 243 for 12-large.
+- PTV-aware keeps voltage_violation_count = 0 and temperature_violation_count = 0 for every generated workload in this sweep.
+- PTV-aware TAT is consistently below serial TAT and above greedy TAT.
+- No over-constrained workload-scale point appears in the current sweep.
+- Dummy cycles are not triggered in this sweep. Capture staggering is active for PTV-aware workloads.
+
+Result:
+Passed.
+
+Test result:
+pytest: 60 passed, 1 warning
+
+Notes:
+This experiment is synthetic mechanism validation only. It does not introduce benchmark-derived workloads, RTL mock validation, HotSpot, 3D-ICE, RedHawk, Voltus, or Tessent SSN.
+
+## Experiment 013: Benchmark-derived Workload Schema and Example Adapter
+
+Date:
+2026-05-15
+
+Commit:
+TBD
+
+Commands:
+
+```bash
+pytest
+python experiments/run_case_4die.py
+python experiments/run_case_4die_stress.py
+python experiments/sweep_fpp_lanes.py
+python experiments/sweep_voltage_limits.py
+python experiments/sweep_thermal_limits.py
+python experiments/sweep_workload_scale.py
+python experiments/run_example_benchmark_workload.py
+```
+
+Purpose:
+Validate a statistics-level benchmark-derived workload schema and a minimal adapter that converts benchmark statistics into scheduler-compatible abstract tasks.
+
+Input files:
+
+```text
+benchmarks/schema.md
+benchmarks/example_benchmark_stats.yaml
+src/workload/benchmark_adapter.py
+```
+
+Output files:
+
+```text
+results/benchmarks/example/benchmark_task_summary.csv
+results/benchmarks/example/serial_schedule.csv
+results/benchmarks/example/greedy_schedule.csv
+results/benchmarks/example/ptv_schedule.csv
+results/benchmarks/example/scheduler_metrics_summary.csv
+results/benchmarks/example/serial_gantt.svg
+results/benchmarks/example/greedy_gantt.svg
+results/benchmarks/example/ptv_gantt.svg
+results/benchmarks/example/tat_comparison.svg
+results/benchmarks/example/peak_ir_drop_comparison.svg
+results/benchmarks/example/peak_temperature_comparison.svg
+```
+
+Key observations:
+- The adapter generated 21 abstract tasks from the example statistics YAML.
+- The generated workload contains scan shift, scan capture, BIST, instrument access, and DWR EXTEST tasks.
+- Capture tasks use `is_capture_phase=True`.
+- Scan durations are derived from scan-chain statistics, and DWR EXTEST durations are derived from interconnect DWR length.
+- Serial, bandwidth-greedy, and PTV-aware schedulers all ran successfully on the generated workload.
+- Example metrics: serial TAT = 0.065206 s, bandwidth_greedy TAT = 0.043492 s, ptv_aware TAT = 0.042852 s.
+- Bandwidth-greedy records 26 voltage-violation samples in this example, while PTV-aware records 0.
+
+Result:
+Passed.
+
+Test result:
+pytest: 68 passed, 1 warning
+
+Notes:
+This experiment is schema validation only. It is not real benchmark validation, does not parse RTL, and does not introduce HotSpot, 3D-ICE, RedHawk, Voltus, Tessent SSN, or industrial signoff data.

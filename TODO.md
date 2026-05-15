@@ -25,33 +25,41 @@
 - [x] 在 README.md 中链接 RESULTS.md。
 - [x] 完成 MVP result consolidation。
 - [x] FPP lane sweep。
-- [x] 新增 FPP lane sweep plots。
-- [x] 新增 FPP lane sweep tests。
+- [x] voltage limit sweep。
+- [x] thermal limit sweep。
+- [x] richer workload generation。
+- [x] workload scale sweep。
+- [x] 新增 synthetic workload generator tests。
+- [x] 新增 workload scale sweep tests。
+- [x] benchmark workload statistics schema。
+- [x] example benchmark stats YAML。
+- [x] benchmark workload adapter。
+- [x] example benchmark workload experiment。
+- [x] benchmark adapter tests。
 
 ## 下一阶段任务
 
-- [ ] thermal limit sweep。
-- [ ] voltage limit sweep。
-- [ ] richer workload generation。
+- [ ] 真实公开 benchmark statistics 接入。
+- [ ] RTL mock validation。
+- [ ] benchmark-derived workload 与 synthetic workload 的结果表格对齐。
 - [ ] 生成论文/组会可用的结果表格。
 - [ ] 生成论文/组会可用的图表版本。
-- [ ] 构造 benchmark-derived workload。
-- [ ] 构造 small RTL mock validation。
 - [ ] 对 stress workload 尝试更明确触发 dummy cycle 的独立配置或机制测试。
 
 ## 参数扫描任务
 
 - [x] FPP lane sweep。
-- [ ] thermal limit sweep。
-- [ ] voltage limit sweep。
-- [ ] die count sweep。
-- [ ] task规模 sweep。
+- [x] voltage limit sweep。
+- [x] thermal limit sweep。
+- [x] workload scale sweep。
+- [ ] die count sweep with alternative access assumptions。
+- [ ] task规模 sweep with alternative workload mixes。
 
 ## 模型改进任务
 
 - [ ] thermal coupling model。
 - [ ] 改进 IR drop model，加入 PDN matrix 或更细粒度供电模型。
-- [ ] benchmark-derived workload。
+- [ ] 真实 benchmark-derived workload。
 - [ ] RTL mock validation。
 - [ ] 准备论文 method section。
 - [ ] 准备组会 PPT 图表。

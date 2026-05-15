@@ -2,7 +2,7 @@
 
 ## 当前里程碑
 
-MVP：4-die IEEE 1838-style PTV-aware test scheduling prototype。
+MVP：IEEE 1838-style PTV-aware test scheduling prototype。
 
 ## 当前阶段进度
 
@@ -16,9 +16,14 @@ MVP：4-die IEEE 1838-style PTV-aware test scheduling prototype。
 - [x] Schedule-based physical evaluator consistency fix
 - [x] MVP result consolidation
 - [x] FPP lane sweep
-- [ ] thermal limit sweep
-- [ ] voltage limit sweep
-- [ ] benchmark-derived workload 或 RTL mock workload
+- [x] voltage limit sweep
+- [x] thermal limit sweep
+- [x] richer synthetic workload generation
+- [x] workload scale sweep
+- [x] benchmark-derived workload schema
+- [x] benchmark workload example adapter
+- [ ] 真实公开 benchmark statistics 接入
+- [ ] RTL mock validation
 - [ ] 论文/组会最终版结果总结
 
 ## 最近完成任务
@@ -26,62 +31,75 @@ MVP：4-die IEEE 1838-style PTV-aware test scheduling prototype。
 日期：2026-05-15
 
 已完成：
-- 完成 Serial / bandwidth_greedy / ptv_aware 三类 scheduler 的 MVP 实现。
-- 完成 unified schedule evaluator。
-- 完成 simplified shared-PDN voltage model。
-- 完成 clean case_4die 与 stress case_4die_stress 验证。
-- 固化当前 MVP 实验结论到 RESULTS.md。
-- 新增 FPP lane sweep experiment。
-- 生成 FPP lane sweep summary CSV 和五类 sweep plots。
-- 增加 FPP lane sweep pytest 覆盖。
+- 新增 benchmark-derived workload statistics schema。
+- 新增 example benchmark statistics YAML。
+- 新增 benchmark workload adapter，将统计字段转换为 scheduler-compatible tasks。
+- 新增 example benchmark workload experiment。
+- 生成 example benchmark task summary、三类 schedule、Gantt chart 和 comparison plots。
+- 增加 benchmark adapter pytest 覆盖。
 - 通过 pytest 测试。
 
 测试结果：
-- pytest: 36 passed, 1 warning
+- pytest: 68 passed, 1 warning
 
-## FPP lane sweep 最新结果
+## Example benchmark workload 最新结果
 
 输入：
-- configs/case_4die_stress.yaml
+- benchmarks/example_benchmark_stats.yaml
 
-扫描：
-- fpp_lanes = [1, 2, 3, 4, 6, 8]
+性质：
+- schema-level validation。
+- 不是 RTL parser。
+- 不是真实 benchmark 结论。
 
 主要观察：
-- Serial TAT 对 FPP lane 数不敏感，所有扫描点均为 0.0454 s。
-- Bandwidth-greedy TAT 随 FPP lane 增加下降，从 1 lane 的 0.0318 s 降至 8 lanes 的 0.0066 s。
-- Bandwidth-greedy peak IR-drop 随 FPP lane 增加上升，从 0.490625 V 增至 1.003125 V。
-- Bandwidth-greedy violation count 不严格单调，因为更高并行度同时改变瞬时功耗和总执行时长；但所有扫描点均存在 voltage violation。
-- PTV-aware 在所有扫描点保持 temperature_violation_count = 0 且 voltage_violation_count = 0。
-- PTV-aware TAT 从 1 lane 的 0.0438 s 降至 2 lanes 的 0.0386 s，之后继续增加 FPP lane 基本没有收益，说明物理约束成为主要限制。
+- adapter 生成 21 个 abstract test tasks。
+- task set 包含 scan shift、scan capture、BIST、instrument access 和 DWR EXTEST。
+- capture task 使用 is_capture_phase=True。
+- scan / capture duration 从 scan_chain_length 和 scan_chain_count 派生。
+- DWR EXTEST duration 从 dwr_length 派生。
+- Serial、Bandwidth-greedy、PTV-aware 三类 scheduler 均可消费该 workload。
+
+Example scheduler metrics：
+- serial_ieee1838_style: TAT = 0.065206 s, peak IR-drop = 0.105000 V, voltage violation = 0。
+- bandwidth_greedy: TAT = 0.043492 s, peak IR-drop = 0.565625 V, voltage violation = 26。
+- ptv_aware: TAT = 0.042852 s, peak IR-drop = 0.183750 V, voltage violation = 0。
 
 ## 已生成文件
 
-- results/sweeps/fpp_lanes/fpp_lane_sweep_summary.csv
-- results/sweeps/fpp_lanes/tat_vs_fpp_lanes.svg
-- results/sweeps/fpp_lanes/peak_ir_drop_vs_fpp_lanes.svg
-- results/sweeps/fpp_lanes/peak_temperature_vs_fpp_lanes.svg
-- results/sweeps/fpp_lanes/voltage_violations_vs_fpp_lanes.svg
-- results/sweeps/fpp_lanes/temperature_violations_vs_fpp_lanes.svg
+- benchmarks/schema.md
+- benchmarks/example_benchmark_stats.yaml
+- src/workload/benchmark_adapter.py
+- experiments/run_example_benchmark_workload.py
+- results/benchmarks/example/benchmark_task_summary.csv
+- results/benchmarks/example/serial_schedule.csv
+- results/benchmarks/example/greedy_schedule.csv
+- results/benchmarks/example/ptv_schedule.csv
+- results/benchmarks/example/scheduler_metrics_summary.csv
+- results/benchmarks/example/serial_gantt.svg
+- results/benchmarks/example/greedy_gantt.svg
+- results/benchmarks/example/ptv_gantt.svg
+- results/benchmarks/example/tat_comparison.svg
+- results/benchmarks/example/peak_ir_drop_comparison.svg
+- results/benchmarks/example/peak_temperature_comparison.svg
 
 ## 当前限制
 
-- Thermal model 仍是 simplified per-die RC model。
-- 尚未实现 die-to-die thermal coupling。
-- Stress workload 与 FPP lane sweep 都是 mechanism validation，不是真实 benchmark。
-- 尚未实现 benchmark-derived workload。
+- benchmark adapter 当前只接收统计 YAML，不解析 Verilog 或 gate-level netlist。
+- example benchmark workload 是 schema validation，不是真实 benchmark validation。
+- 尚未接入真实公开 benchmark statistics。
 - 尚未实现 RTL mock validation。
-- 尚未进行 HotSpot / 3D-ICE / industrial PDN validation。
-- 尚未进行 thermal limit sweep 或 voltage limit sweep。
+- Thermal model 仍是 simplified per-die RC model，尚未实现 die-to-die thermal coupling。
+- Voltage model 仍是 simplified shared-PDN model，尚未实现 PDN matrix 或工业级验证。
+- 未引入 HotSpot、3D-ICE、RedHawk、Voltus 或 Tessent SSN。
 
 ## 下一步任务
 
 建议下一步进入：
-- voltage limit sweep
-- thermal limit sweep
+- 真实公开 benchmark statistics 接入
+- RTL mock validation
 
 保留后续方向：
-- richer workload generation
-- benchmark-derived workload
-- RTL mock validation
 - thermal coupling model improvement
+- PDN matrix model improvement
+- 论文/组会图表整理

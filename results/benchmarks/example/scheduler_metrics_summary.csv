@@ -1,0 +1,4 @@
+scheduler_name,tat,peak_temperature,peak_ir_drop,temperature_violation_count,voltage_violation_count,num_tasks,average_parallelism,max_parallelism,fpp_lane_utilization_average,dummy_cycle_count,dummy_time_total,capture_staggering_applied,constraints_were_binding
+serial_ieee1838_style,0.06520599999999999,26.08380203152655,0.10499999999999998,0,0,21,1.0000000000000002,1,0.6501012176793548,0,0.0,False,False
+bandwidth_greedy,0.043491999999999996,26.07836650488324,0.565625,0,26,21,1.4992642325025294,8,0.9746735031729974,0,0.0,False,False
+ptv_aware,0.04285200000000001,26.26901512377254,0.18375,0,0,21,1.5216559320451786,3,0.9892303743115838,0,0.0,True,True
