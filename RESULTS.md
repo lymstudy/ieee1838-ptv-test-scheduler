@@ -64,6 +64,41 @@ Stress case:
 - results/case_4die_stress/greedy_gantt.svg
 - results/case_4die_stress/ptv_gantt.svg
 
+## FPP Lane Sweep
+
+The FPP lane sweep uses `configs/case_4die_stress.yaml` as the base workload and evaluates FPP lane counts `[1, 2, 3, 4, 6, 8]`.
+
+Summary CSV:
+
+- results/sweeps/fpp_lanes/fpp_lane_sweep_summary.csv
+
+Generated figures:
+
+- results/sweeps/fpp_lanes/tat_vs_fpp_lanes.svg
+- results/sweeps/fpp_lanes/peak_ir_drop_vs_fpp_lanes.svg
+- results/sweeps/fpp_lanes/peak_temperature_vs_fpp_lanes.svg
+- results/sweeps/fpp_lanes/voltage_violations_vs_fpp_lanes.svg
+- results/sweeps/fpp_lanes/temperature_violations_vs_fpp_lanes.svg
+
+Key observations:
+
+- Serial scheduling is insensitive to FPP lane count in TAT because it executes tasks one at a time. Its TAT remains 0.0454 s for all swept lane counts.
+- Bandwidth-greedy TAT decreases as FPP lanes increase, from 0.0318 s at 1 lane to 0.0066 s at 8 lanes.
+- Bandwidth-greedy peak IR-drop increases as FPP lanes increase, from 0.490625 V at 1 lane to 1.003125 V at 8 lanes, showing the risk of aggressive parallel access under the simplified shared-PDN model.
+- Bandwidth-greedy violation counts are not strictly monotonic because higher FPP lane counts change both concurrency and total elapsed time. Voltage violations remain nonzero for all swept lane counts.
+- PTV-aware scheduling keeps both thermal and voltage violation counts at 0 for all swept lane counts.
+- PTV-aware TAT improves from 0.0438 s at 1 lane to 0.0386 s at 2 lanes, then shows diminishing returns for additional FPP lanes because physical constraints, not raw FPP bandwidth, become the binding factor.
+
+Representative sweep endpoints:
+
+| fpp_lanes | scheduler | TAT | peak_ir_drop | temperature_violation_count | voltage_violation_count |
+|---:|---|---:|---:|---:|---:|
+| 1 | serial_ieee1838_style | 0.0454 | 0.1125 | 9 | 0 |
+| 1 | bandwidth_greedy | 0.0318 | 0.490625 | 36 | 16 |
+| 1 | ptv_aware | 0.0438 | 0.1125 | 0 | 0 |
+| 8 | serial_ieee1838_style | 0.0454 | 0.1125 | 9 | 0 |
+| 8 | bandwidth_greedy | 0.0066 | 1.003125 | 26 | 35 |
+| 8 | ptv_aware | 0.0386 | 0.159375 | 0 | 0 |
 ## 6. Known Limitations
 
 - The thermal model is still a simplified per-die RC model.
@@ -73,3 +108,4 @@ Stress case:
 - There is no RTL mock validation yet.
 - There is no HotSpot, 3D-ICE, or industrial PDN validation yet.
 - The simplified shared-PDN voltage model is an MVP abstraction, not a signoff-quality PDN model.
+

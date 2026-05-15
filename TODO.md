@@ -24,9 +24,14 @@
 - [x] 新增 RESULTS.md。
 - [x] 在 README.md 中链接 RESULTS.md。
 - [x] 完成 MVP result consolidation。
+- [x] FPP lane sweep。
+- [x] 新增 FPP lane sweep plots。
+- [x] 新增 FPP lane sweep tests。
 
 ## 下一阶段任务
 
+- [ ] thermal limit sweep。
+- [ ] voltage limit sweep。
 - [ ] richer workload generation。
 - [ ] 生成论文/组会可用的结果表格。
 - [ ] 生成论文/组会可用的图表版本。
@@ -36,7 +41,7 @@
 
 ## 参数扫描任务
 
-- [ ] FPP lane sweep。
+- [x] FPP lane sweep。
 - [ ] thermal limit sweep。
 - [ ] voltage limit sweep。
 - [ ] die count sweep。

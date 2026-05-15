@@ -273,3 +273,63 @@ pytest: 31 passed, 1 warning
 
 Notes:
 This task only consolidated results and synchronized project state files. It did not change scheduler algorithms, the evaluator, or experiment parameters. RESULTS.md explicitly records that the stress workload is for mechanism validation, not a real benchmark.
+
+## Experiment 009: FPP Lane Sweep
+
+Date:
+2026-05-15
+
+Commit:
+TBD
+
+Commands:
+
+```bash
+pytest
+python experiments/run_case_4die.py
+python experiments/run_case_4die_stress.py
+python experiments/sweep_fpp_lanes.py
+```
+
+Purpose:
+Evaluate how FPP lane count affects serial, bandwidth-greedy, and PTV-aware scheduling on the 4-die stress workload.
+
+Base config:
+
+```text
+configs/case_4die_stress.yaml
+```
+
+Sweep values:
+
+```text
+fpp_lanes = [1, 2, 3, 4, 6, 8]
+```
+
+Output files:
+
+```text
+results/sweeps/fpp_lanes/fpp_lane_sweep_summary.csv
+results/sweeps/fpp_lanes/tat_vs_fpp_lanes.svg
+results/sweeps/fpp_lanes/peak_ir_drop_vs_fpp_lanes.svg
+results/sweeps/fpp_lanes/peak_temperature_vs_fpp_lanes.svg
+results/sweeps/fpp_lanes/voltage_violations_vs_fpp_lanes.svg
+results/sweeps/fpp_lanes/temperature_violations_vs_fpp_lanes.svg
+```
+
+Key observations:
+- Serial TAT is insensitive to FPP lane count and remains 0.0454 s across the sweep.
+- Bandwidth-greedy TAT decreases as FPP lanes increase, from 0.0318 s at 1 lane to 0.0066 s at 8 lanes.
+- Bandwidth-greedy peak IR-drop increases as FPP lanes increase, from 0.490625 V at 1 lane to 1.003125 V at 8 lanes.
+- Bandwidth-greedy violation counts are not strictly monotonic because higher lane counts change both instantaneous concurrency and total elapsed time. Voltage violations remain nonzero for all swept lane counts.
+- PTV-aware keeps temperature_violation_count = 0 and voltage_violation_count = 0 for all swept lane counts.
+- PTV-aware TAT improves from 0.0438 s at 1 lane to 0.0386 s at 2 lanes, then shows diminishing returns as physical constraints become binding.
+
+Result:
+Passed.
+
+Test result:
+pytest: 36 passed, 1 warning
+
+Notes:
+This experiment only changes the FPP lane count in the stress config copy. It does not modify scheduler algorithms, thermal limits, voltage limits, or workload tasks.

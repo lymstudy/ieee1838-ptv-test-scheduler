@@ -8,7 +8,7 @@ The current MVP compares three schedulers on a 4-die stack:
 2. Bandwidth-greedy baseline
 3. PTV-aware scheduler
 
-The prototype includes configuration loading, abstract stack/task/access models, a unified schedule evaluator, a simplified thermal model, a simplified shared-PDN voltage model, clean and stress 4-die experiments, plots, and tests.
+The prototype includes configuration loading, abstract stack/task/access models, a unified schedule evaluator, a simplified thermal model, a simplified shared-PDN voltage model, clean and stress 4-die experiments, FPP lane sweep plots, and tests.
 
 ## Scope
 
@@ -28,6 +28,32 @@ Current MVP results are summarized in [RESULTS.md](RESULTS.md).
 
 The key observation is that PTV-aware scheduling reduces physical constraint violations compared with bandwidth-greedy scheduling, while retaining much shorter TAT than purely serial scheduling.
 
+## Experiments
+
+Run the clean MVP case:
+
+```powershell
+python experiments/run_case_4die.py
+```
+
+Run the stress mechanism-validation case:
+
+```powershell
+python experiments/run_case_4die_stress.py
+```
+
+Run the FPP lane sweep:
+
+```powershell
+python experiments/sweep_fpp_lanes.py
+```
+
+Experiment outputs are written under:
+
+- `results/case_4die/`
+- `results/case_4die_stress/`
+- `results/sweeps/fpp_lanes/`
+
 ## Quick Start
 
 ```powershell
@@ -35,12 +61,8 @@ python -m pip install -r requirements.txt
 pytest
 python experiments/run_case_4die.py
 python experiments/run_case_4die_stress.py
+python experiments/sweep_fpp_lanes.py
 ```
-
-Experiment outputs are written under:
-
-- `results/case_4die/`
-- `results/case_4die_stress/`
 
 ## Research Integrity Notes
 
