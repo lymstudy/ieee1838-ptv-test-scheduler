@@ -16,7 +16,7 @@ from src.scheduler.base import ScheduleResult
 def plot_temperature_curve(result: ScheduleResult, output_path: Path) -> None:
     """Write a temperature trace SVG for a schedule result."""
 
-    _plot_trace(
+    plot_trace_curve(
         result.temperature_trace,
         output_path,
         title=f"{result.scheduler_name} temperature trace",
@@ -28,7 +28,7 @@ def plot_temperature_curve(result: ScheduleResult, output_path: Path) -> None:
 def plot_ir_drop_curve(result: ScheduleResult, output_path: Path) -> None:
     """Write an IR-drop trace SVG for a schedule result."""
 
-    _plot_trace(
+    plot_trace_curve(
         result.ir_drop_trace,
         output_path,
         title=f"{result.scheduler_name} IR-drop trace",
@@ -37,7 +37,7 @@ def plot_ir_drop_curve(result: ScheduleResult, output_path: Path) -> None:
     )
 
 
-def _plot_trace(
+def plot_trace_curve(
     trace: Sequence[dict[str, float]],
     output_path: Path,
     title: str,
@@ -63,3 +63,4 @@ def _plot_trace(
     fig.tight_layout()
     fig.savefig(output_path, format="svg")
     plt.close(fig)
+

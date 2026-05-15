@@ -1,2 +1,3 @@
 scheduler_name,tat,peak_temperature,peak_ir_drop,temperature_violation_count,voltage_violation_count,num_tasks,average_parallelism,max_parallelism,fpp_lane_utilization_average
 serial_ieee1838_style,0.010599999999999998,25.007071922893257,0.034874999999999996,0,0,4,1.0000000000000002,1,0.0
+bandwidth_greedy,0.004,25.007071281315277,0.034874999999999996,0,0,4,2.65,4,0.875

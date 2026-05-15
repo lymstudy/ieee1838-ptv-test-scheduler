@@ -58,7 +58,7 @@ class ScheduleResult:
     peak_ir_drop: float
     temperature_trace: tuple[dict[str, float], ...]
     ir_drop_trace: tuple[dict[str, float], ...]
-    metrics: dict[str, float | int] = field(default_factory=dict)
+    metrics: dict[str, Any] = field(default_factory=dict)
 
 
 class BaseScheduler(ABC):
@@ -89,3 +89,4 @@ class BaseScheduler(ABC):
     @abstractmethod
     def schedule(self, tasks: Sequence[TestTask]) -> ScheduleResult:
         """Build a schedule for the supplied tasks."""
+

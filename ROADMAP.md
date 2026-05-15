@@ -20,6 +20,9 @@
 目标：
 实现 deterministic serial IEEE 1838-style baseline scheduler。
 
+状态：
+已完成。
+
 预期产出：
 - serial_schedule.csv
 - serial_metrics.csv
@@ -34,6 +37,9 @@
 - pytest 全部通过。
 
 ## Milestone 2：Bandwidth-Greedy Baseline
+
+状态：
+已完成。
 
 目标：
 实现只考虑访问资源和 FPP lane 约束、但不考虑 thermal/voltage 的激进并行调度器。
@@ -87,3 +93,21 @@
 - voltage drop limit
 - die count
 - task规模
+
+## Milestone 6：Benchmark-derived Workload and RTL Mock Validation
+
+目标：
+将调度器输入从纯 synthetic task 扩展为由公开 RTL benchmark 或 small RTL mock stack 派生的 task set。
+
+预期产出：
+- benchmark_workload.csv
+- rtl_mock_4die_stack.v
+- VCD toggle statistics
+- benchmark-derived scheduling results
+- synthetic vs benchmark workload comparison
+
+验收标准：
+- workload 参数不再完全手工设定
+- scan duration 与 FF/scan chain 数相关
+- power 与 toggle activity 相关
+- 调度结果可复现

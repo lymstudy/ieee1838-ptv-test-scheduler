@@ -31,7 +31,7 @@ class SerialScheduler(BaseScheduler):
 
         for task in ordered_tasks:
             duration = task.duration_s(self.clock_hz)
-            dwr_segment = self.access.dwr_for_die(task.die_id)
+            dwr_segment = self._dwr_segment_name(task.die_id)
             entries.append(
                 ScheduleEntry(
                     task_id=task.id,
@@ -41,9 +41,9 @@ class SerialScheduler(BaseScheduler):
                     end_time=current_time + duration,
                     duration=duration,
                     power=task.power_w,
-                    fpp_lanes_used=0,
+                    fpp_lanes_used=self._fpp_lanes_used(task),
                     access_resource=self._access_resource(task),
-                    dwr_segment=dwr_segment.name,
+                    dwr_segment=dwr_segment,
                     is_capture_phase=False,
                 )
             )
@@ -104,8 +104,24 @@ class SerialScheduler(BaseScheduler):
     @staticmethod
     def _access_resource(task: TestTask) -> str:
         if task.task_type == TaskType.DWR_EXTEST:
-            return "PTAP/STAP/DWR serial path"
-        return "PTAP/STAP serial path"
+            return "PTAP_STAP_DWR_SERIAL"
+        return "PTAP_STAP_SERIAL"
+
+    @staticmethod
+    def _fpp_lanes_used(task: TestTask) -> int:
+        value = (
+            getattr(task, "fpp_lanes_used", None)
+            or getattr(task, "fpp_lanes_required", None)
+            or getattr(task, "required_fpp_lanes", None)
+            or 0
+        )
+        return int(value)
+
+    def _dwr_segment_name(self, die_id: int) -> str:
+        try:
+            return self.access.dwr_for_die(die_id).name
+        except KeyError:
+            return "DWR_NONE"
 
     def _evaluate(self, entries: Sequence[ScheduleEntry]) -> ScheduleResult:
         current_state = TemperatureState({die.id: die.initial_temp_c for die in self.stack.dies})
@@ -141,8 +157,9 @@ class SerialScheduler(BaseScheduler):
                 elapsed += step
 
         tat = entries[-1].end_time if entries else 0.0
-        metrics: dict[str, float | int] = {
-            "task_count": len(entries),
+        metrics: dict[str, float | int | str] = {
+            "scheduler_name": self.scheduler_name,
+            "num_tasks": len(entries),
             "tat": tat,
             "peak_temperature": peak_temperature,
             "peak_ir_drop": peak_ir_drop,
@@ -171,3 +188,5 @@ class SerialScheduler(BaseScheduler):
         row.update({f"die_{die_id}": ir_drop_by_die_v.get(die_id, 0.0) for die_id in self.stack.die_ids()})
         row["peak_ir_drop"] = max(row[f"die_{die_id}"] for die_id in self.stack.die_ids())
         return row
+
+
