@@ -48,6 +48,34 @@ After each meaningful code change:
 - Do not claim zero hardware overhead. Use "no additional test access pins" only
   when appropriate.
 
+## Project State Tracking Rules
+
+This repository uses project state files as the single source of truth for
+progress tracking.
+
+The following files must be maintained:
+
+- STATUS.md
+- ROADMAP.md
+- DECISIONS.md
+- EXPERIMENT_LOG.md
+- TODO.md
+
+Rules:
+
+- Every meaningful task must update STATUS.md.
+- Every experiment run must append a record to EXPERIMENT_LOG.md.
+- Any major modeling, terminology, or engineering decision must be recorded in
+  DECISIONS.md.
+- TODO.md must be updated after each task.
+- ROADMAP.md must be updated if the milestone structure changes.
+- Do not rely on chat history as the only memory of project progress.
+- The repository files are the single source of truth.
+- At the end of every task, report whether STATUS.md, TODO.md, and
+  EXPERIMENT_LOG.md were updated.
+- If a task changes research scope, report whether DECISIONS.md was updated.
+- Do not implement features that contradict DECISIONS.md.
+
 ## Required Outputs for MVP
 
 The 4-die experiment must generate:
@@ -102,3 +130,4 @@ ieee1838-ptv-test-scheduler/
 |-- tests/
 `-- results/
 ```
+
