@@ -51,6 +51,9 @@
 
 ## Milestone 3：PTV-Aware Scheduler
 
+状态：
+已完成。
+
 目标：
 实现 power-, thermal-, and voltage-aware scheduler。
 
@@ -69,6 +72,9 @@
 - violation count 尽可能为 0。
 
 ## Milestone 4：结果对比与可视化
+
+状态：
+基础 MVP 图表已完成。
 
 目标：
 生成论文/组会可用图表。
@@ -111,3 +117,27 @@
 - scan duration 与 FF/scan chain 数相关
 - power 与 toggle activity 相关
 - 调度结果可复现
+## Milestone 4A：Stress Workload Mechanism Validation
+
+状态：
+已完成。
+
+目标：
+在原始 clean 4-die MVP case 之外，新增 synthetic stress workload，用于验证 PTV-aware scheduler 的 thermal constraint、IR drop constraint 和 capture staggering 机制是否生效。
+
+主要产出：
+- configs/case_4die_stress.yaml
+- experiments/run_case_4die_stress.py
+- results/case_4die_stress/scheduler_metrics_summary.csv
+- results/case_4die_stress/serial_schedule.csv
+- results/case_4die_stress/greedy_schedule.csv
+- results/case_4die_stress/ptv_schedule.csv
+- results/case_4die_stress/tat_comparison.svg
+- results/case_4die_stress/peak_temperature_comparison.svg
+- results/case_4die_stress/peak_ir_drop_comparison.svg
+
+观察：
+- bandwidth_greedy 在 stress case 中出现 thermal / voltage violation。
+- ptv_aware 在 stress case 中降低 violation count。
+- capture staggering 生效。
+- dummy cycle insertion 框架未在该 stress case 中触发，仍由 synthetic unit test 覆盖。

@@ -1,12 +1,12 @@
-"""Bandwidth-greedy baseline scheduler."""
+﻿"""Bandwidth-greedy baseline scheduler."""
 
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
 
 from src.model.task import TaskType, TestTask
-from src.model.thermal import TemperatureState
 from src.scheduler.base import BaseScheduler, ScheduleEntry, ScheduleResult
+from src.scheduler.evaluator import evaluate_schedule
 
 
 TASK_TYPE_PRIORITY = {
@@ -98,8 +98,8 @@ class BandwidthGreedyScheduler(BaseScheduler):
             power=task.power_w,
             fpp_lanes_used=self._fpp_lanes_required(task),
             access_resource=self._access_resource(task),
-            dwr_segment=self._dwr_segment_name(task.die_id),
-            is_capture_phase=False,
+            dwr_segment=self._dwr_segment_name(task),
+            is_capture_phase=bool(getattr(task, "is_capture_phase", False)),
         )
 
     def _sort_key(self, task: TestTask) -> tuple[int, int, str]:
@@ -128,13 +128,10 @@ class BandwidthGreedyScheduler(BaseScheduler):
         return self.access.fpp.lanes
 
     def _fpp_lanes_required(self, task: TestTask) -> int:
-        explicit = (
-            getattr(task, "fpp_lanes_required", None)
-            or getattr(task, "required_fpp_lanes", None)
-            or getattr(task, "fpp_lanes_used", None)
-        )
-        if explicit is not None:
-            return int(explicit)
+        for attribute in ("fpp_lanes_required", "required_fpp_lanes", "fpp_lanes_used"):
+            explicit = getattr(task, attribute, None)
+            if explicit is not None:
+                return int(explicit)
         return DEFAULT_FPP_LANES_BY_TASK_TYPE[task.task_type]
 
     @staticmethod
@@ -155,16 +152,19 @@ class BandwidthGreedyScheduler(BaseScheduler):
             return "PTAP_STAP_SERIAL"
         return None
 
-    def _dwr_segment_name(self, die_id: int) -> str:
+    def _dwr_segment_name(self, task: TestTask) -> str:
+        explicit = getattr(task, "dwr_segment", None)
+        if explicit:
+            return explicit
         try:
-            return self.access.dwr_for_die(die_id).name
+            return self.access.dwr_for_die(task.die_id).name
         except KeyError:
             return "DWR_NONE"
 
     def _used_resources(self, running: Sequence[ScheduleEntry]) -> dict[str, object]:
         return {
             "fpp_lanes": sum(entry.fpp_lanes_used for entry in running),
-            "dwr_segments": {entry.dwr_segment for entry in running if entry.dwr_segment},
+            "dwr_segments": {entry.dwr_segment for entry in running if entry.dwr_segment and entry.dwr_segment != "DWR_NONE"},
             "exclusive_access": {
                 resource
                 for entry in running
@@ -181,7 +181,7 @@ class BandwidthGreedyScheduler(BaseScheduler):
         if int(resources["fpp_lanes"]) + lanes_required > capacity:
             return False
 
-        dwr_segment = self._dwr_segment_name(task.die_id)
+        dwr_segment = self._dwr_segment_name(task)
         if dwr_segment != "DWR_NONE" and dwr_segment in resources["dwr_segments"]:
             return False
 
@@ -192,97 +192,19 @@ class BandwidthGreedyScheduler(BaseScheduler):
 
     def _reserve(self, entry: ScheduleEntry, resources: dict[str, object]) -> None:
         resources["fpp_lanes"] = int(resources["fpp_lanes"]) + entry.fpp_lanes_used
-        if entry.dwr_segment:
+        if entry.dwr_segment and entry.dwr_segment != "DWR_NONE":
             resources["dwr_segments"].add(entry.dwr_segment)
         exclusive_resource = self._exclusive_access_resource(entry)
         if exclusive_resource is not None:
             resources["exclusive_access"].add(exclusive_resource)
 
     def _evaluate(self, entries: Sequence[ScheduleEntry]) -> ScheduleResult:
-        current_state = TemperatureState({die.id: die.initial_temp_c for die in self.stack.dies})
-        temperature_trace = [self._temperature_trace_row(0.0, current_state)]
-        zero_power = {die.id: 0.0 for die in self.stack.dies}
-        zero_voltage = self.voltage_model.estimate(zero_power)
-        ir_drop_trace = [self._voltage_trace_row(0.0, zero_voltage.ir_drop_by_die_v)]
-
-        tat = max((entry.end_time for entry in entries), default=0.0)
-        peak_temperature = current_state.peak_temp_c()
-        peak_ir_drop = 0.0
-        temperature_violation_count = 0
-        voltage_violation_count = 0
-        max_parallelism = 0
-
-        event_times = sorted({0.0, *(entry.start_time for entry in entries), *(entry.end_time for entry in entries)})
-        for start_time, end_time in zip(event_times, event_times[1:]):
-            interval = end_time - start_time
-            if interval <= 0:
-                continue
-            active_entries = [
-                entry for entry in entries if entry.start_time <= start_time + 1e-15 and entry.end_time > start_time + 1e-15
-            ]
-            max_parallelism = max(max_parallelism, len(active_entries))
-            active_power = {die.id: 0.0 for die in self.stack.dies}
-            for entry in active_entries:
-                active_power[entry.die_id] += entry.power
-
-            voltage_state = self.voltage_model.estimate(active_power)
-            peak_ir_drop = max(peak_ir_drop, voltage_state.peak_ir_drop_v())
-            voltage_violates = self.voltage_model.violates_limit(voltage_state)
-
-            elapsed = 0.0
-            while elapsed < interval:
-                step = min(self.time_step_s, interval - elapsed)
-                current_state = self.thermal_model.step(current_state, active_power, step)
-                sample_time = start_time + elapsed + step
-                temperature_trace.append(self._temperature_trace_row(sample_time, current_state))
-                ir_drop_trace.append(self._voltage_trace_row(sample_time, voltage_state.ir_drop_by_die_v))
-
-                if self.thermal_model.violates_limit(current_state):
-                    temperature_violation_count += 1
-                if voltage_violates:
-                    voltage_violation_count += 1
-                peak_temperature = max(peak_temperature, current_state.peak_temp_c())
-                elapsed += step
-
-        total_task_time = sum(entry.duration for entry in entries)
-        lane_time = sum(entry.duration * entry.fpp_lanes_used for entry in entries)
-        lane_capacity = self._fpp_lane_capacity()
-        average_parallelism = total_task_time / tat if tat > 0 else 0.0
-        fpp_lane_utilization_average = lane_time / (tat * lane_capacity) if tat > 0 and lane_capacity > 0 else 0.0
-
-        metrics: dict[str, float | int | str] = {
-            "scheduler_name": self.scheduler_name,
-            "tat": tat,
-            "peak_temperature": peak_temperature,
-            "peak_ir_drop": peak_ir_drop,
-            "temperature_violation_count": temperature_violation_count,
-            "voltage_violation_count": voltage_violation_count,
-            "num_tasks": len(entries),
-            "average_parallelism": average_parallelism,
-            "max_parallelism": max_parallelism,
-            "fpp_lane_utilization_average": fpp_lane_utilization_average,
-        }
-        return ScheduleResult(
+        return evaluate_schedule(
             scheduler_name=self.scheduler_name,
-            entries=tuple(entries),
-            tat=tat,
-            peak_temperature=peak_temperature,
-            peak_ir_drop=peak_ir_drop,
-            temperature_trace=tuple(temperature_trace),
-            ir_drop_trace=tuple(ir_drop_trace),
-            metrics=metrics,
+            entries=entries,
+            stack=self.stack,
+            access=self.access,
+            thermal_model=self.thermal_model,
+            voltage_model=self.voltage_model,
+            time_step_s=self.time_step_s,
         )
-
-    def _temperature_trace_row(self, time_s: float, state: TemperatureState) -> dict[str, float]:
-        row = {"time": time_s}
-        row.update({f"die_{die_id}": state.by_die_id[die_id] for die_id in self.stack.die_ids()})
-        row["peak_temperature"] = state.peak_temp_c()
-        return row
-
-    def _voltage_trace_row(self, time_s: float, ir_drop_by_die_v: dict[int, float]) -> dict[str, float]:
-        row = {"time": time_s}
-        row.update({f"die_{die_id}": ir_drop_by_die_v.get(die_id, 0.0) for die_id in self.stack.die_ids()})
-        row["peak_ir_drop"] = max(row[f"die_{die_id}"] for die_id in self.stack.die_ids())
-        return row
-
-

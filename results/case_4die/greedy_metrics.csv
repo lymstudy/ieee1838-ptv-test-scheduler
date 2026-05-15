@@ -1,2 +1,2 @@
-scheduler_name,tat,peak_temperature,peak_ir_drop,temperature_violation_count,voltage_violation_count,num_tasks,average_parallelism,max_parallelism,fpp_lane_utilization_average
-bandwidth_greedy,0.004,25.007071281315277,0.034874999999999996,0,0,4,2.65,4,0.875
+scheduler_name,tat,peak_temperature,peak_ir_drop,temperature_violation_count,voltage_violation_count,num_tasks,average_parallelism,max_parallelism,fpp_lane_utilization_average,dummy_cycle_count,dummy_time_total,capture_staggering_applied,constraints_were_binding
+bandwidth_greedy,0.004,25.007071281315277,0.09281249999999998,0,4,4,2.65,4,0.875,0,0.0,False,False

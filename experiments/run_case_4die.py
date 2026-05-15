@@ -1,4 +1,4 @@
-"""Run the 4-die scaffold sanity checks, serial baseline, and greedy baseline."""
+﻿"""Run the 4-die scaffold sanity checks and scheduler baselines."""
 
 from __future__ import annotations
 
@@ -20,7 +20,9 @@ from src.model.thermal import RCThermalModel, TemperatureState, ThermalConfig
 from src.model.voltage import EquivalentPdnModel, VoltageConfig
 from src.scheduler.base import ScheduleResult
 from src.scheduler.greedy import BandwidthGreedyScheduler
+from src.scheduler.ptv_aware import PTVAwareScheduler
 from src.scheduler.serial import SerialScheduler
+from src.visualize.comparison import plot_basic_comparisons
 from src.visualize.curves import plot_ir_drop_curve, plot_temperature_curve, plot_trace_curve
 from src.visualize.gantt import plot_gantt
 
@@ -38,6 +40,10 @@ SUMMARY_COLUMNS = [
     "average_parallelism",
     "max_parallelism",
     "fpp_lane_utilization_average",
+    "dummy_cycle_count",
+    "dummy_time_total",
+    "capture_staggering_applied",
+    "constraints_were_binding",
 ]
 
 
@@ -187,6 +193,10 @@ def summary_row(result: ScheduleResult) -> dict:
         "average_parallelism": average_parallelism,
         "max_parallelism": max_parallelism,
         "fpp_lane_utilization_average": result.metrics.get("fpp_lane_utilization_average", 0.0),
+        "dummy_cycle_count": result.metrics.get("dummy_cycle_count", 0),
+        "dummy_time_total": result.metrics.get("dummy_time_total", 0.0),
+        "capture_staggering_applied": result.metrics.get("capture_staggering_applied", False),
+        "constraints_were_binding": result.metrics.get("constraints_were_binding", False),
     }
 
 
@@ -255,8 +265,32 @@ def build_greedy_scheduler(
     )
 
 
+def build_ptv_scheduler(
+    stack: DieStack,
+    access: AccessConfig,
+    thermal_config: ThermalConfig,
+    voltage_config: VoltageConfig,
+    clock_hz: float,
+    time_step_s: float,
+    scheduler_config: dict,
+) -> PTVAwareScheduler:
+    """Build a PTV-aware scheduler."""
+
+    return PTVAwareScheduler(
+        stack=stack,
+        access=access,
+        thermal_model=RCThermalModel(thermal_config),
+        voltage_model=EquivalentPdnModel(voltage_config),
+        clock_hz=clock_hz,
+        time_step_s=time_step_s,
+        max_concurrent_capture=int(scheduler_config.get("max_concurrent_capture", 1)),
+        dummy_cycle_duration_s=float(scheduler_config.get("dummy_cycle_duration_s", 0.0001)),
+        max_dummy_cycles_per_block=int(scheduler_config.get("max_dummy_cycles_per_block", 10)),
+    )
+
+
 def run() -> dict[str, Path]:
-    """Run sanity checks plus serial and bandwidth-greedy baselines."""
+    """Run sanity checks plus serial, bandwidth-greedy, and PTV-aware schedulers."""
 
     defaults = load_yaml(CONFIG_DIR / "default_params.yaml")
     case = load_yaml(CONFIG_DIR / "case_4die.yaml")
@@ -266,6 +300,7 @@ def run() -> dict[str, Path]:
     tasks = build_tasks(case["tasks"])
     thermal_config = ThermalConfig.from_config(defaults["thermal"])
     voltage_config = VoltageConfig.from_config(defaults["voltage"])
+    scheduler_config = defaults.get("scheduler", {})
     time_step_s = float(defaults["simulation"]["time_step_s"])
     clock_hz = float(defaults["simulation"]["clock_hz"])
 
@@ -288,21 +323,31 @@ def run() -> dict[str, Path]:
 
     serial_result = build_serial_scheduler(stack, access, thermal_config, voltage_config, clock_hz, time_step_s).schedule(tasks)
     greedy_result = build_greedy_scheduler(stack, access, thermal_config, voltage_config, clock_hz, time_step_s).schedule(tasks)
+    ptv_result = build_ptv_scheduler(
+        stack,
+        access,
+        thermal_config,
+        voltage_config,
+        clock_hz,
+        time_step_s,
+        scheduler_config,
+    ).schedule(tasks)
+
+    results = [serial_result, greedy_result, ptv_result]
     outputs.update(write_scheduler_outputs(serial_result, "serial"))
     outputs.update(write_scheduler_outputs(greedy_result, "greedy"))
+    outputs.update(write_scheduler_outputs(ptv_result, "ptv"))
 
     summary_path = RESULT_DIR / "scheduler_metrics_summary.csv"
-    write_dict_rows(
-        summary_path,
-        [summary_row(serial_result), summary_row(greedy_result)],
-        fieldnames=SUMMARY_COLUMNS,
-    )
+    write_dict_rows(summary_path, [summary_row(result) for result in results], fieldnames=SUMMARY_COLUMNS)
     outputs["scheduler_metrics_summary"] = summary_path
+    outputs.update(plot_basic_comparisons(results, RESULT_DIR))
     return outputs
 
 
 if __name__ == "__main__":
     outputs = run()
-    print("4-die sanity, serial baseline, and bandwidth-greedy baseline completed.")
+    print("4-die sanity, serial, bandwidth-greedy, and PTV-aware experiments completed.")
     for name, path in outputs.items():
         print(f"{name}: {path.relative_to(ROOT)}")
+

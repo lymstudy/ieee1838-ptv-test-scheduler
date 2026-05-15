@@ -1,12 +1,12 @@
-"""Serial IEEE 1838-style baseline scheduler."""
+﻿"""Serial IEEE 1838-style baseline scheduler."""
 
 from __future__ import annotations
 
 from collections.abc import Iterable, Sequence
 
 from src.model.task import TaskType, TestTask
-from src.model.thermal import TemperatureState
 from src.scheduler.base import BaseScheduler, ScheduleEntry, ScheduleResult
+from src.scheduler.evaluator import evaluate_schedule
 
 
 TASK_TYPE_PRIORITY = {
@@ -31,7 +31,7 @@ class SerialScheduler(BaseScheduler):
 
         for task in ordered_tasks:
             duration = task.duration_s(self.clock_hz)
-            dwr_segment = self._dwr_segment_name(task.die_id)
+            dwr_segment = self._dwr_segment_name(task)
             entries.append(
                 ScheduleEntry(
                     task_id=task.id,
@@ -44,7 +44,7 @@ class SerialScheduler(BaseScheduler):
                     fpp_lanes_used=self._fpp_lanes_used(task),
                     access_resource=self._access_resource(task),
                     dwr_segment=dwr_segment,
-                    is_capture_phase=False,
+                    is_capture_phase=bool(getattr(task, "is_capture_phase", False)),
                 )
             )
             current_time += duration
@@ -109,84 +109,30 @@ class SerialScheduler(BaseScheduler):
 
     @staticmethod
     def _fpp_lanes_used(task: TestTask) -> int:
-        value = (
-            getattr(task, "fpp_lanes_used", None)
-            or getattr(task, "fpp_lanes_required", None)
-            or getattr(task, "required_fpp_lanes", None)
-            or 0
-        )
-        return int(value)
+        for attribute in ("fpp_lanes_used", "fpp_lanes_required", "required_fpp_lanes"):
+            value = getattr(task, attribute, None)
+            if value is not None:
+                return int(value)
+        return 0
 
-    def _dwr_segment_name(self, die_id: int) -> str:
+    def _dwr_segment_name(self, task: TestTask) -> str:
+        explicit = getattr(task, "dwr_segment", None)
+        if explicit:
+            return explicit
         try:
-            return self.access.dwr_for_die(die_id).name
+            return self.access.dwr_for_die(task.die_id).name
         except KeyError:
             return "DWR_NONE"
 
     def _evaluate(self, entries: Sequence[ScheduleEntry]) -> ScheduleResult:
-        current_state = TemperatureState({die.id: die.initial_temp_c for die in self.stack.dies})
-        temperature_trace = [self._temperature_trace_row(0.0, current_state)]
-        zero_power = {die.id: 0.0 for die in self.stack.dies}
-        zero_voltage = self.voltage_model.estimate(zero_power)
-        ir_drop_trace = [self._voltage_trace_row(0.0, zero_voltage.ir_drop_by_die_v)]
-
-        temperature_violation_count = 0
-        voltage_violation_count = 0
-        peak_temperature = current_state.peak_temp_c()
-        peak_ir_drop = 0.0
-
-        for entry in entries:
-            active_power = {die.id: 0.0 for die in self.stack.dies}
-            active_power[entry.die_id] = entry.power
-            voltage_state = self.voltage_model.estimate(active_power)
-            if self.voltage_model.violates_limit(voltage_state):
-                voltage_violation_count += 1
-            peak_ir_drop = max(peak_ir_drop, voltage_state.peak_ir_drop_v())
-
-            elapsed = 0.0
-            while elapsed < entry.duration:
-                step = min(self.time_step_s, entry.duration - elapsed)
-                current_state = self.thermal_model.step(current_state, active_power, step)
-                sample_time = entry.start_time + elapsed + step
-                temperature_trace.append(self._temperature_trace_row(sample_time, current_state))
-                ir_drop_trace.append(self._voltage_trace_row(sample_time, voltage_state.ir_drop_by_die_v))
-
-                if self.thermal_model.violates_limit(current_state):
-                    temperature_violation_count += 1
-                peak_temperature = max(peak_temperature, current_state.peak_temp_c())
-                elapsed += step
-
-        tat = entries[-1].end_time if entries else 0.0
-        metrics: dict[str, float | int | str] = {
-            "scheduler_name": self.scheduler_name,
-            "num_tasks": len(entries),
-            "tat": tat,
-            "peak_temperature": peak_temperature,
-            "peak_ir_drop": peak_ir_drop,
-            "temperature_violation_count": temperature_violation_count,
-            "voltage_violation_count": voltage_violation_count,
-        }
-        return ScheduleResult(
+        return evaluate_schedule(
             scheduler_name=self.scheduler_name,
-            entries=tuple(entries),
-            tat=tat,
-            peak_temperature=peak_temperature,
-            peak_ir_drop=peak_ir_drop,
-            temperature_trace=tuple(temperature_trace),
-            ir_drop_trace=tuple(ir_drop_trace),
-            metrics=metrics,
+            entries=entries,
+            stack=self.stack,
+            access=self.access,
+            thermal_model=self.thermal_model,
+            voltage_model=self.voltage_model,
+            time_step_s=self.time_step_s,
         )
-
-    def _temperature_trace_row(self, time_s: float, state: TemperatureState) -> dict[str, float]:
-        row = {"time": time_s}
-        row.update({f"die_{die_id}": state.by_die_id[die_id] for die_id in self.stack.die_ids()})
-        row["peak_temperature"] = state.peak_temp_c()
-        return row
-
-    def _voltage_trace_row(self, time_s: float, ir_drop_by_die_v: dict[int, float]) -> dict[str, float]:
-        row = {"time": time_s}
-        row.update({f"die_{die_id}": ir_drop_by_die_v.get(die_id, 0.0) for die_id in self.stack.die_ids()})
-        row["peak_ir_drop"] = max(row[f"die_{die_id}"] for die_id in self.stack.die_ids())
-        return row
 
 

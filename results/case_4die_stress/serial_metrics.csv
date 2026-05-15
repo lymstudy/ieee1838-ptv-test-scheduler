@@ -1,0 +1,2 @@
+scheduler_name,tat,peak_temperature,peak_ir_drop,temperature_violation_count,voltage_violation_count,num_tasks,average_parallelism,max_parallelism,fpp_lane_utilization_average,dummy_cycle_count,dummy_time_total,capture_staggering_applied,constraints_were_binding
+serial_ieee1838_style,0.04539999999999999,26.223359126105755,0.1125,9,0,23,1.0000000000000002,1,0.35022026431718073,0,0.0,False,False

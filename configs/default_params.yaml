@@ -1,4 +1,4 @@
-simulation:
+﻿simulation:
   time_step_s: 0.001
   clock_hz: 50000000
 
@@ -11,6 +11,7 @@ thermal:
 voltage:
   nominal_voltage_v: 0.80
   pdn_resistance_ohm: 0.045
+  mode: shared
   max_ir_drop_v: 0.08
 
 access:
@@ -19,3 +20,5 @@ access:
   fpp_enabled: true
   fpp_lanes: 2
   fpp_lane_width_bits: 1
+
+
