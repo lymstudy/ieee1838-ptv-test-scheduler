@@ -1,0 +1,86 @@
+﻿# This is a manually specified realistic statistics case.
+# It is not parsed from RTL yet.
+# It is intended to validate the benchmark-derived workload flow for a small
+# UART-like communication controller partitioned across four dies.
+benchmark_name: realistic_uart_controller
+die_count: 4
+fpp_lanes: 2
+voltage_limit: 0.075
+thermal_limit: 27.0
+max_concurrent_capture: 1
+dummy_cycle_duration: 0.0002
+
+simulation:
+  clock_hz: 1000000
+  time_step_s: 0.0002
+
+dies:
+  - die_id: 0
+    module_name: uart_rx_ctrl
+    flip_flop_count: 960
+    scan_chain_count: 4
+    scan_chain_length: 240
+    estimated_shift_power: 0.34
+    estimated_capture_power: 0.52
+    estimated_bist_power: 0.46
+    estimated_instrument_power: 0.08
+    bist_task_count: 1
+    instrument_task_count: 1
+  - die_id: 1
+    module_name: uart_tx_ctrl
+    flip_flop_count: 880
+    scan_chain_count: 4
+    scan_chain_length: 220
+    estimated_shift_power: 0.32
+    estimated_capture_power: 0.50
+    estimated_bist_power: 0.44
+    estimated_instrument_power: 0.08
+    bist_task_count: 1
+    instrument_task_count: 1
+  - die_id: 2
+    module_name: fifo_ctrl
+    flip_flop_count: 1536
+    scan_chain_count: 6
+    scan_chain_length: 256
+    estimated_shift_power: 0.46
+    estimated_capture_power: 0.66
+    estimated_bist_power: 0.62
+    estimated_instrument_power: 0.10
+    bist_task_count: 2
+    instrument_task_count: 1
+  - die_id: 3
+    module_name: bus_if_ctrl
+    flip_flop_count: 1120
+    scan_chain_count: 5
+    scan_chain_length: 224
+    estimated_shift_power: 0.38
+    estimated_capture_power: 0.56
+    estimated_bist_power: 0.50
+    estimated_instrument_power: 0.09
+    bist_task_count: 1
+    instrument_task_count: 2
+
+interconnects:
+  - src_die: 0
+    dst_die: 1
+    dwr_length: 192
+    estimated_extest_power: 0.28
+  - src_die: 1
+    dst_die: 2
+    dwr_length: 256
+    estimated_extest_power: 0.34
+  - src_die: 2
+    dst_die: 3
+    dwr_length: 224
+    estimated_extest_power: 0.31
+
+power_model:
+  vdd: 0.80
+  shared_resistance: 0.080
+  power_scale: 1.0
+
+thermal_model:
+  ambient_temperature: 25.0
+  initial_temperature: 25.25
+  thermal_alpha: 1.0
+  cooling_beta: 0.012

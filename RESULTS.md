@@ -251,6 +251,74 @@ Example scheduler metrics:
 | ptv_aware | 0.042852 | 26.2690151238 | 0.183750 | 0 | 0 |
 
 The result only shows that the schema-level adapter can generate scheduler-compatible workload objects and that the existing schedulers can consume them. It should not be interpreted as a real public benchmark conclusion.
+## Example Benchmark Audit
+
+A schedule audit was added for the example benchmark-derived workload to explain why PTV-aware has a slightly lower TAT than bandwidth-greedy in this schema-level example.
+
+Audit outputs:
+
+- results/benchmarks/example/audit/greedy_schedule_audit.csv
+- results/benchmarks/example/audit/ptv_schedule_audit.csv
+- results/benchmarks/example/audit/schedule_comparison_audit.md
+
+Audit conclusion:
+
+- No scheduler bug was found.
+- Both bandwidth-greedy and PTV-aware satisfy FPP lane capacity in the audited schedule.
+- Both schedules have no DWR segment overlap.
+- Both schedules have no global idle time.
+- Bandwidth-greedy final finishing task: `scan_capture_die3`.
+- PTV-aware final finishing task: `scan_capture_die3`.
+- Bandwidth-greedy first scan-shift start: 0.00192 s.
+- PTV-aware first scan-shift start: 0 s.
+- Bandwidth-greedy FPP idle lane-seconds: 0.002203.
+- PTV-aware FPP idle lane-seconds: 0.000923.
+
+In this example benchmark, PTV-aware can slightly outperform bandwidth-greedy in TAT because the heuristic priority ordering avoids resource blocking while also satisfying voltage constraints. Specifically, PTV-aware starts a long FPP scan-shift task immediately, while bandwidth-greedy first fills the ready queue using its deterministic local order and occupies FPP lanes with short DWR EXTEST tasks. Since the scan-shift tasks require all available FPP lanes, that early ordering difference shortens the serialized FPP scan tail for PTV-aware.
+
+This result is workload-specific and should not be generalized into a claim that PTV-aware is always faster than bandwidth-greedy. Bandwidth-greedy remains a local ready-task packing baseline, not a global TAT optimizer.
+## Realistic UART Statistics Workload
+
+The realistic UART workload is a manually specified realistic statistics case for a small UART-like controller partitioned into four modules: `uart_rx_ctrl`, `uart_tx_ctrl`, `fifo_ctrl`, and `bus_if_ctrl`.
+
+This workload is not parsed from RTL and is not real chip validation. It is intended to validate the benchmark-derived workload flow using circuit-level statistics that are closer to a small communication controller than the schema-only example.
+
+Input and outputs:
+
+- benchmarks/realistic_uart_stats.yaml
+- results/benchmarks/realistic_uart/benchmark_task_summary.csv
+- results/benchmarks/realistic_uart/serial_schedule.csv
+- results/benchmarks/realistic_uart/greedy_schedule.csv
+- results/benchmarks/realistic_uart/ptv_schedule.csv
+- results/benchmarks/realistic_uart/scheduler_metrics_summary.csv
+- results/benchmarks/realistic_uart/serial_gantt.svg
+- results/benchmarks/realistic_uart/greedy_gantt.svg
+- results/benchmarks/realistic_uart/ptv_gantt.svg
+- results/benchmarks/realistic_uart/tat_comparison.svg
+- results/benchmarks/realistic_uart/peak_ir_drop_comparison.svg
+- results/benchmarks/realistic_uart/peak_temperature_comparison.svg
+- results/benchmarks/realistic_uart/audit/greedy_schedule_audit.csv
+- results/benchmarks/realistic_uart/audit/ptv_schedule_audit.csv
+- results/benchmarks/realistic_uart/audit/schedule_comparison_audit.md
+
+The adapter generated 21 abstract tasks from the manually specified UART statistics.
+
+| scheduler | TAT | peak_temperature | peak_ir_drop | temperature_violation_count | voltage_violation_count |
+|---|---:|---:|---:|---:|---:|
+| serial_ieee1838_style | 0.010149 | 25.2698906020 | 0.066000 | 0 | 0 |
+| bandwidth_greedy | 0.002128 | 25.3505638342 | 0.360000 | 0 | 17 |
+| ptv_aware | 0.007661 | 25.2631210476 | 0.074000 | 0 | 0 |
+
+Audit conclusion:
+
+- No scheduler bug was found.
+- Bandwidth-greedy and PTV-aware have no FPP capacity violation and no DWR overlap.
+- Bandwidth-greedy is fastest but creates voltage violations under the simplified shared-PDN evaluator.
+- PTV-aware increases TAT relative to bandwidth-greedy because it limits physical-risk concurrency, reducing voltage violations from 17 to 0.
+- PTV-aware final finishing task: `scan_capture_die0`.
+- Bandwidth-greedy final finishing task: `scan_capture_die3`.
+
+This result should be interpreted as manually specified statistics-flow validation, not as a real benchmark conclusion.
 ## 6. Known Limitations
 
 - The thermal model is still a simplified per-die RC model.
@@ -260,6 +328,8 @@ The result only shows that the schema-level adapter can generate scheduler-compa
 - There is no RTL mock validation yet.
 - There is no HotSpot, 3D-ICE, or industrial PDN validation yet.
 - The simplified shared-PDN voltage model is an MVP abstraction, not a signoff-quality PDN model.
+
+
 
 
 

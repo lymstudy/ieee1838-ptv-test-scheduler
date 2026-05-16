@@ -577,3 +577,127 @@ pytest: 68 passed, 1 warning
 
 Notes:
 This experiment is schema validation only. It is not real benchmark validation, does not parse RTL, and does not introduce HotSpot, 3D-ICE, RedHawk, Voltus, Tessent SSN, or industrial signoff data.
+
+## Experiment 014: Example Benchmark Schedule Audit
+
+Date:
+2026-05-15
+
+Commit:
+TBD
+
+Commands:
+
+```bash
+pytest
+python experiments/run_example_benchmark_workload.py
+python experiments/audit_example_benchmark_schedule.py
+```
+
+Purpose:
+Audit the example benchmark-derived workload schedules to explain why PTV-aware TAT is slightly lower than bandwidth-greedy TAT.
+
+Input files:
+
+```text
+results/benchmarks/example/greedy_schedule.csv
+results/benchmarks/example/ptv_schedule.csv
+results/benchmarks/example/scheduler_metrics_summary.csv
+benchmarks/example_benchmark_stats.yaml
+```
+
+Output files:
+
+```text
+results/benchmarks/example/audit/greedy_schedule_audit.csv
+results/benchmarks/example/audit/ptv_schedule_audit.csv
+results/benchmarks/example/audit/schedule_comparison_audit.md
+```
+
+Key observations:
+- No scheduler bug was found.
+- Greedy and PTV-aware both satisfy FPP lane capacity.
+- Greedy and PTV-aware both have no DWR segment overlap.
+- Both schedules have no global idle time.
+- Greedy final finishing task: scan_capture_die3.
+- PTV-aware final finishing task: scan_capture_die3.
+- Greedy first scan-shift start: 0.00192 s.
+- PTV-aware first scan-shift start: 0 s.
+- Greedy FPP idle lane-seconds: 0.002203.
+- PTV-aware FPP idle lane-seconds: 0.000923.
+- PTV-aware starts a long FPP scan-shift task immediately, while greedy initially occupies both FPP lanes with short DWR EXTEST tasks due deterministic local ordering.
+- This shorter serialized FPP scan tail explains why PTV-aware TAT is 0.042852 s and greedy TAT is 0.043492 s in this example.
+
+Result:
+Passed.
+
+Test result:
+pytest: 73 passed, 1 warning
+
+Notes:
+This audit does not modify scheduler algorithms, benchmark schema, or workload parameters. The conclusion is workload-specific and should not be generalized as PTV-aware always being faster than bandwidth-greedy.
+
+## Experiment 015: Realistic UART Statistics Workload
+
+Date:
+2026-05-15
+
+Commit:
+TBD
+
+Commands:
+
+```bash
+pytest
+python experiments/run_realistic_uart_workload.py
+python experiments/audit_realistic_uart_schedule.py
+python experiments/run_example_benchmark_workload.py
+python experiments/audit_example_benchmark_schedule.py
+```
+
+Purpose:
+Validate the benchmark-derived workload flow on a manually specified realistic UART-like controller statistics case.
+
+Input file:
+
+```text
+benchmarks/realistic_uart_stats.yaml
+```
+
+Output files:
+
+```text
+results/benchmarks/realistic_uart/benchmark_task_summary.csv
+results/benchmarks/realistic_uart/serial_schedule.csv
+results/benchmarks/realistic_uart/greedy_schedule.csv
+results/benchmarks/realistic_uart/ptv_schedule.csv
+results/benchmarks/realistic_uart/scheduler_metrics_summary.csv
+results/benchmarks/realistic_uart/serial_gantt.svg
+results/benchmarks/realistic_uart/greedy_gantt.svg
+results/benchmarks/realistic_uart/ptv_gantt.svg
+results/benchmarks/realistic_uart/tat_comparison.svg
+results/benchmarks/realistic_uart/peak_ir_drop_comparison.svg
+results/benchmarks/realistic_uart/peak_temperature_comparison.svg
+results/benchmarks/realistic_uart/audit/greedy_schedule_audit.csv
+results/benchmarks/realistic_uart/audit/ptv_schedule_audit.csv
+results/benchmarks/realistic_uart/audit/schedule_comparison_audit.md
+```
+
+Key observations:
+- The adapter generated 21 abstract tasks.
+- The generated workload contains scan shift, scan capture, BIST, instrument access, and DWR EXTEST tasks.
+- Serial TAT = 0.010149 s, peak IR-drop = 0.066000 V, voltage violations = 0.
+- Bandwidth-greedy TAT = 0.002128 s, peak IR-drop = 0.360000 V, voltage violations = 17.
+- PTV-aware TAT = 0.007661 s, peak IR-drop = 0.074000 V, voltage violations = 0.
+- No scheduler bug was found in the audit.
+- Greedy and PTV-aware both satisfy FPP lane capacity and DWR segment exclusivity.
+- PTV-aware lowers voltage violations relative to greedy at the cost of longer TAT.
+
+Result:
+Passed.
+
+Test result:
+pytest: 81 passed, 1 warning
+
+Notes:
+This workload is a manually specified realistic statistics case. It is not parsed from RTL and is not real benchmark or chip validation.

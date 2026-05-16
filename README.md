@@ -8,7 +8,7 @@ The current MVP compares three schedulers on 3D stack test workloads:
 2. Bandwidth-greedy baseline
 3. PTV-aware scheduler
 
-The prototype includes configuration loading, abstract stack/task/access models, a unified schedule evaluator, a simplified thermal model, a simplified shared-PDN voltage model, clean and stress 4-die experiments, parameter sweeps, deterministic synthetic workload-scale sweeps, a benchmark-derived workload statistics schema with an example adapter, plots, and tests.
+The prototype includes configuration loading, abstract stack/task/access models, a unified schedule evaluator, a simplified thermal model, a simplified shared-PDN voltage model, clean and stress 4-die experiments, parameter sweeps, deterministic synthetic workload-scale sweeps, a benchmark-derived workload statistics schema with example and realistic UART adapters, plots, and tests.
 
 ## Scope
 
@@ -34,6 +34,7 @@ The benchmark-derived workload path currently uses a statistics schema, not a Ve
 
 - Schema: `benchmarks/schema.md`
 - Example stats: `benchmarks/example_benchmark_stats.yaml`
+- Realistic UART stats: `benchmarks/realistic_uart_stats.yaml`
 - Adapter: `src/workload/benchmark_adapter.py`
 
 The adapter converts benchmark statistics such as flip-flop count, scan-chain count, scan-chain length, estimated task powers, and DWR interconnect lengths into scheduler-compatible abstract tasks. It is intended as a bridge for future public benchmark statistics or manually extracted RTL report data.
@@ -42,12 +43,24 @@ Run the schema-level example workload:
 
 ```powershell
 python experiments/run_example_benchmark_workload.py
+python experiments/audit_example_benchmark_schedule.py
 ```
+
+Run the manually specified realistic UART statistics workload:
+
+```powershell
+python experiments/run_realistic_uart_workload.py
+python experiments/audit_realistic_uart_schedule.py
+```
+
+## Realistic UART Statistics Case
+
+The realistic UART case demonstrates the benchmark-derived workload flow with manually specified circuit-level statistics for a small UART-like controller. It is not parsed from RTL and is not real chip validation.
 
 Results are written under:
 
 ```text
-results/benchmarks/example/
+results/benchmarks/realistic_uart/
 ```
 
 ## Experiments
@@ -88,12 +101,6 @@ Run the synthetic workload-scale sweep:
 python experiments/sweep_workload_scale.py
 ```
 
-Run the example benchmark-statistics workload:
-
-```powershell
-python experiments/run_example_benchmark_workload.py
-```
-
 Experiment outputs are written under:
 
 - `results/case_4die/`
@@ -103,6 +110,7 @@ Experiment outputs are written under:
 - `results/sweeps/thermal_limits/`
 - `results/sweeps/workload_scale/`
 - `results/benchmarks/example/`
+- `results/benchmarks/realistic_uart/`
 
 ## Quick Start
 
@@ -116,6 +124,9 @@ python experiments/sweep_voltage_limits.py
 python experiments/sweep_thermal_limits.py
 python experiments/sweep_workload_scale.py
 python experiments/run_example_benchmark_workload.py
+python experiments/audit_example_benchmark_schedule.py
+python experiments/run_realistic_uart_workload.py
+python experiments/audit_realistic_uart_schedule.py
 ```
 
 ## Research Integrity Notes
@@ -126,4 +137,5 @@ python experiments/run_example_benchmark_workload.py
 - When discussing scan streaming ideas, use "streaming-scan-inspired" only where appropriate.
 - Synthetic workloads are for mechanism validation and are not real benchmark-derived workloads.
 - The example benchmark-derived workload is schema validation from statistics, not a real benchmark conclusion.
+- The realistic UART case is a manually specified realistic statistics case, not RTL-extracted benchmark validation.
 - Do not claim zero hardware overhead. Use narrower statements only when accurate, such as "reuse IEEE 1838-compatible test access resources".

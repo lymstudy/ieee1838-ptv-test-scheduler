@@ -36,6 +36,12 @@
 - [x] benchmark workload adapter。
 - [x] example benchmark workload experiment。
 - [x] benchmark adapter tests。
+- [x] benchmark example schedule audit。
+- [x] benchmark example audit tests。
+- [x] realistic benchmark statistics case。
+- [x] realistic UART workload experiment。
+- [x] realistic UART schedule audit。
+- [x] realistic UART workload tests。
 
 ## 下一阶段任务
 

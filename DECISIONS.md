@@ -190,3 +190,30 @@ Design principles:
 - The current example is schema validation only. It is not a real benchmark conclusion and does not validate against real ATPG, HotSpot, 3D-ICE, RedHawk, Voltus, Tessent SSN, or silicon data.
 
 This schema prepares the repository for future public benchmark statistics or manually extracted RTL report data without coupling scheduler algorithms to parser-specific details.
+
+## D17: Interpreting Heuristic TAT Inversions
+
+A PTV-aware schedule may occasionally have a slightly lower TAT than the bandwidth-greedy baseline on a specific workload. This is not automatically a scheduler bug.
+
+Interpretation rule:
+
+- Bandwidth-greedy is a deterministic local ready-task packing baseline. It starts ready tasks that fit current resource constraints according to its fixed task ordering, but it does not perform look-ahead or optimize the future FPP tail.
+- PTV-aware uses a benefit/risk priority. If that priority starts a long FPP task earlier and avoids later resource blocking, it may produce a slightly shorter TAT while still satisfying thermal and voltage constraints.
+- Such a result must be audited for FPP lane capacity, DWR segment exclusivity, dependencies, and voltage/thermal violations before interpretation.
+- If no resource or dependency violation is found, the correct explanation is workload-specific heuristic ordering, not a general claim that PTV-aware is always faster than bandwidth-greedy.
+
+This decision is a reporting principle for MVP experiments and is not an IEEE 1838 scheduling rule.
+
+## D18: Realistic Statistics Case Labeling
+
+The `benchmarks/realistic_uart_stats.yaml` workload may be described as a manually specified realistic statistics case.
+
+Required wording rules:
+
+- It may be called a UART-like or communication-controller statistics workload.
+- It may be used to validate the benchmark-derived workload flow and adapter behavior.
+- It must not be called an RTL-extracted benchmark.
+- It must not be presented as real chip validation, ATPG validation, HotSpot/3D-ICE validation, RedHawk/Voltus validation, or silicon validation.
+- Task durations and powers should be described as derived from manually specified circuit-level statistics through the benchmark adapter.
+
+This decision keeps the research claim aligned with the current implementation scope.
