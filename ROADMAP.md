@@ -25,8 +25,6 @@ A0 是 task-level physical-aware scheduling prototype。它验证调度器、资
 - workload scale sweep
 - benchmark-derived workload schema
 - example benchmark adapter
-- realistic UART statistics case
-- audit reports
 - RESULTS.md 结果总结
 
 核心结论：
@@ -56,7 +54,7 @@ A0 是 task-level physical-aware scheduling prototype。它验证调度器、资
 ## B1：AccessPath Data Model and Path Cost Estimator
 
 状态：
-计划中。
+已完成初版 MVP。
 
 目标：
 建立 IEEE 1838-compatible access path 的数据模型和成本估计器。
@@ -73,6 +71,14 @@ A0 是 task-level physical-aware scheduling prototype。它验证调度器、资
 - 能估算 required_3dcr_bits、access_bit_length 和 estimated_access_time。
 - 能列出 occupied_resources。
 - 能体现 deeper die access overhead 更高。
+
+实际产出：
+- `src/access_path/model.py`
+- `src/access_path/generator.py`
+- `experiments/demo_access_path_generation.py`
+- `tests/test_access_path_generator.py`
+- `results/access_path/access_path_summary.csv`
+- `results/access_path/access_path_summary.md`
 
 ## B2：TestIntent to ExecutionPhase Layered Expander
 
@@ -258,7 +264,7 @@ A0 是 task-level physical-aware scheduling prototype。它验证调度器、资
 - External health event interface，受 fast throttle / emergency shutdown 类机制启发，但不实现 UCIe。
 - Interposer test-bus-aware routing，作为 B11 之后的长期扩展。
 
-B1 下一步不变：AccessPath data model and path cost estimator。
+B1 已完成初版 MVP；下一步推进 B2：TestIntent to ExecutionPhase layered expander。
 
 ## B4.1：PowerPillar-Aware Capture Staggering
 

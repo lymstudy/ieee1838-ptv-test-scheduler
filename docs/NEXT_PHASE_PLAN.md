@@ -18,8 +18,6 @@ A0 原型已经完成：
 - Workload scale sweep
 - Benchmark-derived workload schema
 - Example benchmark adapter
-- Realistic UART statistics case
-- Schedule audit reports
 
 A0 已经证明：Bandwidth-greedy 可以降低 TAT，但会提高 voltage / thermal risk；PTV-aware 可以用一定 TAT 代价降低或消除 physical violation。
 
@@ -54,11 +52,14 @@ Predictive access-path and physical-aware layered test scheduling for IEEE 1838-
 
 ### P0：AccessPath + LayeredTask spec/code
 
+当前状态：
+
+- AccessPath data model：已完成初版 MVP
+- AccessPath generator：已完成初版 MVP
+- Path cost estimator：已完成初版 MVP
+
 下一步优先完成：
 
-- AccessPath data model
-- AccessPath generator
-- Path cost estimator
 - TestIntent model
 - ExecutionPhase model
 - Layered task expander
@@ -95,22 +96,27 @@ FPGA 后续只能用于验证控制流和访问序列执行，不能直接验证
 
 ## 6. Immediate Next Task
 
+更新状态：
+
+B1：AccessPath data model and path cost estimator 已完成初版 MVP。
+
 推荐下一步：
 
-B1：AccessPath data model and path cost estimator。
+B2：TestIntent to ExecutionPhase layered expander。
 
 预期输出：
 
-- `src/access_path/model.py`
-- `src/access_path/generator.py`
-- `tests/test_access_path_generator.py`
-- Access path examples in docs
+- `src/intent/model.py`
+- `src/layered/model.py`
+- `src/layered/expander.py`
+- `tests/test_layered_expander.py`
+- BIST / scan / DWR EXTEST / instrument access 展开示例
 
 ## 7. Frontier Idea Integration
 
 更长期的前沿启发整合见：[`FRONTIER_IDEA_INTEGRATION_PLAN.md`](FRONTIER_IDEA_INTEGRATION_PLAN.md)。这些内容是 future roadmap，不是当前已实现功能，也不是 B1 immediate scope。
 
-B1 仍然是下一步：AccessPath data model and path cost estimator。
+B1 已完成初版 MVP。下一步仍保持主线推进到 B2：TestIntent to ExecutionPhase layered expander。
 
 ### P1/P2/P3 补充方向
 

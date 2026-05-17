@@ -1,0 +1,7 @@
+path_id,target_die,path_dies,selected_staps,required_3dcr_bits,access_bit_length,estimated_access_time,operation_count,occupied_resource_count,notes
+basic_die0,0,0,,8,16,3.2e-07,2,3,Basic PTAP/STAP/3DCR access path estimate.
+basic_die1,1,0|1,1,16,28,5.6e-07,3,5,Basic PTAP/STAP/3DCR access path estimate.
+basic_die2,2,0|1|2,1|2,24,40,8e-07,3,7,Basic PTAP/STAP/3DCR access path estimate.
+basic_die3,3,0|1|2|3,1|2|3,32,52,1.04e-06,3,9,Basic PTAP/STAP/3DCR access path estimate.
+dwr_die3_512b,3,0|1|2|3,1|2|3,32,612,1.224e-05,6,10,"DWR access adds wrapper mode configuration, serial shift, and readback overhead."
+fpp_die3_8192b_2lanes,3,0|1|2|3,1|2|3,32,8260,5.456e-06,5,11,"FPP is a data transport resource, not a universal control path; PTAP/STAP/FPP configuration overhead is still included."

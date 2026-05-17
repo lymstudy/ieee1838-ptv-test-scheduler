@@ -19,7 +19,6 @@ A0 原型已经完成一个可复现的 task-level physical-aware scheduling fra
 - Workload scale sweep。
 - Benchmark-derived workload statistics schema。
 - Example benchmark adapter。
-- Manually specified realistic UART statistics case。
 
 A0 的定位是：task-level physical-aware scheduling prototype。它用于验证调度器、资源约束、schedule overlap 物理评估、参数扫描和 benchmark statistics adapter 的基础可行性。
 
@@ -58,10 +57,11 @@ A0 不是完整 IEEE 1838 behavior model。当前模型没有完整展开 IEEE 1
 
 ### 2.5 真实性仍有限
 
-1. Realistic UART 是 manually specified statistics case。
-2. 尚未 RTL-extracted benchmark。
-3. 尚未 RTL mock validation。
-4. 尚未 industrial PDN / thermal tool correlation。
+1. 当前只完成 benchmark-derived workload schema 和 example adapter。
+2. Realistic UART / public benchmark-derived statistics case 尚未完成。
+3. 尚未 RTL-extracted benchmark。
+4. 尚未 RTL mock validation。
+5. 尚未 industrial PDN / thermal tool correlation。
 
 ## 3. B 阶段目标架构
 
@@ -359,7 +359,7 @@ T(t+1) = A_T * T(t) + B_T * P(t)
 
 - Level 0：Python task-level simulation，目前已完成。
 - Level 1：IEEE 1838 access behavior mock，计划中。
-- Level 2：benchmark-derived workload，已完成 schema 和 manually specified UART stats，后续接公开 benchmark。
+- Level 2：benchmark-derived workload，已完成 schema 和 example adapter；realistic UART / public benchmark statistics 后续接入。
 - Level 3：RTL mock validation，验证 simplified PTAP/STAP/DWR/FPP/scan/BIST 行为。
 - Level 4：thermal / IR-drop model correlation，例如 HotSpot/3D-ICE/simple PDN matrix。
 - Level 5：FPGA semi-hardware playback，验证 scheduler command flow，不声称真实 3D thermal/IR-drop。
@@ -482,4 +482,39 @@ B0 设计规格的后续前沿启发整合见：[`FRONTIER_IDEA_INTEGRATION_PLAN
 - SSN-inspired TAM / FPP co-allocation：研究 stack-level FPP lane 和 die-level TAM bandwidth 的共同分配；不实现 Siemens Tessent SSN。
 - Interposer test-bus-aware routing：作为 B11 之后的长期扩展，不进入 B1 immediate implementation。
 
-B1 下一步仍是 AccessPath data model and path cost estimator。本 addendum 不改变 B1 范围。
+B1 范围仍是 AccessPath data model and path cost estimator；frontier addendum 不扩大 B1 范围。B1 初版实现状态见下一节。
+
+## 16. B1 Implementation Note: AccessPath MVP
+
+B1 初版已经实现为独立的 access-path estimator，不依赖现有 scheduler 内部对象，也不修改 A0 evaluator。
+
+已实现文件：
+
+- `src/access_path/model.py`
+- `src/access_path/generator.py`
+- `experiments/demo_access_path_generation.py`
+- `tests/test_access_path_generator.py`
+
+当前 B1 MVP 支持：
+
+- `StackAccessConfig`
+- `AccessResource`
+- `AccessOperation`
+- `AccessPath`
+- `AccessPathGenerator.generate_path_to_die`
+- `AccessPathGenerator.generate_dwr_access_path`
+- `AccessPathGenerator.generate_fpp_data_path`
+- PTAP shift time estimate
+- FPP transfer time estimate
+
+当前 timing model 仍是抽象估算：
+
+```text
+access_time =
+  path_select_bits / tck_frequency
++ config_bits / tck_frequency
++ data_bits / transfer_bandwidth
++ readback_bits / tck_frequency
+```
+
+该实现只用于 B 阶段 access path cost planning，不是 IEEE 1838 bit-accurate implementation，也不是完整 IEEE 1838 behavior model。下一步进入 B2：TestIntent to ExecutionPhase layered expander。

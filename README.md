@@ -12,7 +12,7 @@ A0 compares three schedulers on abstract 3D stack test workloads:
 2. Bandwidth-greedy baseline
 3. PTV-aware scheduler
 
-A0 includes configuration loading, abstract stack/task/access models, a unified schedule evaluator, a simplified thermal model, a simplified shared-PDN voltage model, clean and stress 4-die experiments, parameter sweeps, deterministic synthetic workload-scale sweeps, benchmark-derived workload statistics schema, example benchmark adapter, realistic UART statistics case, plots, tests, and audit reports.
+A0 includes configuration loading, abstract stack/task/access models, a unified schedule evaluator, a simplified thermal model, a simplified shared-PDN voltage model, clean and stress 4-die experiments, parameter sweeps, deterministic synthetic workload-scale sweeps, benchmark-derived workload statistics schema, example benchmark adapter, plots, and tests.
 
 A0 is a task-level scheduling prototype. It is not a full IEEE 1838 behavior model.
 
@@ -45,7 +45,7 @@ B-stage goal:
 
 Predictive access-path and physical-aware layered test scheduling for IEEE 1838-compatible 3D ICs.
 
-The next implementation task is B1: AccessPath data model and path cost estimator.
+B1 AccessPath data model and path cost estimator is implemented as an initial MVP. The next implementation task is B2: TestIntent to ExecutionPhase layered expander.
 
 ## Benchmark-Derived Workload Schema
 
@@ -53,7 +53,6 @@ The benchmark-derived workload path currently uses a statistics schema, not a Ve
 
 - Schema: `benchmarks/schema.md`
 - Example stats: `benchmarks/example_benchmark_stats.yaml`
-- Realistic UART stats: `benchmarks/realistic_uart_stats.yaml`
 - Adapter: `src/workload/benchmark_adapter.py`
 
 The adapter converts benchmark statistics such as flip-flop count, scan-chain count, scan-chain length, estimated task powers, and DWR interconnect lengths into scheduler-compatible abstract tasks.
@@ -81,14 +80,22 @@ python experiments/sweep_thermal_limits.py
 python experiments/sweep_workload_scale.py
 ```
 
-Run benchmark-statistics workloads and audits:
+Run benchmark-statistics workloads:
 
 ```powershell
 python experiments/run_example_benchmark_workload.py
-python experiments/audit_example_benchmark_schedule.py
-python experiments/run_realistic_uart_workload.py
-python experiments/audit_realistic_uart_schedule.py
 ```
+
+Run the B1 access-path generation demo:
+
+```powershell
+python experiments/demo_access_path_generation.py
+```
+
+Access-path demo outputs:
+
+- `results/access_path/access_path_summary.csv`
+- `results/access_path/access_path_summary.md`
 
 Experiment outputs are written under:
 
@@ -99,7 +106,7 @@ Experiment outputs are written under:
 - `results/sweeps/thermal_limits/`
 - `results/sweeps/workload_scale/`
 - `results/benchmarks/example/`
-- `results/benchmarks/realistic_uart/`
+- `results/access_path/`
 
 ## Quick Start
 
@@ -117,7 +124,7 @@ python experiments/run_case_4die.py
 - When discussing scan streaming ideas, use "streaming-scan-inspired" only where appropriate.
 - Synthetic workloads are for mechanism validation and are not real benchmark-derived workloads.
 - The example benchmark-derived workload is schema validation from statistics, not a real benchmark conclusion.
-- The realistic UART case is a manually specified realistic statistics case, not RTL-extracted benchmark validation.
+- Realistic UART / public benchmark-derived statistics remain future work unless the corresponding files are present in the repository.
 - Do not claim zero hardware overhead. Use narrower statements only when accurate, such as "reuse IEEE 1838-compatible test access resources".
 
 ## Frontier Idea Integration Roadmap
@@ -126,4 +133,4 @@ Future planning for PTVA-SSN-inspired extensions, interposer test-bus routing, e
 
 - [FRONTIER_IDEA_INTEGRATION_PLAN.md](docs/FRONTIER_IDEA_INTEGRATION_PLAN.md)
 
-This document is a roadmap only. It does not mean the repository has implemented SSN, UCIe, interposer routing hardware, PackageProfile models, PowerPillar models, or new scheduler algorithms. B1 remains the next implementation step: AccessPath data model and path cost estimator.
+This document is a roadmap only. It does not mean the repository has implemented SSN, UCIe, interposer routing hardware, PackageProfile models, PowerPillar models, or new scheduler algorithms. B1 is now implemented as an initial AccessPath MVP; B2 layered expansion remains the next implementation step.

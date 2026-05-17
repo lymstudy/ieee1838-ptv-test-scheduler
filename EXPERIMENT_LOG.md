@@ -629,9 +629,58 @@ Passed.
 Test result:
 pytest: 68 passed, 1 warning
 
+## Design/Prototype Note 019: B1 AccessPath Model and Path Cost Estimator
+
+Date:
+2026-05-17
+
+Commit:
+TBD
+
+Type:
+Design/prototype note.
+
+Commands:
+
+```bash
+pytest
+python experiments/demo_access_path_generation.py
+python experiments/run_case_4die.py
+```
+
+Purpose:
+Implement the B1 access-path data model, access path generator, and MVP path timing estimator without changing scheduler or evaluator behavior.
+
+Files added:
+
+```text
+src/access_path/__init__.py
+src/access_path/model.py
+src/access_path/generator.py
+experiments/demo_access_path_generation.py
+tests/test_access_path_generator.py
+```
+
+Output files:
+
+```text
+results/access_path/access_path_summary.csv
+results/access_path/access_path_summary.md
+```
+
+Key observations:
+- Basic access path estimated time increases from die0 to die3 because deeper access requires more STAP/3DCR path configuration bits.
+- DWR access path adds wrapper configuration, serial shift, and readback overhead relative to the basic path.
+- FPP data path includes `FPP_TRANSFER` for bulk data but still includes PTAP/STAP/FPP configuration overhead.
+
+Result:
+Completed for B1 AccessPath implementation. `pytest`, `demo_access_path_generation.py`, and `run_case_4die.py` completed successfully.
+
+Test result:
+pytest: 75 passed, 1 warning
+
 Notes:
 No scheduler, evaluator, benchmark, RTL parser, RTL mock, sweep, or industrial-tool integration was added in this task.
-
 
 ## Design Note 018: Frontier Idea Integration into B-stage Roadmap
 
@@ -685,3 +734,49 @@ Documentation planning only. No scheduler, evaluator, AccessPath code, RTL, SSN,
 Test result:
 pytest: 68 passed, 1 warning
 
+
+## Design Note 020: Repository State Consistency Fix
+
+Date:
+2026-05-17
+
+Commit:
+TBD
+
+Type:
+Design note, not an experiment.
+
+Commands:
+
+```bash
+pytest
+python experiments/demo_access_path_generation.py
+python experiments/run_case_4die.py
+python experiments/run_example_benchmark_workload.py
+```
+
+Purpose:
+Audit and repair documentation that incorrectly described absent benchmark/audit artifacts as completed in the current checkout.
+
+Repository audit:
+- `benchmarks/realistic_uart_stats.yaml`: not present.
+- `experiments/run_realistic_uart_workload.py`: not present.
+- `experiments/audit_realistic_uart_schedule.py`: not present.
+- `tests/test_realistic_uart_workload.py`: not present.
+- `results/benchmarks/realistic_uart/`: not present.
+- `experiments/audit_example_benchmark_schedule.py`: not present.
+- `tests/test_example_benchmark_audit.py`: not present.
+- `results/benchmarks/example/audit/`: not present.
+
+State correction:
+- Benchmark-derived workload schema and example adapter remain completed.
+- Example benchmark workload runner, tests, and result directory remain valid.
+- Realistic UART statistics case is moved back to future work.
+- Example benchmark schedule audit is moved back to future work.
+- No scheduler, evaluator, AccessPath code, benchmark implementation, RTL parser, RTL mock, or sweep was changed.
+
+Result:
+Pending command execution.
+
+Test result:
+Pending command execution.

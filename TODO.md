@@ -36,11 +36,6 @@
 - [x] benchmark workload adapter。
 - [x] example benchmark workload experiment。
 - [x] benchmark adapter tests。
-- [x] benchmark example schedule audit。
-- [x] realistic benchmark statistics case。
-- [x] realistic UART workload experiment。
-- [x] realistic UART schedule audit。
-- [x] realistic UART workload tests。
 - [x] A0 原型冻结。
 
 ## B0 已完成任务
@@ -52,16 +47,16 @@
 
 ## B 阶段立即任务
 
-- [ ] AccessPath model。
-- [ ] AccessPath generator。
-- [ ] AccessPath cost estimator。
+- [x] AccessPath model。
+- [x] AccessPath generator。
+- [x] AccessPath cost estimator。
 - [ ] TestIntent model。
 - [ ] AccessOp model。
 - [ ] ExecutionPhase model。
 - [ ] LayeredTask model。
 - [ ] Layered task expander。
-- [ ] Access path examples in docs。
-- [ ] `tests/test_access_path_generator.py`。
+- [x] Access path examples in docs。
+- [x] `tests/test_access_path_generator.py`。
 
 ## B 阶段后续任务
 
@@ -74,6 +69,11 @@
 - [ ] MILP small optimal baseline。
 - [ ] RTL mock validation。
 - [ ] public benchmark-derived statistics case。
+- [ ] benchmark example schedule audit。
+- [ ] realistic UART statistics case。
+- [ ] realistic UART workload experiment。
+- [ ] realistic UART schedule audit。
+- [ ] realistic UART workload tests。
 - [ ] benchmark-derived workload 与 synthetic workload 的结果表格对齐。
 - [ ] 生成论文/组会可用的结果表格。
 - [ ] 生成论文/组会可用的图表版本。

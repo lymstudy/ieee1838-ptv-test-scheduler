@@ -228,3 +228,33 @@ Bottom-thermal/top-voltage behavior is not hard-coded. Later asymmetric voltage 
 Package/material effects are modeled through `PackageProfile` boundary conditions. The project must not claim that glass substrate or any specific package material universally improves all scenarios unless supported by explicit external evidence.
 
 The zero hardware overhead claim remains forbidden. Acceptable language must be narrower and traceable, such as reuse of existing IEEE 1838-compatible abstract access resources under stated modeling assumptions.
+
+## D21: B1 MVP AccessPath Timing Model
+
+B1 introduces an abstract access path estimator for IEEE 1838-compatible scheduling research. It is not a bit-accurate implementation of IEEE 1838 and does not claim complete IEEE 1838 behavior modeling.
+
+The MVP access time model is:
+
+```text
+access_time =
+  path_select_bits / tck_frequency
++ config_bits / tck_frequency
++ data_bits / transfer_bandwidth
++ readback_bits / tck_frequency
+```
+
+PTAP/STAP/3DCR/DWR serial configuration and shift time are estimated with `bits / tck_frequency_hz`. FPP bulk data transfer time is estimated with `data_bits / (fpp_bandwidth_bits_per_s * lanes)`.
+
+DWR access paths must include basic die path setup plus DWR mode configuration, DWR serial shift, and readback overhead.
+
+FPP data paths must include PTAP/STAP target path setup and FPP configuration overhead before `FPP_TRANSFER`. FPP is modeled as an optional data transport resource, not a universal control path and not zero-cost.
+
+The B1 estimator is deliberately independent of A0 scheduler internals. It prepares inputs for later TestIntent / ExecutionPhase expansion without changing existing scheduler behavior.
+
+## D22: Repository State Must Match Landed Files
+
+Project state documents must not claim that an experiment, workload, benchmark case, script, test, or result has been completed unless the corresponding files are present in the current repository checkout.
+
+If a planned experiment is discussed before implementation, it must be labeled as future work or planned work. This applies especially to benchmark-derived workloads, realistic statistics cases, RTL mock validation, FPGA playback, and industrial tool correlation.
+
+For the current checkout, the benchmark-derived workload schema and example adapter are completed, while the realistic UART statistics case is not completed because the expected YAML, experiment scripts, audit script, tests, and result directory are absent. The example benchmark audit is also not completed in this checkout because the expected audit script, audit test, and audit result directory are absent.
