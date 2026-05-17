@@ -1,0 +1,5 @@
+layered_task_id,parent_intent_id,intent_type,target_die,phase_count,total_estimated_time,contains_local_execution,contains_capture_phase,contains_fpp_phase,contains_dwr_phase
+layered_scan_die3,scan_die3,internal_scan,3,6,1.0272000000000001e-05,False,True,True,False
+layered_bist_die2,bist_die2,bist,2,5,0.0025032,True,False,False,False
+layered_dwr_extest_die1_die2,dwr_extest_die1_die2,dwr_extest,,5,3.2200000000000003e-05,False,True,False,True
+layered_instrument_die0,instrument_die0,instrument_access,0,3,3.52e-06,False,False,False,False

@@ -776,7 +776,215 @@ State correction:
 - No scheduler, evaluator, AccessPath code, benchmark implementation, RTL parser, RTL mock, or sweep was changed.
 
 Result:
-Pending command execution.
+Documentation state was corrected. `pytest` and `run_case_4die.py` passed in the current follow-up run. `demo_access_path_generation.py` and `run_example_benchmark_workload.py` were blocked by write permission errors in existing `results/` subdirectories, so their outputs were not refreshed in this sandbox session.
 
 Test result:
-Pending command execution.
+pytest: 81 passed, 1 warning
+
+
+## Design/Prototype Note 021: B2 TestIntent to ExecutionPhase Layered Expander
+
+Date:
+2026-05-17
+
+Commit:
+TBD
+
+Type:
+Design/prototype note.
+
+Commands:
+
+```bash
+pytest
+python experiments/demo_access_path_generation.py
+python experiments/demo_layered_task_expansion.py
+python experiments/run_case_4die.py
+python experiments/run_example_benchmark_workload.py
+```
+
+Purpose:
+Implement the B2 TestIntent, ExecutionPhase, LayeredTask, and layered task expander MVP without changing scheduler or evaluator behavior.
+
+Files added:
+
+```text
+src/layered/__init__.py
+src/layered/intent.py
+src/layered/phase.py
+src/layered/expander.py
+experiments/demo_layered_task_expansion.py
+tests/test_layered_expander.py
+```
+
+Expected output files:
+
+```text
+results/layered_expansion/layered_task_summary.csv
+results/layered_expansion/execution_phase_summary.csv
+results/layered_expansion/layered_task_summary.md
+```
+
+Key observations:
+- BIST expands into access, trigger, local run, re-access, and readback phases.
+- `LOCAL_BIST_RUN` uses `uses_ptap=False`, so future phase schedulers can overlap local BIST execution with other die access phases.
+- Internal scan expands into config, FPP shift-in, capture, FPP shift-out, and optional readback.
+- DWR EXTEST expands into wrapper config, DWR shift-in, capture, and shift-out.
+- Instrument access remains a simplified network access model with future room for SIB hierarchical or daisy-chain timing.
+
+Result:
+B2 layered expansion implementation and tests passed. `run_case_4die.py` also passed. `demo_layered_task_expansion.py` could not create `results/layered_expansion/` because the current sandbox denied write access to that results path. `demo_access_path_generation.py` and `run_example_benchmark_workload.py` were also blocked by write permission errors in existing results paths.
+
+Test result:
+pytest: 81 passed, 1 warning
+
+## Design/Prototype Note 022: B2.5 Output Path Robustness Fix
+
+Date:
+2026-05-17
+
+Commit:
+TBD
+
+Type:
+Engineering robustness note.
+
+Commands:
+
+```bash
+pytest
+python experiments/demo_access_path_generation.py --output-dir tmp_access_path_out
+python experiments/demo_layered_task_expansion.py --output-dir tmp_layered_out
+python experiments/run_example_benchmark_workload.py --output-dir tmp_benchmark_out
+```
+
+Purpose:
+Make B1/B2 demo scripts and the example benchmark runner write to configurable output directories so tests and sandboxed runs do not depend on fixed `results/` subdirectories being writable.
+
+Files updated:
+
+```text
+experiments/demo_access_path_generation.py
+experiments/demo_layered_task_expansion.py
+experiments/run_example_benchmark_workload.py
+tests/test_access_path_generator.py
+tests/test_benchmark_adapter.py
+README.md
+STATUS.md
+TODO.md
+DECISIONS.md
+EXPERIMENT_LOG.md
+```
+
+Behavior:
+- `demo_access_path_generation.py` supports `--output-dir`, defaulting to `results/access_path/`.
+- `demo_layered_task_expansion.py` supports `--output-dir`, defaulting to `results/layered_expansion/`.
+- `run_example_benchmark_workload.py` supports `--output-dir`, defaulting to `results/benchmarks/example/`.
+- Missing output directories are created automatically.
+- Directory creation failures raise a clear error that includes the target path.
+- Tests use pytest `tmp_path` for generated outputs.
+
+Temporary output files generated:
+
+```text
+tmp_access_path_out/access_path_summary.csv
+tmp_access_path_out/access_path_summary.md
+tmp_layered_out/layered_task_summary.csv
+tmp_layered_out/execution_phase_summary.csv
+tmp_layered_out/layered_task_summary.md
+tmp_benchmark_out/benchmark_task_summary.csv
+tmp_benchmark_out/scheduler_metrics_summary.csv
+tmp_benchmark_out/serial_schedule.csv
+tmp_benchmark_out/greedy_schedule.csv
+tmp_benchmark_out/ptv_schedule.csv
+```
+
+Additional benchmark plots were also generated under `tmp_benchmark_out/`.
+
+Result:
+Passed. The configurable output directory path works for all three scripts in the current sandbox.
+
+Test result:
+pytest: 81 passed, 1 warning
+
+Notes:
+This task did not modify scheduler core algorithms, the unified evaluator, AccessPath generation logic, or LayeredTask expansion logic. The warning remains the known `.pytest_cache` permission warning.
+
+## Design/Prototype Note 023: B3.1 ExecutionPhase-Level Access-Time-Aware Scheduler
+
+Date:
+2026-05-17
+
+Commit:
+TBD
+
+Type:
+Design/prototype note.
+
+Commands:
+
+```bash
+pytest tests/test_layered_scheduler.py
+pytest
+python experiments/demo_access_time_scheduler.py --output-dir tmp_access_time_scheduler_out
+```
+
+Purpose:
+Implement the first B3 ExecutionPhase-level scheduler prototype without modifying existing A0 task-level schedulers, evaluator modules, AccessPath logic, or B2 layered expansion logic.
+
+Files added:
+
+```text
+src/layered/scheduler.py
+tests/test_layered_scheduler.py
+experiments/demo_access_time_scheduler.py
+```
+
+Files updated:
+
+```text
+src/layered/__init__.py
+STATUS.md
+TODO.md
+DECISIONS.md
+EXPERIMENT_LOG.md
+```
+
+Implemented behavior:
+- `ScheduledPhase` stores one `ExecutionPhase` with `start_time` and `end_time`.
+- `LayeredScheduleResult` stores scheduled phases, total time, residual resource conflicts, and dependency violations.
+- `AccessTimeAwareScheduler` implements deterministic earliest-start list scheduling.
+- Stable input order is preserved when multiple phases can start at the same time.
+- A phase can start only after all dependency phase IDs have completed.
+- Missing dependency IDs raise `ValueError` with the missing ID.
+- `uses_ptap=True` occupies a global PTAP resource.
+- `uses_fpp=True` occupies FPP lane capacity using `phase.fpp_lanes`, defaulting to one lane when absent.
+- `uses_dwr=True` occupies the named DWR segment, or a global DWR resource if no segment is provided.
+- `is_capture_phase=True` occupies a global CAPTURE resource when `capture_exclusive=True`.
+- `is_local_execution=True` does not automatically occupy PTAP.
+
+Demo outputs:
+
+```text
+tmp_access_time_scheduler_out/phase_schedule.csv
+tmp_access_time_scheduler_out/phase_schedule.md
+```
+
+Key validation observations:
+- Pure dependency chains schedule serially.
+- Independent local execution phases can overlap.
+- PTAP phases serialize.
+- BIST local execution can overlap with another PTAP config phase when `uses_ptap=False`.
+- FPP lane capacity is respected.
+- DWR conflicts are segment-specific.
+- Result `total_time` equals the maximum scheduled phase end time.
+
+Result:
+Passed.
+
+Test result:
+`pytest tests/test_layered_scheduler.py`: 8 passed, 1 warning.
+`pytest`: 89 passed, 1 warning.
+
+Notes:
+B3.1 is a first ExecutionPhase-level access-time-aware scheduling prototype. It is not predictive physical-aware scheduling, does not integrate thermal or voltage prediction, and is not a complete IEEE 1838 framework. Phase-level thermal / voltage prediction integration remains future B3.2/B3.3 work.

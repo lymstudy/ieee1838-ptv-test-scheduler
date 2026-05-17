@@ -258,3 +258,56 @@ Project state documents must not claim that an experiment, workload, benchmark c
 If a planned experiment is discussed before implementation, it must be labeled as future work or planned work. This applies especially to benchmark-derived workloads, realistic statistics cases, RTL mock validation, FPGA playback, and industrial tool correlation.
 
 For the current checkout, the benchmark-derived workload schema and example adapter are completed, while the realistic UART statistics case is not completed because the expected YAML, experiment scripts, audit script, tests, and result directory are absent. The example benchmark audit is also not completed in this checkout because the expected audit script, audit test, and audit result directory are absent.
+
+## D23: B2 Layered Expansion Semantics
+
+High-level `TestIntent` objects are not scheduled directly. They are expanded into `ExecutionPhase` objects first, so future schedulers can reason about access/config time, data transfer time, local execution time, capture time, and readback time separately.
+
+BIST is represented as access-path configuration, BIST trigger, local BIST execution, re-access, and result readback. The `LOCAL_BIST_RUN` phase sets `uses_ptap=False` and `is_local_execution=True`, because after trigger the local BIST engine may run without continuously occupying the PTAP control path in the abstract B-stage model.
+
+Internal scan is represented as access/config, scan/FPP configuration, FPP shift-in, scan capture, FPP shift-out, and optional readback. Capture phases use `is_capture_phase=True`.
+
+DWR EXTEST is represented as wrapper access/config, DWR mode configuration, DWR shift-in, DWR capture, and DWR shift-out. DWR means Die Wrapper Register.
+
+Instrument access is currently simplified as access path configuration, instrument network access, and optional readback. Later work may replace the flat timing estimate with SIB hierarchical or daisy-chain network timing.
+
+B2 does not connect ExecutionPhase objects to the A0 schedulers and does not claim full IEEE 1838 behavior implementation.
+
+## D24: Configurable Demo Output Directories
+
+B1/B2 demo scripts and the example benchmark runner support a configurable `output_dir` / `--output-dir` so validation can write to sandbox-safe temporary directories.
+
+Default paths are preserved for reproducibility:
+
+```text
+experiments/demo_access_path_generation.py -> results/access_path/
+experiments/demo_layered_task_expansion.py -> results/layered_expansion/
+experiments/run_example_benchmark_workload.py -> results/benchmarks/example/
+```
+
+Tests should use pytest `tmp_path` for generated demo and benchmark outputs rather than assuming fixed `results/` subdirectories are writable.
+
+This is an engineering robustness decision only. It does not change scheduler algorithms, evaluator behavior, AccessPath estimation, LayeredTask expansion semantics, or research scope.
+
+## D25: B3.1 Phase-Level Scheduler Scope
+
+B3.1 introduces a minimal `ExecutionPhase`-level scheduler as a separate layered module:
+
+```text
+src/layered/scheduler.py
+```
+
+This scheduler operates after B2 `TestIntent -> ExecutionPhase` expansion and before any future phase-level physical prediction or reporting layer.
+
+The B3.1 scheduling policy is deterministic earliest-start list scheduling:
+
+- dependencies are phase IDs and must complete before a phase starts;
+- global PTAP is exclusive when `uses_ptap=True`;
+- FPP is a capacity resource controlled by `total_fpp_lanes`;
+- DWR conflicts are keyed by `dwr_segment`, with a global DWR fallback when no segment is provided;
+- capture phases can use a global exclusive CAPTURE resource;
+- local execution does not imply PTAP occupation unless `uses_ptap=True`.
+
+This decision deliberately keeps B3.1 independent of the existing A0 task-level schedulers and evaluator modules. It does not implement predictive physical-aware scheduling, does not add thermal/voltage look-ahead, and does not claim full IEEE 1838 behavior implementation.
+
+Phase-level thermal / voltage prediction integration remains future B3.2/B3.3 work.

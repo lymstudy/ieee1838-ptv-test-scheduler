@@ -45,7 +45,7 @@ B-stage goal:
 
 Predictive access-path and physical-aware layered test scheduling for IEEE 1838-compatible 3D ICs.
 
-B1 AccessPath data model and path cost estimator is implemented as an initial MVP. The next implementation task is B2: TestIntent to ExecutionPhase layered expander.
+B1 AccessPath data model and path cost estimator and B2 TestIntent to ExecutionPhase layered expander are implemented as initial MVPs. The next implementation task is B3: Access-time-aware scheduler.
 
 ## Benchmark-Derived Workload Schema
 
@@ -84,18 +84,33 @@ Run benchmark-statistics workloads:
 
 ```powershell
 python experiments/run_example_benchmark_workload.py
+python experiments/run_example_benchmark_workload.py --output-dir tmp_benchmark_out
 ```
 
 Run the B1 access-path generation demo:
 
 ```powershell
 python experiments/demo_access_path_generation.py
+python experiments/demo_access_path_generation.py --output-dir tmp_access_path_out
 ```
 
 Access-path demo outputs:
 
 - `results/access_path/access_path_summary.csv`
 - `results/access_path/access_path_summary.md`
+
+Run the B2 layered task expansion demo:
+
+```powershell
+python experiments/demo_layered_task_expansion.py
+python experiments/demo_layered_task_expansion.py --output-dir tmp_layered_out
+```
+
+Layered expansion demo outputs:
+
+- `results/layered_expansion/layered_task_summary.csv`
+- `results/layered_expansion/execution_phase_summary.csv`
+- `results/layered_expansion/layered_task_summary.md`
 
 Experiment outputs are written under:
 
@@ -107,6 +122,7 @@ Experiment outputs are written under:
 - `results/sweeps/workload_scale/`
 - `results/benchmarks/example/`
 - `results/access_path/`
+- `results/layered_expansion/`
 
 ## Quick Start
 
@@ -133,4 +149,4 @@ Future planning for PTVA-SSN-inspired extensions, interposer test-bus routing, e
 
 - [FRONTIER_IDEA_INTEGRATION_PLAN.md](docs/FRONTIER_IDEA_INTEGRATION_PLAN.md)
 
-This document is a roadmap only. It does not mean the repository has implemented SSN, UCIe, interposer routing hardware, PackageProfile models, PowerPillar models, or new scheduler algorithms. B1 is now implemented as an initial AccessPath MVP; B2 layered expansion remains the next implementation step.
+This document is a roadmap only. It does not mean the repository has implemented SSN, UCIe, interposer routing hardware, PackageProfile models, PowerPillar models, or new scheduler algorithms. B1 and B2 are implemented as initial MVPs; B3 access-time-aware scheduling remains the next implementation step.

@@ -101,10 +101,10 @@ def test_invalid_target_die_raises(generator: AccessPathGenerator) -> None:
         generator.generate_path_to_die(4)
 
 
-def test_demo_access_path_generation_writes_summary_csv() -> None:
+def test_demo_access_path_generation_writes_summary_csv(tmp_path: Path) -> None:
     """The access-path demo should write the requested CSV and Markdown files."""
 
-    outputs = run_access_path_demo()
+    outputs = run_access_path_demo(tmp_path)
     csv_path = outputs["access_path_summary_csv"]
     markdown_path = outputs["access_path_summary_md"]
 

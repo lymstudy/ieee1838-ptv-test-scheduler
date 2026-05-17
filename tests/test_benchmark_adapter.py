@@ -41,11 +41,11 @@ def generated_tasks(stats):
     return build_tasks(generate_tasks_from_benchmark(stats))
 
 
-@pytest.fixture(scope="module")
-def benchmark_outputs() -> dict[str, Path]:
+@pytest.fixture()
+def benchmark_outputs(tmp_path: Path) -> dict[str, Path]:
     """Run the example benchmark workload experiment once."""
 
-    return run()
+    return run(tmp_path)
 
 
 def test_example_benchmark_stats_can_be_loaded(stats) -> None:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import csv
 import sys
 from pathlib import Path
@@ -13,7 +14,18 @@ if str(ROOT) not in sys.path:
 from src.access_path import AccessPath, AccessPathGenerator, StackAccessConfig
 
 
-RESULT_DIR = ROOT / "results" / "access_path"
+DEFAULT_RESULT_DIR = ROOT / "results" / "access_path"
+
+
+def prepare_output_dir(output_dir: Path | str) -> Path:
+    """Create and return the output directory, raising a clear error on failure."""
+
+    path = Path(output_dir)
+    try:
+        path.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        raise RuntimeError(f"failed to create output directory '{path}': {exc}") from exc
+    return path
 
 
 def create_demo_config() -> StackAccessConfig:
@@ -106,17 +118,17 @@ def write_markdown(path: Path, paths: list[AccessPath]) -> None:
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def run() -> dict[str, Path]:
+def run(output_dir: Path | str = DEFAULT_RESULT_DIR) -> dict[str, Path]:
     """Generate the access-path demo outputs."""
 
-    RESULT_DIR.mkdir(parents=True, exist_ok=True)
+    result_dir = prepare_output_dir(output_dir)
     generator = AccessPathGenerator(create_demo_config())
     paths = [generator.generate_path_to_die(die_id) for die_id in range(4)]
     paths.append(generator.generate_dwr_access_path(target_die=3, dwr_bits=512))
     paths.append(generator.generate_fpp_data_path(target_die=3, data_bits=8192, lanes=2))
 
-    csv_path = RESULT_DIR / "access_path_summary.csv"
-    markdown_path = RESULT_DIR / "access_path_summary.md"
+    csv_path = result_dir / "access_path_summary.csv"
+    markdown_path = result_dir / "access_path_summary.md"
     write_csv(csv_path, [path_to_row(path) for path in paths])
     write_markdown(markdown_path, paths)
 
@@ -126,10 +138,24 @@ def run() -> dict[str, Path]:
     }
 
 
-def main() -> None:
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """Parse command-line arguments."""
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=DEFAULT_RESULT_DIR,
+        help=f"directory for demo outputs (default: {DEFAULT_RESULT_DIR})",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> None:
     """Run the demo from the command line."""
 
-    outputs = run()
+    args = parse_args(argv)
+    outputs = run(args.output_dir)
     for output_path in outputs.values():
         print(output_path)
 

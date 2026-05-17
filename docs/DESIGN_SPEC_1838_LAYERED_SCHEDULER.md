@@ -518,3 +518,33 @@ access_time =
 ```
 
 该实现只用于 B 阶段 access path cost planning，不是 IEEE 1838 bit-accurate implementation，也不是完整 IEEE 1838 behavior model。下一步进入 B2：TestIntent to ExecutionPhase layered expander。
+
+## 17. B2 Implementation Note: Layered Task Expansion MVP
+
+B2 初版已经实现 TestIntent、ExecutionPhase、LayeredTask 和 layered expander。该实现仍是 phase-level expansion prototype，没有接入 A0 scheduler，也不改变 evaluator。
+
+已实现文件：
+
+- `src/layered/intent.py`
+- `src/layered/phase.py`
+- `src/layered/expander.py`
+- `experiments/demo_layered_task_expansion.py`
+- `tests/test_layered_expander.py`
+
+当前 B2 MVP 支持的 TestIntent：
+
+- `InternalScanIntent`
+- `BISTIntent`
+- `DWRExTestIntent`
+- `InstrumentAccessIntent`
+- `BypassIntent`
+
+当前 B2 MVP 支持的关键 phase 语义：
+
+- BIST 展开为 `CONFIG_ACCESS_PATH`、`TRIGGER_BIST`、`LOCAL_BIST_RUN`、`CONFIG_ACCESS_PATH`、`READ_BIST_RESULT`。
+- `LOCAL_BIST_RUN` 使用 `uses_ptap=False` 和 `is_local_execution=True`，体现 BIST 启动后本地运行可释放 PTAP。
+- Internal scan 展开为 access config、scan/FPP config、FPP shift-in、scan capture、FPP shift-out 和 optional readback。
+- DWR EXTEST 展开为 access config、DWR mode config、DWR shift-in、DWR capture、DWR shift-out。
+- Instrument access 展开为 access config、instrument network access 和 optional readback。
+
+B2 仍不实现 phase scheduler。下一步进入 B3：Access-time-aware scheduler。

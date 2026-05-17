@@ -83,7 +83,7 @@ A0 是 task-level physical-aware scheduling prototype。它验证调度器、资
 ## B2：TestIntent to ExecutionPhase Layered Expander
 
 状态：
-计划中。
+已完成初版 MVP。
 
 目标：
 将高层 test intent 展开为多阶段 execution phases。
@@ -101,6 +101,16 @@ A0 是 task-level physical-aware scheduling prototype。它验证调度器、资
 - Scan 可展开为 access path config、FPP shift-in、capture、FPP shift-out、readback。
 - DWR EXTEST 可展开为 DWR mode config、shift、capture、update/readout。
 - Instrument access 可展开为 select、network access、read/write、optional readback。
+
+实际产出：
+- `src/layered/intent.py`
+- `src/layered/phase.py`
+- `src/layered/expander.py`
+- `experiments/demo_layered_task_expansion.py`
+- `tests/test_layered_expander.py`
+- `results/layered_expansion/layered_task_summary.csv`
+- `results/layered_expansion/execution_phase_summary.csv`
+- `results/layered_expansion/layered_task_summary.md`
 
 ## B3：Access-Time-Aware Scheduler
 

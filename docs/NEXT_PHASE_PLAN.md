@@ -57,12 +57,13 @@ Predictive access-path and physical-aware layered test scheduling for IEEE 1838-
 - AccessPath data model：已完成初版 MVP
 - AccessPath generator：已完成初版 MVP
 - Path cost estimator：已完成初版 MVP
+- TestIntent model：已完成初版 MVP
+- ExecutionPhase model：已完成初版 MVP
+- Layered task expander：已完成初版 MVP
 
 下一步优先完成：
 
-- TestIntent model
-- ExecutionPhase model
-- Layered task expander
+- Access-time-aware scheduler
 
 ### P1：Predictive scheduling + ablation
 
@@ -99,24 +100,23 @@ FPGA 后续只能用于验证控制流和访问序列执行，不能直接验证
 更新状态：
 
 B1：AccessPath data model and path cost estimator 已完成初版 MVP。
+B2：TestIntent to ExecutionPhase layered expander 已完成初版 MVP。
 
 推荐下一步：
 
-B2：TestIntent to ExecutionPhase layered expander。
+B3：Access-time-aware scheduler。
 
 预期输出：
 
-- `src/intent/model.py`
-- `src/layered/model.py`
-- `src/layered/expander.py`
-- `tests/test_layered_expander.py`
-- BIST / scan / DWR EXTEST / instrument access 展开示例
+- phase-level schedule CSV
+- phase-level Gantt chart
+- access/config、data transfer、local execution、capture、readback 分离的 baseline scheduler
 
 ## 7. Frontier Idea Integration
 
 更长期的前沿启发整合见：[`FRONTIER_IDEA_INTEGRATION_PLAN.md`](FRONTIER_IDEA_INTEGRATION_PLAN.md)。这些内容是 future roadmap，不是当前已实现功能，也不是 B1 immediate scope。
 
-B1 已完成初版 MVP。下一步仍保持主线推进到 B2：TestIntent to ExecutionPhase layered expander。
+B1 和 B2 已完成初版 MVP。下一步仍保持主线推进到 B3：Access-time-aware scheduler。
 
 ### P1/P2/P3 补充方向
 

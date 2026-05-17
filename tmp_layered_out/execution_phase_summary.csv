@@ -1,0 +1,20 @@
+phase_id,parent_intent_id,phase_type,target_die,involved_dies,duration,power,uses_ptap,uses_fpp,uses_dwr,is_local_execution,is_capture_phase,requires_readback,dependencies,description
+scan_die3:config,scan_die3,CONFIG_ACCESS_PATH,3,0|1|2|3,1.04e-06,0.2,True,False,False,False,False,False,,Configure target die access path for internal scan.
+scan_die3:config_scan_fpp,scan_die3,CONFIG_SCAN_FPP,3,3,3.2e-07,0.7,True,True,False,False,False,False,scan_die3:config,Configure scan/FPP data path before scan shift.
+scan_die3:fpp_shift_in,scan_die3,FPP_SHIFT_IN,3,3,4.096e-06,0.7,False,True,False,False,False,False,scan_die3:config_scan_fpp,Shift scan stimulus data into the target die.
+scan_die3:scan_capture,scan_die3,SCAN_CAPTURE,3,3,8e-08,0.95,False,False,False,False,True,False,scan_die3:fpp_shift_in,Capture scan response; this phase contributes high transient current risk.
+scan_die3:fpp_shift_out,scan_die3,FPP_SHIFT_OUT,3,3,4.096e-06,0.7,False,True,False,False,False,False,scan_die3:scan_capture,Shift scan response data out of the target die.
+scan_die3:readback,scan_die3,READBACK,3,3,6.4e-07,0.7,True,False,False,False,False,True,scan_die3:fpp_shift_out,Optional scan status or result readback.
+bist_die2:config,bist_die2,CONFIG_ACCESS_PATH,2,0|1|2,8e-07,0.15,True,False,False,False,False,False,,Configure access path for BIST trigger.
+bist_die2:trigger_bist,bist_die2,TRIGGER_BIST,2,2,3.2e-07,0.25,True,False,False,False,False,False,bist_die2:config,Trigger local BIST start through the PTAP/STAP access path.
+bist_die2:local_bist_run,bist_die2,LOCAL_BIST_RUN,2,2,0.0025,0.8,False,False,False,True,False,False,bist_die2:trigger_bist,"Local BIST execution. This phase does not occupy PTAP, so future schedulers may overlap it with other die access phases."
+bist_die2:readback_access,bist_die2,CONFIG_ACCESS_PATH,2,0|1|2,8e-07,0.15,True,False,False,False,False,False,bist_die2:local_bist_run,Re-configure access path for BIST result readback.
+bist_die2:read_bist_result,bist_die2,READ_BIST_RESULT,2,2,1.28e-06,0.2,True,False,False,False,False,True,bist_die2:readback_access,Read BIST result bits through the PTAP/STAP access path.
+dwr_extest_die1_die2:config,dwr_extest_die1_die2,CONFIG_ACCESS_PATH,2,1|2,8e-07,0.2,True,False,False,False,False,False,,Configure access path to adjacent source/destination DWR wrappers.
+dwr_extest_die1_die2:config_dwr_mode,dwr_extest_die1_die2,CONFIG_DWR_MODE,2,1|2,6.4e-07,0.55,True,False,True,False,False,False,dwr_extest_die1_die2:config,Configure DWR EXTEST mode on adjacent wrappers.
+dwr_extest_die1_die2:dwr_shift_in,dwr_extest_die1_die2,DWR_SHIFT_IN,2,1|2,2.048e-05,0.55,True,False,True,False,False,False,dwr_extest_die1_die2:config_dwr_mode,Shift DWR EXTEST stimulus bits into wrapper registers.
+dwr_extest_die1_die2:dwr_capture,dwr_extest_die1_die2,DWR_CAPTURE,2,1|2,4e-08,0.9,False,False,True,False,True,False,dwr_extest_die1_die2:dwr_shift_in,Capture die-to-die interconnect response through DWR EXTEST.
+dwr_extest_die1_die2:dwr_shift_out,dwr_extest_die1_die2,DWR_SHIFT_OUT,2,1|2,1.024e-05,0.55,True,False,True,False,False,True,dwr_extest_die1_die2:dwr_capture,Shift out DWR EXTEST response bits.
+instrument_die0:config,instrument_die0,CONFIG_ACCESS_PATH,0,0,3.2e-07,0.1,True,False,False,False,False,False,,Configure target die access path for instrument access.
+instrument_die0:access_instrument,instrument_die0,ACCESS_INSTRUMENT,0,0,2.56e-06,0.18,True,False,False,False,False,False,instrument_die0:config,Access instrument network. Later models may replace this with SIB hierarchical or daisy-chain network timing.
+instrument_die0:readback,instrument_die0,READBACK,0,0,6.4e-07,0.18,True,False,False,False,False,True,instrument_die0:access_instrument,Optional instrument register readback/status phase.

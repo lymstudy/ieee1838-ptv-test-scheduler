@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import csv
 import sys
 from pathlib import Path
@@ -25,7 +26,7 @@ from src.workload.benchmark_adapter import generate_case_from_benchmark, load_be
 
 
 STATS_PATH = ROOT / "benchmarks" / "example_benchmark_stats.yaml"
-RESULT_DIR = ROOT / "results" / "benchmarks" / "example"
+DEFAULT_RESULT_DIR = ROOT / "results" / "benchmarks" / "example"
 SUMMARY_COLUMNS = [
     "scheduler_name",
     "tat",
@@ -54,6 +55,17 @@ TASK_SUMMARY_COLUMNS = [
     "is_capture_phase",
     "dependencies",
 ]
+
+
+def prepare_output_dir(output_dir: Path | str) -> Path:
+    """Create and return the output directory, raising a clear error on failure."""
+
+    path = Path(output_dir)
+    try:
+        path.mkdir(parents=True, exist_ok=True)
+    except OSError as exc:
+        raise RuntimeError(f"failed to create output directory '{path}': {exc}") from exc
+    return path
 
 
 def write_dict_rows(path: Path, rows: list[dict], fieldnames: list[str] | None = None) -> None:
@@ -147,18 +159,18 @@ def build_results(case: dict) -> tuple[tuple[TestTask, ...], list[ScheduleResult
     return tasks, [serial.schedule(tasks), greedy.schedule(tasks), ptv.schedule(tasks)]
 
 
-def write_scheduler_outputs(result: ScheduleResult, prefix: str) -> dict[str, Path]:
+def write_scheduler_outputs(result: ScheduleResult, prefix: str, result_dir: Path) -> dict[str, Path]:
     """Write schedule CSV and Gantt chart for one scheduler."""
 
-    schedule_path = RESULT_DIR / f"{prefix}_schedule.csv"
+    schedule_path = result_dir / f"{prefix}_schedule.csv"
     write_dict_rows(schedule_path, [entry.to_row() for entry in result.entries])
 
-    gantt_path = RESULT_DIR / f"{prefix}_gantt.svg"
+    gantt_path = result_dir / f"{prefix}_gantt.svg"
     plot_gantt(result, gantt_path)
     return {f"{prefix}_schedule": schedule_path, f"{prefix}_gantt": gantt_path}
 
 
-def run() -> dict[str, Path]:
+def run(output_dir: Path | str = DEFAULT_RESULT_DIR) -> dict[str, Path]:
     """Run the example benchmark-statistics workload and write outputs."""
 
     stats = load_benchmark_stats(STATS_PATH)
@@ -166,10 +178,10 @@ def run() -> dict[str, Path]:
     tasks, results = build_results(case)
     clock_hz = float(case["simulation"]["clock_hz"])
 
-    RESULT_DIR.mkdir(parents=True, exist_ok=True)
+    result_dir = prepare_output_dir(output_dir)
     outputs: dict[str, Path] = {}
 
-    task_summary_path = RESULT_DIR / "benchmark_task_summary.csv"
+    task_summary_path = result_dir / "benchmark_task_summary.csv"
     write_dict_rows(
         task_summary_path,
         [task_summary_row(task, clock_hz) for task in tasks],
@@ -183,17 +195,48 @@ def run() -> dict[str, Path]:
         "ptv_aware": "ptv",
     }
     for result in results:
-        outputs.update(write_scheduler_outputs(result, prefix_by_scheduler[result.scheduler_name]))
+        outputs.update(
+            write_scheduler_outputs(result, prefix_by_scheduler[result.scheduler_name], result_dir)
+        )
 
-    summary_path = RESULT_DIR / "scheduler_metrics_summary.csv"
+    summary_path = result_dir / "scheduler_metrics_summary.csv"
     write_dict_rows(summary_path, [summary_row(result) for result in results], fieldnames=SUMMARY_COLUMNS)
     outputs["scheduler_metrics_summary"] = summary_path
-    outputs.update(plot_basic_comparisons(results, RESULT_DIR))
+    outputs.update(plot_basic_comparisons(results, result_dir))
     return outputs
 
 
-if __name__ == "__main__":
-    outputs = run()
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    """Parse command-line arguments."""
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=DEFAULT_RESULT_DIR,
+        help=f"directory for benchmark outputs (default: {DEFAULT_RESULT_DIR})",
+    )
+    return parser.parse_args(argv)
+
+
+def display_path(path: Path) -> str:
+    """Return a readable path relative to the repo when possible."""
+
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
+def main(argv: list[str] | None = None) -> None:
+    """Run the example benchmark workload from the command line."""
+
+    args = parse_args(argv)
+    outputs = run(args.output_dir)
     print("Example benchmark-derived workload experiment completed.")
     for name, path in outputs.items():
-        print(f"{name}: {path.relative_to(ROOT)}")
+        print(f"{name}: {display_path(path)}")
+
+
+if __name__ == "__main__":
+    main()

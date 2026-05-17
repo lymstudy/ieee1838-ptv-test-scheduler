@@ -50,17 +50,23 @@
 - [x] AccessPath model。
 - [x] AccessPath generator。
 - [x] AccessPath cost estimator。
-- [ ] TestIntent model。
+- [x] TestIntent model。
 - [ ] AccessOp model。
-- [ ] ExecutionPhase model。
-- [ ] LayeredTask model。
-- [ ] Layered task expander。
+- [x] ExecutionPhase model。
+- [x] LayeredTask model。
+- [x] Layered task expander。
 - [x] Access path examples in docs。
+- [x] B2.5 output-dir robustness / demo output path support。
+- [x] B3.1 ExecutionPhase-level access-time-aware scheduler prototype。
+- [x] `tests/test_layered_scheduler.py`。
+- [x] `experiments/demo_access_time_scheduler.py`。
 - [x] `tests/test_access_path_generator.py`。
 
 ## B 阶段后续任务
 
 - [ ] Access-time-aware scheduler。
+- [ ] B3.2 phase-level thermal / voltage prediction integration。
+- [ ] B3.3 phase-level schedule reporting and physical trace integration。
 - [ ] Predictive path-blocking-aware scheduler。
 - [ ] Rolling-horizon / MPC-style scheduler prototype。
 - [ ] asymmetric voltage matrix。
@@ -109,3 +115,4 @@
 - [ ] FPP hardware cost model。
 - [ ] optional FPGA schedule playback planning。
 - [ ] optional tool correlation planning。
+
