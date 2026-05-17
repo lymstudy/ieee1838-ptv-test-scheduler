@@ -2,7 +2,9 @@
 
 ## 当前里程碑
 
-MVP：IEEE 1838-style PTV-aware test scheduling prototype。
+A0 原型已完成：task-level IEEE 1838-style PTV-aware test scheduling prototype。
+
+B0 已启动并完成：IEEE 1838-aware layered access scheduling 设计规格。
 
 ## 当前阶段进度
 
@@ -22,84 +24,101 @@ MVP：IEEE 1838-style PTV-aware test scheduling prototype。
 - [x] workload scale sweep
 - [x] benchmark-derived workload schema
 - [x] benchmark workload example adapter
-- [ ] 真实公开 benchmark statistics 接入
+- [x] benchmark example schedule audit
+- [x] realistic benchmark statistics case
+- [x] A0 原型冻结
+- [x] B0 IEEE 1838-aware layered scheduler design spec
+- [ ] B1 AccessPath data model and path cost estimator
+- [ ] B2 TestIntent to ExecutionPhase layered expander
+- [ ] B3 Access-time-aware scheduler
+- [ ] B4 Predictive path-blocking-aware PTV scheduler
 - [ ] RTL mock validation
+- [ ] 真实公开 benchmark statistics 接入
 - [ ] 论文/组会最终版结果总结
 
 ## 最近完成任务
 
-日期：2026-05-15
+日期：2026-05-16
 
 已完成：
-- 新增 benchmark-derived workload statistics schema。
-- 新增 example benchmark statistics YAML。
-- 新增 benchmark workload adapter，将统计字段转换为 scheduler-compatible tasks。
-- 新增 example benchmark workload experiment。
-- 生成 example benchmark task summary、三类 schedule、Gantt chart 和 comparison plots。
-- 增加 benchmark adapter pytest 覆盖。
-- 通过 pytest 测试。
+- 冻结 A0 task-level PTV scheduling prototype 的定位。
+- 新增 B0 设计规格书：`docs/DESIGN_SPEC_1838_LAYERED_SCHEDULER.md`。
+- 新增下一阶段短路线图：`docs/NEXT_PHASE_PLAN.md`。
+- 明确 A0 不是完整 IEEE 1838 behavior model。
+- 明确 B 阶段主线为 IEEE 1838 access behavior、layered task expansion、access time model、predictive scheduling 和 asymmetric physical model。
+- 更新 README、ROADMAP、TODO、DECISIONS 和 EXPERIMENT_LOG。
 
 测试结果：
 - pytest: 68 passed, 1 warning
 
-## Example benchmark workload 最新结果
+## A0 原型重新定位
 
-输入：
-- benchmarks/example_benchmark_stats.yaml
+A0 是 task-level physical-aware scheduling prototype。
 
-性质：
-- schema-level validation。
-- 不是 RTL parser。
-- 不是真实 benchmark 结论。
+A0 已能证明：
+- bandwidth_greedy 可以显著降低 TAT；
+- aggressive concurrency 会提高 voltage / thermal violation 风险；
+- ptv_aware 可以用一定 TAT 代价降低或消除 physical violation；
+- schedule-based evaluator 能正确统计 overlap 下的 power、temperature 和 IR-drop。
 
-主要观察：
-- adapter 生成 21 个 abstract test tasks。
-- task set 包含 scan shift、scan capture、BIST、instrument access 和 DWR EXTEST。
-- capture task 使用 is_capture_phase=True。
-- scan / capture duration 从 scan_chain_length 和 scan_chain_count 派生。
-- DWR EXTEST duration 从 dwr_length 派生。
-- Serial、Bandwidth-greedy、PTV-aware 三类 scheduler 均可消费该 workload。
+A0 不再继续扩展为最终形态。后续进入 B 阶段，将访问路径、IEEE 1838 access operation、分层执行 phase 和预测性调度作为主线。
 
-Example scheduler metrics：
-- serial_ieee1838_style: TAT = 0.065206 s, peak IR-drop = 0.105000 V, voltage violation = 0。
-- bandwidth_greedy: TAT = 0.043492 s, peak IR-drop = 0.565625 V, voltage violation = 26。
-- ptv_aware: TAT = 0.042852 s, peak IR-drop = 0.183750 V, voltage violation = 0。
+## B0 设计规格输出
 
-## 已生成文件
+- `docs/DESIGN_SPEC_1838_LAYERED_SCHEDULER.md`
+- `docs/NEXT_PHASE_PLAN.md`
 
-- benchmarks/schema.md
-- benchmarks/example_benchmark_stats.yaml
-- src/workload/benchmark_adapter.py
-- experiments/run_example_benchmark_workload.py
-- results/benchmarks/example/benchmark_task_summary.csv
-- results/benchmarks/example/serial_schedule.csv
-- results/benchmarks/example/greedy_schedule.csv
-- results/benchmarks/example/ptv_schedule.csv
-- results/benchmarks/example/scheduler_metrics_summary.csv
-- results/benchmarks/example/serial_gantt.svg
-- results/benchmarks/example/greedy_gantt.svg
-- results/benchmarks/example/ptv_gantt.svg
-- results/benchmarks/example/tat_comparison.svg
-- results/benchmarks/example/peak_ir_drop_comparison.svg
-- results/benchmarks/example/peak_temperature_comparison.svg
+B0 定义的核心对象：
+- TestIntent
+- AccessOp
+- AccessPath
+- LayeredTask
+- ExecutionPhase
+- Predictive Physical-Aware Scheduler
+- Asymmetric voltage / thermal model roadmap
 
 ## 当前限制
 
-- benchmark adapter 当前只接收统计 YAML，不解析 Verilog 或 gate-level netlist。
-- example benchmark workload 是 schema validation，不是真实 benchmark validation。
-- 尚未接入真实公开 benchmark statistics。
-- 尚未实现 RTL mock validation。
-- Thermal model 仍是 simplified per-die RC model，尚未实现 die-to-die thermal coupling。
-- Voltage model 仍是 simplified shared-PDN model，尚未实现 PDN matrix 或工业级验证。
+- 当前 scheduler 仍是 A0 task-level 实现。
+- 尚未实现 AccessPath data model。
+- 尚未实现 TestIntent / ExecutionPhase。
+- 尚未实现 layered task expander。
+- 尚未建模 3DCR select/bypass、STAP path opening、DWR mode/shift/capture/update 的细粒度行为。
+- 尚未实现 access/config time、local execution time、readback time 的分离。
+- Thermal model 仍是 simplified per-die RC model。
+- Voltage model 仍是 simplified shared-PDN model。
+- realistic UART case 是 manually specified statistics case，不是 RTL-extracted benchmark。
 - 未引入 HotSpot、3D-ICE、RedHawk、Voltus 或 Tessent SSN。
 
 ## 下一步任务
 
-建议下一步进入：
-- 真实公开 benchmark statistics 接入
-- RTL mock validation
+推荐下一步进入：
 
-保留后续方向：
-- thermal coupling model improvement
-- PDN matrix model improvement
-- 论文/组会图表整理
+B1：AccessPath data model and path cost estimator。
+
+预期输出：
+- `src/access_path/model.py`
+- `src/access_path/generator.py`
+- `tests/test_access_path_generator.py`
+- docs 中给出 access path 示例
+
+
+## Frontier Idea Integration Plan
+
+日期：2026-05-17
+
+已完成：
+- 新增 `docs/FRONTIER_IDEA_INTEGRATION_PLAN.md`。
+- 将 PTVA-SSN-inspired ideas、interposer test-bus、UCIe-inspired health event、HBM-like capture staggering、PackageProfile-aware boundary condition 纳入 B 阶段之后的长期规划。
+- 更新 DESIGN_SPEC 和 NEXT_PHASE_PLAN 的增量引用。
+- 明确这些 idea 是 future roadmap，不是当前已实现功能。
+
+关键边界：
+- SSN is not part of IEEE 1838。
+- UCIe is not part of IEEE 1838。
+- SIB is not assumed to directly control FPP lane width。
+- FPP is optional and not zero-cost。
+- Zero hardware overhead claim remains forbidden。
+
+下一步任务仍然是：
+B1：AccessPath data model and path cost estimator。

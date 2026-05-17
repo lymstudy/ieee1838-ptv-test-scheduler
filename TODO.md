@@ -1,6 +1,6 @@
 ﻿# TODO
 
-## 已完成任务
+## A0 已完成任务
 
 - [x] 定义 common scheduler interface。
 - [x] 实现 ScheduleEntry dataclass。
@@ -36,30 +36,76 @@
 - [x] benchmark workload adapter。
 - [x] example benchmark workload experiment。
 - [x] benchmark adapter tests。
+- [x] benchmark example schedule audit。
+- [x] realistic benchmark statistics case。
+- [x] realistic UART workload experiment。
+- [x] realistic UART schedule audit。
+- [x] realistic UART workload tests。
+- [x] A0 原型冻结。
 
-## 下一阶段任务
+## B0 已完成任务
 
-- [ ] 真实公开 benchmark statistics 接入。
+- [x] IEEE 1838-aware layered scheduler design spec。
+- [x] Next phase plan。
+- [x] A0/B 阶段路线图更新。
+- [x] B 阶段研究决策记录。
+
+## B 阶段立即任务
+
+- [ ] AccessPath model。
+- [ ] AccessPath generator。
+- [ ] AccessPath cost estimator。
+- [ ] TestIntent model。
+- [ ] AccessOp model。
+- [ ] ExecutionPhase model。
+- [ ] LayeredTask model。
+- [ ] Layered task expander。
+- [ ] Access path examples in docs。
+- [ ] `tests/test_access_path_generator.py`。
+
+## B 阶段后续任务
+
+- [ ] Access-time-aware scheduler。
+- [ ] Predictive path-blocking-aware scheduler。
+- [ ] Rolling-horizon / MPC-style scheduler prototype。
+- [ ] asymmetric voltage matrix。
+- [ ] thermal coupling model。
+- [ ] ablation study。
+- [ ] MILP small optimal baseline。
 - [ ] RTL mock validation。
+- [ ] public benchmark-derived statistics case。
 - [ ] benchmark-derived workload 与 synthetic workload 的结果表格对齐。
 - [ ] 生成论文/组会可用的结果表格。
 - [ ] 生成论文/组会可用的图表版本。
-- [ ] 对 stress workload 尝试更明确触发 dummy cycle 的独立配置或机制测试。
 
-## 参数扫描任务
+## 保留任务
 
-- [x] FPP lane sweep。
-- [x] voltage limit sweep。
-- [x] thermal limit sweep。
-- [x] workload scale sweep。
+- [ ] 真实公开 benchmark statistics 接入。
+- [ ] RTL mock validation。
 - [ ] die count sweep with alternative access assumptions。
 - [ ] task规模 sweep with alternative workload mixes。
-
-## 模型改进任务
-
-- [ ] thermal coupling model。
+- [ ] 对 stress workload 尝试更明确触发 dummy cycle 的独立配置或机制测试。
 - [ ] 改进 IR drop model，加入 PDN matrix 或更细粒度供电模型。
-- [ ] 真实 benchmark-derived workload。
-- [ ] RTL mock validation。
 - [ ] 准备论文 method section。
 - [ ] 准备组会 PPT 图表。
+
+## B0 补充规划已完成
+
+- [x] Frontier Idea Integration Plan。
+- [x] DESIGN_SPEC frontier addendum。
+- [x] NEXT_PHASE_PLAN frontier addendum。
+- [x] ROADMAP frontier future milestones。
+- [x] DECISIONS frontier terminology / claim boundaries。
+
+## B 阶段后排 Frontier 任务
+
+- [ ] SSN-inspired TAM abstraction。
+- [ ] FPP/SSN co-allocation。
+- [ ] PowerPillar-aware capture staggering。
+- [ ] PackageProfile model。
+- [ ] external health event interface。
+- [ ] interposer test-bus routing model。
+- [ ] health-event safe mode pseudocode refinement。
+- [ ] FPP hardware cost model。
+- [ ] optional FPGA schedule playback planning。
+- [ ] optional tool correlation planning。

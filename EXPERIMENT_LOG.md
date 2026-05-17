@@ -577,3 +577,111 @@ pytest: 68 passed, 1 warning
 
 Notes:
 This experiment is schema validation only. It is not real benchmark validation, does not parse RTL, and does not introduce HotSpot, 3D-ICE, RedHawk, Voltus, Tessent SSN, or industrial signoff data.
+
+## Design Note 016: B0 IEEE 1838 Layered Scheduler Spec
+
+Date:
+2026-05-16
+
+Commit:
+TBD
+
+Type:
+Design note, not an experiment.
+
+Commands:
+
+```bash
+pytest
+```
+
+Purpose:
+Freeze the completed A0 task-level PTV scheduling prototype and define the B-stage design direction for IEEE 1838-aware layered access scheduling.
+
+Documents created:
+
+```text
+docs/DESIGN_SPEC_1838_LAYERED_SCHEDULER.md
+docs/NEXT_PHASE_PLAN.md
+```
+
+Documents updated:
+
+```text
+README.md
+STATUS.md
+TODO.md
+ROADMAP.md
+DECISIONS.md
+EXPERIMENT_LOG.md
+```
+
+Key decisions:
+- A0 is task-level physical-aware scheduling and is no longer treated as the final architecture.
+- B-stage work centers on IEEE 1838 access behavior, access path generation, layered task expansion, access time modeling, predictive scheduling, and asymmetric physical models.
+- FPP is treated as optional data transport, not a universal control path.
+- BIST local execution can release the PTAP control path after trigger in the next model.
+- Future schedulers must distinguish access/config time, local execution time, data transfer time, capture time, readback time, and dummy cycle time.
+
+Result:
+Passed.
+
+Test result:
+pytest: 68 passed, 1 warning
+
+Notes:
+No scheduler, evaluator, benchmark, RTL parser, RTL mock, sweep, or industrial-tool integration was added in this task.
+
+
+## Design Note 018: Frontier Idea Integration into B-stage Roadmap
+
+Date:
+2026-05-17
+
+Commit:
+TBD
+
+Type:
+Design note, not an experiment.
+
+Commands:
+
+```bash
+pytest
+```
+
+Purpose:
+Integrate selected frontier ideas into the B-stage roadmap before starting B1 AccessPath implementation.
+
+Documents created:
+
+```text
+docs/FRONTIER_IDEA_INTEGRATION_PLAN.md
+```
+
+Documents updated:
+
+```text
+docs/DESIGN_SPEC_1838_LAYERED_SCHEDULER.md
+docs/NEXT_PHASE_PLAN.md
+README.md
+STATUS.md
+TODO.md
+ROADMAP.md
+DECISIONS.md
+EXPERIMENT_LOG.md
+```
+
+Key planning additions:
+- Interposer test-bus / BNH / MBB inspiration is recorded as future routing architecture work, not B1/B2 scope.
+- UCIe-inspired throttle / emergency health events are abstracted only as future external health-event inputs, not as UCIe implementation.
+- HBM-like vertical PDN risk motivates future PowerPillar-aware capture staggering.
+- Package/substrate effects are represented only through future PackageProfile boundary conditions.
+- SSN-inspired TAM abstraction is allowed only as future streaming-scan-inspired die-level TAM modeling, not as IEEE 1838 or Siemens SSN implementation.
+
+Result:
+Documentation planning only. No scheduler, evaluator, AccessPath code, RTL, SSN, UCIe, benchmark, or experiment was added.
+
+Test result:
+pytest: 68 passed, 1 warning
+

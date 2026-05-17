@@ -190,3 +190,41 @@ Design principles:
 - The current example is schema validation only. It is not a real benchmark conclusion and does not validate against real ATPG, HotSpot, 3D-ICE, RedHawk, Voltus, Tessent SSN, or silicon data.
 
 This schema prepares the repository for future public benchmark statistics or manually extracted RTL report data without coupling scheduler algorithms to parser-specific details.
+
+## D19: A0 Freeze and B-Stage Layered Scheduling Direction
+
+A0 is frozen as a task-level physical-aware scheduling prototype. It should not be presented as a complete IEEE 1838 behavior framework.
+
+B-stage work will use IEEE 1838-compatible access behavior and layered scheduling as the main research direction:
+
+- TestIntent describes what should be tested.
+- AccessOp describes abstract IEEE 1838-style access operations.
+- AccessPath captures target-die path cost, selected STAPs, bypassed dies, DWR segments, FPP lanes, and occupied resources.
+- ExecutionPhase separates access/config time, data transfer time, local execution time, capture time, readback time, and dummy cycle time.
+- Predictive scheduling should account for access path blocking, physical risk, FPP usage, readback delay, and future schedule impact.
+
+FPP is an optional high-bandwidth data transport resource. It is not a universal control path and usually still requires PTAP/STAP configuration before use.
+
+BIST local execution may release the PTAP control path after trigger, while still consuming local BIST engine, power-domain, and thermal-region resources.
+
+Future B-stage models must distinguish access/config time, execution time, and readback time. Monolithic task duration is retained only as an A0 simplification.
+
+This decision does not claim IEEE 1838 defines scheduling algorithms. It defines the repository's next modeling direction.
+
+## D20: Frontier Idea Terminology and Claim Boundaries
+
+SSN is not part of IEEE 1838. Later B-stage work may introduce an `SSNInspiredTAM` or streaming-scan-inspired die-level TAM abstraction, but it must not be described as Siemens Tessent SSN implementation or as IEEE 1838 functionality.
+
+UCIe is not part of IEEE 1838. A future `HealthEventInterface` may be inspired by external fast throttle, emergency shutdown, or open-drain event mechanisms, but it must not be described as UCIe implementation or UCIe PHY validation.
+
+SIB is not assumed to directly control FPP lane width. SIB-style ideas may influence instrument-network or access-network hierarchy, while FPP configuration is modeled through FPP configuration elements.
+
+3DCR/STAP configuration remains the main stack-level access path control abstraction for B-stage IEEE 1838-aware modeling.
+
+FPP remains an optional high-bandwidth data transport resource. It is not a universal control path, is not zero-cost, and any optional FPP/SSN-like TAM/delay/sensor/controller resource must be costed in hardware, area, pins, routing, timing, or control complexity.
+
+Bottom-thermal/top-voltage behavior is not hard-coded. Later asymmetric voltage and thermal models should represent physical asymmetry through PDN matrices, thermal coupling matrices, die/package profiles, and workload placement rather than fixed slogans.
+
+Package/material effects are modeled through `PackageProfile` boundary conditions. The project must not claim that glass substrate or any specific package material universally improves all scenarios unless supported by explicit external evidence.
+
+The zero hardware overhead claim remains forbidden. Acceptable language must be narrower and traceable, such as reuse of existing IEEE 1838-compatible abstract access resources under stated modeling assumptions.
