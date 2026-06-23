@@ -1,0 +1,2 @@
+scheduler_name,tat,peak_temperature,peak_ir_drop,temperature_violation_count,voltage_violation_count,num_tasks,average_parallelism,max_parallelism,fpp_lane_utilization_average,dummy_cycle_count,dummy_time_total,capture_staggering_applied,constraints_were_binding
+ptv_aware,0.0054,25.007071556236458,0.06749999999999999,0,0,4,1.9629629629629628,3,0.6481481481481481,0,0.0,False,True

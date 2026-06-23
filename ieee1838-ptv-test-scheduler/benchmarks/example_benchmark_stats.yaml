@@ -1,0 +1,82 @@
+﻿benchmark_name: example_schema_validation_4die
+die_count: 4
+fpp_lanes: 2
+voltage_limit: 0.22
+thermal_limit: 27.0
+max_concurrent_capture: 1
+dummy_cycle_duration: 0.0002
+
+simulation:
+  clock_hz: 1000000
+  time_step_s: 0.0002
+
+dies:
+  - die_id: 0
+    module_name: control_tile
+    flip_flop_count: 18000
+    scan_chain_count: 16
+    scan_chain_length: 1125
+    estimated_shift_power: 1.18
+    estimated_capture_power: 1.52
+    estimated_bist_power: 1.35
+    estimated_instrument_power: 0.18
+    bist_task_count: 1
+    instrument_task_count: 1
+  - die_id: 1
+    module_name: compute_tile
+    flip_flop_count: 26000
+    scan_chain_count: 20
+    scan_chain_length: 1300
+    estimated_shift_power: 1.32
+    estimated_capture_power: 1.68
+    estimated_bist_power: 1.48
+    estimated_instrument_power: 0.20
+    bist_task_count: 1
+    instrument_task_count: 2
+  - die_id: 2
+    module_name: memory_controller_tile
+    flip_flop_count: 22000
+    scan_chain_count: 18
+    scan_chain_length: 1223
+    estimated_shift_power: 1.25
+    estimated_capture_power: 1.60
+    estimated_bist_power: 1.42
+    estimated_instrument_power: 0.19
+    bist_task_count: 2
+    instrument_task_count: 1
+  - die_id: 3
+    module_name: io_tile
+    flip_flop_count: 14000
+    scan_chain_count: 12
+    scan_chain_length: 1167
+    estimated_shift_power: 1.10
+    estimated_capture_power: 1.42
+    estimated_bist_power: 1.28
+    estimated_instrument_power: 0.17
+    bist_task_count: 1
+    instrument_task_count: 1
+
+interconnects:
+  - src_die: 0
+    dst_die: 1
+    dwr_length: 512
+    estimated_extest_power: 0.92
+  - src_die: 1
+    dst_die: 2
+    dwr_length: 640
+    estimated_extest_power: 0.98
+  - src_die: 2
+    dst_die: 3
+    dwr_length: 448
+    estimated_extest_power: 0.86
+
+power_model:
+  vdd: 0.80
+  shared_resistance: 0.050
+  power_scale: 1.0
+
+thermal_model:
+  ambient_temperature: 25.0
+  initial_temperature: 25.35
+  thermal_alpha: 1.0
+  cooling_beta: 0.012

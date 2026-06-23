@@ -1,0 +1,5 @@
+task_id,task_type,die_id,start_time,end_time,duration,power,fpp_lanes_used,access_resource,dwr_segment,is_capture_phase
+scan_die0,scan,0,0.0,0.004,0.004,0.62,0,PTAP_STAP_SERIAL,dwr_die0,False
+bist_die1,bist,1,0.004,0.0063999999999999994,0.0024,0.45,0,PTAP_STAP_SERIAL,dwr_die1,False
+dwr_extest_die2,dwr_extest,2,0.0063999999999999994,0.009399999999999999,0.003,0.38,0,PTAP_STAP_DWR_SERIAL,dwr_die2,False
+instrument_access_die3,instrument_access,3,0.009399999999999999,0.010599999999999998,0.0012,0.2,0,PTAP_STAP_SERIAL,dwr_die3,False
