@@ -30,6 +30,7 @@ SystemModel = {
   package,
   timing,
   resource_limits,
+  thermal_model,
   dies,
   ieee1838_access,
   test_objects,
@@ -71,6 +72,18 @@ SystemModel = {
 | `access_parent_die` | 访问该 die 前需要经过的下级 die；primary die 为 `null` |
 | `thermal` | 热阻、热容、功率密度等简化参数 |
 | `pdn` | 供电电压、等效电阻等简化参数 |
+
+### 2.5 `thermal_model`
+
+M1 可选定义一个轻量三参数层间热传导代理模型：
+
+| 字段 | 含义 |
+| --- | --- |
+| `self_heating_weight` | 本 die 自热权重 |
+| `vertical_coupling_weight` | 垂直相邻 die 的耦合权重 |
+| `layer_distance_decay` | 跨层距离衰减系数 |
+
+该模型只用于 recipe 阶段的热风险/热负载估计，不等同于 HotSpot 或 3D-ICE。
 
 ### 3. `ieee1838_access`
 
@@ -263,11 +276,11 @@ M1 使用可解释的代理指标：
 
 ```text
 thermal_risk = peak_power_w * power_density_w_per_mm2
-             * adjacency_factor
+             * layer_conduction_factor
              / cooling_factor
 ```
 
-`adjacency_factor` 可由 `thermal_adjacency` 累加得到；`cooling_factor` 可由 die 的 `heat_sink_distance_rank`、热阻或经验参数给出。该指标只用于排序或剪枝，不等同于 HotSpot 结果。
+`layer_conduction_factor` 由 `thermal_model` 和 `thermal_adjacency` 共同得到；`cooling_factor` 可由 die 的 `heat_sink_distance_rank`、热阻或经验参数给出。该指标只用于排序或剪枝，不等同于 HotSpot 结果。
 
 ## JSON 输入格式
 
@@ -282,6 +295,7 @@ units
 package
 timing
 resource_limits
+thermal_model
 dies
 ieee1838_access
 test_objects

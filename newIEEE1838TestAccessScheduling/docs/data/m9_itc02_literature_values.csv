@@ -1,0 +1,13 @@
+field,value,unit,source_id,evidence,data_class,use_status,notes
+d695_test_length_candidate_min,48000,cycles,ITC02_SOC,"itc02_aco_literature_0710.4687.pdf, Table 1",public_measured_or_benchmark,related_baseline_only,"Literature comparison row for d695; not raw scan-chain data."
+d695_test_length_candidate_max,120000,cycles,ITC02_SOC,"itc02_aco_literature_0710.4687.pdf, Table 1",public_measured_or_benchmark,related_baseline_only,"Visible range in extracted Table 1; not raw scan-chain data."
+p22810_test_length_candidate_min,384000,cycles,ITC02_SOC,"itc02_aco_literature_0710.4687.pdf, Table 1",public_measured_or_benchmark,related_baseline_only,"Literature comparison row for p22810; not raw scan-chain data."
+p22810_test_length_candidate_max,960000,cycles,ITC02_SOC,"itc02_aco_literature_0710.4687.pdf, Table 1",public_measured_or_benchmark,related_baseline_only,"Visible range in extracted Table 1; not raw scan-chain data."
+p34392_test_length_candidate_min,768000,cycles,ITC02_SOC,"itc02_aco_literature_0710.4687.pdf, Table 1",public_measured_or_benchmark,related_baseline_only,"Literature comparison row for p34392; not raw scan-chain data."
+p34392_test_length_candidate_max,1768000,cycles,ITC02_SOC,"itc02_aco_literature_0710.4687.pdf, Table 1",public_measured_or_benchmark,related_baseline_only,"Visible range in extracted Table 1; not raw scan-chain data."
+p93791_test_length_candidate_min,1000000,cycles,ITC02_SOC,"itc02_aco_literature_0710.4687.pdf, Table 1",public_measured_or_benchmark,related_baseline_only,"Literature comparison row for p93791; not raw scan-chain data."
+p93791_test_length_candidate_max,3000000,cycles,ITC02_SOC,"itc02_aco_literature_0710.4687.pdf, Table 1",public_measured_or_benchmark,related_baseline_only,"Visible range in extracted Table 1; not raw scan-chain data."
+d695_ate_channel_visible_range,12-41,channels,ITC02_SOC,"itc02_aco_literature_0710.4687.pdf, Table 1",public_measured_or_benchmark,related_baseline_only,"ATE channel comparison values from literature; not scheduler FPP lane count."
+p22810_ate_channel_visible_range,14-63,channels,ITC02_SOC,"itc02_aco_literature_0710.4687.pdf, Table 1",public_measured_or_benchmark,related_baseline_only,"ATE channel comparison values from literature; not scheduler FPP lane count."
+p34392_ate_channel_visible_range,18-55,channels,ITC02_SOC,"itc02_aco_literature_0710.4687.pdf, Table 1",public_measured_or_benchmark,related_baseline_only,"ATE channel comparison values from literature; not scheduler FPP lane count."
+p93791_ate_channel_visible_range,16-58,channels,ITC02_SOC,"itc02_aco_literature_0710.4687.pdf, Table 1",public_measured_or_benchmark,related_baseline_only,"ATE channel comparison values from literature; not scheduler FPP lane count."

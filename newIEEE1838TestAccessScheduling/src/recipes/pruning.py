@@ -17,17 +17,31 @@ NUMERIC_FIELDS = {
     "peak_power_w",
     "access_power_w",
     "thermal_risk",
+    "thermal_load",
+    "serial_time_s",
     "fpp_lanes_required",
+    "max_fpp_lanes_required",
+    "lane_occupancy",
     "estimated_bits",
 }
 
 PARETO_METRICS = (
     "total_time_s",
     "peak_power_w",
-    "fpp_lanes_required",
-    "serial_resource_time_s",
     "thermal_risk",
+    "thermal_load",
+    "serial_time_s",
+    "max_fpp_lanes_required",
+    "lane_occupancy",
 )
+
+RECIPE_TYPE_PRIORITY = {
+    "B": 0,
+    "F": 1,
+    "H": 2,
+    "S": 3,
+    "I": 4,
+}
 
 
 @dataclass(frozen=True)
@@ -77,6 +91,47 @@ def write_pruning_summary_csv(rows: list[dict[str, object]], output_path: str | 
             writer.writerow({field: row.get(field, "") for field in fieldnames})
 
 
+def write_pruning_report_markdown(result: ParetoPruningResult, output_path: str | Path) -> None:
+    output = Path(output_path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    before_count = sum(int(row["before_count"]) for row in result.summary_rows)
+    after_count = sum(int(row["after_count"]) for row in result.summary_rows)
+    removed_count = before_count - after_count
+
+    lines = [
+        "# M3 Pareto Pruning Report",
+        "",
+        f"- Recipes before pruning: {before_count}",
+        f"- Recipes after pruning: {after_count}",
+        f"- Recipes removed: {removed_count}",
+        f"- Dominance metrics: {', '.join(PARETO_METRICS)}",
+        "",
+        "| target_id | before | after | removed | removed recipes |",
+        "| --- | ---: | ---: | ---: | --- |",
+    ]
+    for row in result.summary_rows:
+        lines.append(
+            "| {target_id} | {before_count} | {after_count} | {removed_count} | {removed_recipe_ids} |".format(
+                target_id=row["target_id"],
+                before_count=row["before_count"],
+                after_count=row["after_count"],
+                removed_count=row["removed_count"],
+                removed_recipe_ids=str(row.get("removed_recipe_ids", "")).replace("|", "\\|"),
+            )
+        )
+
+    lines.extend(["", "## Dominance Notes", ""])
+    for row in result.summary_rows:
+        notes = str(row.get("dominance_notes", ""))
+        if notes:
+            lines.append(f"### {row['target_id']}")
+            for note in notes.split(" | "):
+                lines.append(f"- {note}")
+            lines.append("")
+
+    output.write_text("\n".join(lines), encoding="utf-8")
+
+
 def normalize_recipe_row(row: dict[str, object]) -> dict[str, object]:
     normalized = dict(row)
     for field in NUMERIC_FIELDS:
@@ -87,6 +142,13 @@ def normalize_recipe_row(row: dict[str, object]) -> dict[str, object]:
         normalized["serial_access_required"] = _to_bool(normalized["serial_access_required"])
 
     normalized["serial_resource_time_s"] = serial_resource_time_s(normalized)
+    normalized.setdefault("serial_time_s", normalized["serial_resource_time_s"])
+    normalized.setdefault("max_fpp_lanes_required", normalized.get("fpp_lanes_required", 0))
+    normalized.setdefault("lane_occupancy", float(normalized.get("fpp_time_s", 0.0)) * float(normalized.get("max_fpp_lanes_required", 0.0)))
+    normalized.setdefault(
+        "thermal_load",
+        float(normalized.get("thermal_risk", 0.0)) * float(normalized.get("total_time_s", 0.0)),
+    )
     return normalized
 
 
@@ -161,7 +223,13 @@ def dominates(left: dict[str, object], right: dict[str, object], tolerance: floa
 
     no_worse = all(float(left[metric]) <= float(right[metric]) + tolerance for metric in PARETO_METRICS)
     strictly_better = any(float(left[metric]) < float(right[metric]) - tolerance for metric in PARETO_METRICS)
-    return no_worse and strictly_better
+    if no_worse and strictly_better:
+        return True
+
+    metrics_tied = all(abs(float(left[metric]) - float(right[metric])) <= tolerance for metric in PARETO_METRICS)
+    if metrics_tied:
+        return _recipe_priority(left) < _recipe_priority(right)
+    return False
 
 
 def _find_dominator(
@@ -174,7 +242,7 @@ def _find_dominator(
         return None
     return sorted(
         dominators,
-        key=lambda row: tuple(float(row[metric]) for metric in PARETO_METRICS),
+        key=lambda row: tuple(float(row[metric]) for metric in PARETO_METRICS) + (_recipe_priority(row),),
     )[0]
 
 
@@ -210,16 +278,27 @@ def _ordered_fieldnames(rows: list[dict[str, object]]) -> list[str]:
         "local_execution_time_s",
         "readback_time_s",
         "serial_resource_time_s",
+        "serial_time_s",
+        "fpp_time_s",
         "peak_power_w",
         "access_power_w",
         "thermal_risk",
+        "thermal_load",
         "serial_access_required",
         "fpp_lanes_required",
+        "max_fpp_lanes_required",
+        "lane_occupancy",
         "fpp_channel",
         "dwr_segments",
         "route_resource",
         "estimated_bits",
         "notes",
+        "test_method",
+        "access_mechanism",
+        "test_endpoint",
+        "bist_type",
+        "phase_count",
+        "phase_resources",
         "dominated_by",
         "dominance_reason",
     ]
@@ -243,3 +322,7 @@ def _to_bool(value: object) -> bool:
     if isinstance(value, bool):
         return value
     return str(value).strip().lower() in {"1", "true", "yes", "y"}
+
+
+def _recipe_priority(row: dict[str, object]) -> int:
+    return RECIPE_TYPE_PRIORITY.get(str(row.get("recipe_type", "")), 99)

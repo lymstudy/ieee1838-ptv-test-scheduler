@@ -9,6 +9,7 @@ from src.recipes import (
     dominates,
     pareto_prune,
     rows_from_recipes,
+    write_pruning_report_markdown,
     write_pruning_summary_csv,
     write_recipe_rows_csv,
 )
@@ -26,7 +27,7 @@ def test_pareto_pruning_reduces_candidate_count() -> None:
     rows = _m2_rows()
     result = pareto_prune(rows)
 
-    assert len(rows) == 32
+    assert len(rows) == 26
     assert len(result.kept_rows) < len(rows)
     assert len(result.removed_rows) == len(rows) - len(result.kept_rows)
 
@@ -67,7 +68,7 @@ def test_dominated_hybrid_variant_is_removed_with_reason() -> None:
     assert "total_time_s" in str(removed["dominance_reason"])
 
 
-def test_custom_dominance_uses_serial_resource_time() -> None:
+def test_custom_dominance_uses_serial_time() -> None:
     rows = [
         {
             "recipe_id": "a",
@@ -105,13 +106,86 @@ def test_custom_dominance_uses_serial_resource_time() -> None:
     assert result.removed_rows[0]["dominated_by"] == "a"
 
 
+def test_pareto_keeps_slower_low_power_tradeoff() -> None:
+    rows = [
+        {
+            "recipe_id": "fast_hot",
+            "target_id": "target",
+            "target_kind": "core",
+            "recipe_type": "F",
+            "total_time_s": 1.0,
+            "peak_power_w": 5.0,
+            "thermal_risk": 5.0,
+            "thermal_load": 5.0,
+            "serial_time_s": 0.1,
+            "max_fpp_lanes_required": 2,
+            "lane_occupancy": 2.0,
+        },
+        {
+            "recipe_id": "slow_cool",
+            "target_id": "target",
+            "target_kind": "core",
+            "recipe_type": "S",
+            "total_time_s": 2.0,
+            "peak_power_w": 1.0,
+            "thermal_risk": 1.0,
+            "thermal_load": 2.0,
+            "serial_time_s": 2.0,
+            "max_fpp_lanes_required": 0,
+            "lane_occupancy": 0.0,
+        },
+    ]
+
+    result = pareto_prune(rows)
+
+    assert {row["recipe_id"] for row in result.kept_rows} == {"fast_hot", "slow_cool"}
+
+
+def test_identical_metrics_use_recipe_priority() -> None:
+    rows = [
+        {
+            "recipe_id": "f_recipe",
+            "target_id": "target",
+            "target_kind": "core",
+            "recipe_type": "F",
+            "total_time_s": 1.0,
+            "peak_power_w": 1.0,
+            "thermal_risk": 1.0,
+            "thermal_load": 1.0,
+            "serial_time_s": 0.1,
+            "max_fpp_lanes_required": 1,
+            "lane_occupancy": 1.0,
+        },
+        {
+            "recipe_id": "h_recipe",
+            "target_id": "target",
+            "target_kind": "core",
+            "recipe_type": "H",
+            "total_time_s": 1.0,
+            "peak_power_w": 1.0,
+            "thermal_risk": 1.0,
+            "thermal_load": 1.0,
+            "serial_time_s": 0.1,
+            "max_fpp_lanes_required": 1,
+            "lane_occupancy": 1.0,
+        },
+    ]
+
+    result = pareto_prune(rows)
+
+    assert [row["recipe_id"] for row in result.kept_rows] == ["f_recipe"]
+    assert result.removed_rows[0]["dominated_by"] == "f_recipe"
+
+
 def test_m3_outputs_are_writable_and_parseable(tmp_path: Path) -> None:
     result = pareto_prune(_m2_rows())
     pruned_output = tmp_path / "m3_recipe_pruned.csv"
     summary_output = tmp_path / "m3_pruning_summary.csv"
+    report_output = tmp_path / "m3_pruning_report.md"
 
     write_recipe_rows_csv(result.kept_rows, pruned_output)
     write_pruning_summary_csv(result.summary_rows, summary_output)
+    write_pruning_report_markdown(result, report_output)
 
     with pruned_output.open("r", encoding="utf-8", newline="") as handle:
         pruned_rows = list(csv.DictReader(handle))
@@ -120,4 +194,42 @@ def test_m3_outputs_are_writable_and_parseable(tmp_path: Path) -> None:
 
     assert len(pruned_rows) == len(result.kept_rows)
     assert len(summary_rows) == len({row["target_id"] for row in _m2_rows()})
-    assert "serial_resource_time_s" in pruned_rows[0]
+    assert "serial_time_s" in pruned_rows[0]
+    assert "thermal_load" in pruned_rows[0]
+    assert "lane_occupancy" in pruned_rows[0]
+    assert "Recipes before pruning" in report_output.read_text(encoding="utf-8")
+
+
+def test_lane_occupancy_can_prevent_dominance() -> None:
+    rows = [
+        {
+            "recipe_id": "low_lane",
+            "target_id": "target",
+            "target_kind": "core",
+            "recipe_type": "F",
+            "total_time_s": 1.0,
+            "peak_power_w": 1.0,
+            "thermal_risk": 1.0,
+            "thermal_load": 1.0,
+            "serial_time_s": 0.1,
+            "max_fpp_lanes_required": 2,
+            "lane_occupancy": 4.0,
+        },
+        {
+            "recipe_id": "high_lane",
+            "target_id": "target",
+            "target_kind": "core",
+            "recipe_type": "H",
+            "total_time_s": 1.0,
+            "peak_power_w": 1.0,
+            "thermal_risk": 1.0,
+            "thermal_load": 1.0,
+            "serial_time_s": 0.1,
+            "max_fpp_lanes_required": 2,
+            "lane_occupancy": 5.0,
+        },
+    ]
+
+    result = pareto_prune(rows)
+
+    assert [row["recipe_id"] for row in result.kept_rows] == ["low_lane"]

@@ -1,0 +1,1058 @@
+{
+  "model_version": "m1-ieee1838-computable-v1",
+  "case_id": "2_5d_interposer_m9_public",
+  "description": "2.5D interposer case derived from ITC'02 d695 modules, Open3DBench area/power references, and UCIe-like interposer link assumptions.",
+  "provenance_notes": [
+    "ITC'02 d695 .soc provides module I/O, scan-chain lengths, and pattern counts.",
+    "UCIe 32 GT/s public value is used as a package-link-derived FPP-like scheduler capacity, not as IEEE 1838 FPP itself.",
+    "IEEE 1838 bit widths and per-phase power split are model assumptions."
+  ],
+  "units": {
+    "time": "s",
+    "frequency": "Hz",
+    "bandwidth": "bit/s",
+    "length": "um",
+    "area": "mm2",
+    "power": "W",
+    "temperature": "C",
+    "voltage": "V",
+    "resistance": "ohm"
+  },
+  "package": {
+    "topology_type": "2_5d_interposer",
+    "tower_count": 1,
+    "die_count": 4,
+    "primary_entry_die": "die0",
+    "thermal_boundary": "top_heat_sink",
+    "ambient_temperature_c": 25.0
+  },
+  "timing": {
+    "ptap_tck_hz": 50000000,
+    "default_bist_clock_hz": 100000000,
+    "default_fpp_lane_bandwidth_bps": 32000000000,
+    "capture_time_s": 1e-06,
+    "mode_update_time_s": 1e-06
+  },
+  "resource_limits": {
+    "ptap_ports": 1,
+    "total_fpp_lanes": 8,
+    "max_total_power_w": 10.0,
+    "max_temperature_c": 85.0,
+    "max_ir_drop_v": 0.12,
+    "max_concurrent_capture": 1
+  },
+  "thermal_model": {
+    "self_heating_weight": 1.0,
+    "vertical_coupling_weight": 0.35,
+    "horizontal_coupling_weight": 0.2,
+    "layer_distance_decay": 0.5
+  },
+  "dies": [
+    {
+      "die_id": "die0",
+      "role": "primary",
+      "tower_id": "interposer0",
+      "layer_index": 0,
+      "access_parent_die": null,
+      "position_um": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "size_um": {
+        "width": 1000,
+        "height": 1000
+      },
+      "thermal": {
+        "region_id": "thermal_die0",
+        "thermal_resistance_c_per_w": 0.55,
+        "thermal_capacitance_j_per_c": 0.16,
+        "heat_sink_distance_rank": 1,
+        "cooling_factor": 0.78
+      },
+      "pdn": {
+        "supply_voltage_v": 0.8,
+        "self_resistance_ohm": 0.03,
+        "shared_resistance_ohm": 0.015
+      }
+    },
+    {
+      "die_id": "die1",
+      "role": "secondary",
+      "tower_id": "interposer0",
+      "layer_index": 0,
+      "access_parent_die": "die0",
+      "position_um": {
+        "x": 1400,
+        "y": 0,
+        "z": 0
+      },
+      "size_um": {
+        "width": 800,
+        "height": 800
+      },
+      "thermal": {
+        "region_id": "thermal_die1",
+        "thermal_resistance_c_per_w": 0.6,
+        "thermal_capacitance_j_per_c": 0.15,
+        "heat_sink_distance_rank": 1,
+        "cooling_factor": 0.84
+      },
+      "pdn": {
+        "supply_voltage_v": 0.8,
+        "self_resistance_ohm": 0.03,
+        "shared_resistance_ohm": 0.015
+      }
+    },
+    {
+      "die_id": "die2",
+      "role": "secondary",
+      "tower_id": "interposer0",
+      "layer_index": 0,
+      "access_parent_die": "die0",
+      "position_um": {
+        "x": 0,
+        "y": 1400,
+        "z": 0
+      },
+      "size_um": {
+        "width": 750,
+        "height": 750
+      },
+      "thermal": {
+        "region_id": "thermal_die2",
+        "thermal_resistance_c_per_w": 0.64,
+        "thermal_capacitance_j_per_c": 0.14,
+        "heat_sink_distance_rank": 1,
+        "cooling_factor": 0.88
+      },
+      "pdn": {
+        "supply_voltage_v": 0.8,
+        "self_resistance_ohm": 0.03,
+        "shared_resistance_ohm": 0.015
+      }
+    },
+    {
+      "die_id": "die3",
+      "role": "secondary",
+      "tower_id": "interposer0",
+      "layer_index": 0,
+      "access_parent_die": "die0",
+      "position_um": {
+        "x": 1400,
+        "y": 1400,
+        "z": 0
+      },
+      "size_um": {
+        "width": 2500,
+        "height": 2500
+      },
+      "thermal": {
+        "region_id": "thermal_die3",
+        "thermal_resistance_c_per_w": 0.5,
+        "thermal_capacitance_j_per_c": 0.28,
+        "heat_sink_distance_rank": 1,
+        "cooling_factor": 0.76
+      },
+      "pdn": {
+        "supply_voltage_v": 0.8,
+        "self_resistance_ohm": 0.03,
+        "shared_resistance_ohm": 0.015
+      }
+    }
+  ],
+  "ieee1838_access": {
+    "ptap": {
+      "ptap_id": "ptap0",
+      "die_id": "die0",
+      "tck_hz": 50000000,
+      "exclusive": true,
+      "control_bits_per_access": 64
+    },
+    "staps": [
+      {
+        "stap_id": "stap_die1",
+        "die_id": "die1",
+        "parent_die": "die0",
+        "select_bits": 32,
+        "bypass_bits": 1,
+        "exclusive_path_group": "serial_access_path"
+      },
+      {
+        "stap_id": "stap_die2",
+        "die_id": "die2",
+        "parent_die": "die0",
+        "select_bits": 32,
+        "bypass_bits": 1,
+        "exclusive_path_group": "serial_access_path"
+      },
+      {
+        "stap_id": "stap_die3",
+        "die_id": "die3",
+        "parent_die": "die0",
+        "select_bits": 32,
+        "bypass_bits": 1,
+        "exclusive_path_group": "serial_access_path"
+      }
+    ],
+    "three_dcrs": [
+      {
+        "register_id": "3dcr_die0",
+        "die_id": "die0",
+        "bit_length": 32,
+        "controls": [
+          "dwr_die0"
+        ]
+      },
+      {
+        "register_id": "3dcr_die1",
+        "die_id": "die1",
+        "bit_length": 32,
+        "controls": [
+          "dwr_die1"
+        ]
+      },
+      {
+        "register_id": "3dcr_die2",
+        "die_id": "die2",
+        "bit_length": 32,
+        "controls": [
+          "dwr_die2"
+        ]
+      },
+      {
+        "register_id": "3dcr_die3",
+        "die_id": "die3",
+        "bit_length": 32,
+        "controls": [
+          "dwr_die3"
+        ]
+      }
+    ],
+    "dwr_segments": [
+      {
+        "segment_id": "dwr_die0",
+        "die_id": "die0",
+        "bit_length": 256,
+        "supported_modes": [
+          "EXTEST",
+          "IF",
+          "OF",
+          "MISSION"
+        ],
+        "serial_access": true,
+        "fpp_access": true,
+        "parallel_group": "dwr_group_die0",
+        "mode_config_bits": 16
+      },
+      {
+        "segment_id": "dwr_die1",
+        "die_id": "die1",
+        "bit_length": 288,
+        "supported_modes": [
+          "EXTEST",
+          "IF",
+          "OF",
+          "MISSION"
+        ],
+        "serial_access": true,
+        "fpp_access": true,
+        "parallel_group": "dwr_group_die1",
+        "mode_config_bits": 16
+      },
+      {
+        "segment_id": "dwr_die2",
+        "die_id": "die2",
+        "bit_length": 320,
+        "supported_modes": [
+          "EXTEST",
+          "IF",
+          "OF",
+          "MISSION"
+        ],
+        "serial_access": true,
+        "fpp_access": true,
+        "parallel_group": "dwr_group_die2",
+        "mode_config_bits": 16
+      },
+      {
+        "segment_id": "dwr_die3",
+        "die_id": "die3",
+        "bit_length": 352,
+        "supported_modes": [
+          "EXTEST",
+          "IF",
+          "OF",
+          "MISSION"
+        ],
+        "serial_access": true,
+        "fpp_access": true,
+        "parallel_group": "dwr_group_die3",
+        "mode_config_bits": 16
+      }
+    ],
+    "fpp_channels": [
+      {
+        "channel_id": "fpp_interposer",
+        "source_die": "die0",
+        "target_scope": "package",
+        "config_bits": 64,
+        "max_lanes": 8
+      }
+    ],
+    "fpp_lanes": [
+      {
+        "lane_id": "fpp_interposer_lane0",
+        "channel_id": "fpp_interposer",
+        "direction": "bidirectional",
+        "bandwidth_bps": 32000000000,
+        "registered": true,
+        "requires_clock_lane": true,
+        "connects": {
+          "dies": [
+            "die0",
+            "die1",
+            "die2",
+            "die3"
+          ],
+          "dwr_segments": [
+            "dwr_die0",
+            "dwr_die1",
+            "dwr_die2",
+            "dwr_die3"
+          ]
+        },
+        "mutual_exclusion_group": "fpp_interposer_lane0_dir"
+      },
+      {
+        "lane_id": "fpp_interposer_lane1",
+        "channel_id": "fpp_interposer",
+        "direction": "bidirectional",
+        "bandwidth_bps": 32000000000,
+        "registered": true,
+        "requires_clock_lane": true,
+        "connects": {
+          "dies": [
+            "die0",
+            "die1",
+            "die2",
+            "die3"
+          ],
+          "dwr_segments": [
+            "dwr_die0",
+            "dwr_die1",
+            "dwr_die2",
+            "dwr_die3"
+          ]
+        },
+        "mutual_exclusion_group": "fpp_interposer_lane1_dir"
+      },
+      {
+        "lane_id": "fpp_interposer_lane2",
+        "channel_id": "fpp_interposer",
+        "direction": "bidirectional",
+        "bandwidth_bps": 32000000000,
+        "registered": true,
+        "requires_clock_lane": false,
+        "connects": {
+          "dies": [
+            "die0",
+            "die1",
+            "die2",
+            "die3"
+          ],
+          "dwr_segments": [
+            "dwr_die0",
+            "dwr_die1",
+            "dwr_die2",
+            "dwr_die3"
+          ]
+        },
+        "mutual_exclusion_group": "fpp_interposer_lane2_dir"
+      },
+      {
+        "lane_id": "fpp_interposer_lane3",
+        "channel_id": "fpp_interposer",
+        "direction": "bidirectional",
+        "bandwidth_bps": 32000000000,
+        "registered": true,
+        "requires_clock_lane": false,
+        "connects": {
+          "dies": [
+            "die0",
+            "die1",
+            "die2",
+            "die3"
+          ],
+          "dwr_segments": [
+            "dwr_die0",
+            "dwr_die1",
+            "dwr_die2",
+            "dwr_die3"
+          ]
+        },
+        "mutual_exclusion_group": "fpp_interposer_lane3_dir"
+      },
+      {
+        "lane_id": "fpp_interposer_lane4",
+        "channel_id": "fpp_interposer",
+        "direction": "bidirectional",
+        "bandwidth_bps": 32000000000,
+        "registered": true,
+        "requires_clock_lane": false,
+        "connects": {
+          "dies": [
+            "die0",
+            "die1",
+            "die2",
+            "die3"
+          ],
+          "dwr_segments": [
+            "dwr_die0",
+            "dwr_die1",
+            "dwr_die2",
+            "dwr_die3"
+          ]
+        },
+        "mutual_exclusion_group": "fpp_interposer_lane4_dir"
+      },
+      {
+        "lane_id": "fpp_interposer_lane5",
+        "channel_id": "fpp_interposer",
+        "direction": "bidirectional",
+        "bandwidth_bps": 32000000000,
+        "registered": true,
+        "requires_clock_lane": false,
+        "connects": {
+          "dies": [
+            "die0",
+            "die1",
+            "die2",
+            "die3"
+          ],
+          "dwr_segments": [
+            "dwr_die0",
+            "dwr_die1",
+            "dwr_die2",
+            "dwr_die3"
+          ]
+        },
+        "mutual_exclusion_group": "fpp_interposer_lane5_dir"
+      },
+      {
+        "lane_id": "fpp_interposer_lane6",
+        "channel_id": "fpp_interposer",
+        "direction": "bidirectional",
+        "bandwidth_bps": 32000000000,
+        "registered": true,
+        "requires_clock_lane": false,
+        "connects": {
+          "dies": [
+            "die0",
+            "die1",
+            "die2",
+            "die3"
+          ],
+          "dwr_segments": [
+            "dwr_die0",
+            "dwr_die1",
+            "dwr_die2",
+            "dwr_die3"
+          ]
+        },
+        "mutual_exclusion_group": "fpp_interposer_lane6_dir"
+      },
+      {
+        "lane_id": "fpp_interposer_lane7",
+        "channel_id": "fpp_interposer",
+        "direction": "bidirectional",
+        "bandwidth_bps": 32000000000,
+        "registered": true,
+        "requires_clock_lane": false,
+        "connects": {
+          "dies": [
+            "die0",
+            "die1",
+            "die2",
+            "die3"
+          ],
+          "dwr_segments": [
+            "dwr_die0",
+            "dwr_die1",
+            "dwr_die2",
+            "dwr_die3"
+          ]
+        },
+        "mutual_exclusion_group": "fpp_interposer_lane7_dir"
+      }
+    ]
+  },
+  "test_objects": [
+    {
+      "object_id": "d695_m1_die0",
+      "object_type": "core",
+      "die_id": "die0",
+      "area_mm2": 0.1559,
+      "scan": {
+        "chain_count": 1,
+        "max_chain_length_bits": 64,
+        "pattern_count": 12,
+        "requires_capture": true,
+        "response_bits_per_pattern": 64
+      },
+      "bist": {
+        "enabled": false
+      },
+      "power": {
+        "shift_power_w": 0.1842,
+        "capture_power_w": 0.4281,
+        "access_power_w": 0.0503
+      },
+      "thermal_region": "thermal_die0",
+      "supported_recipes": [
+        "S",
+        "F",
+        "H"
+      ],
+      "required_resources": {
+        "dwr_segments": [
+          "dwr_die0"
+        ],
+        "preferred_fpp_channel": "fpp_interposer"
+      }
+    },
+    {
+      "object_id": "d695_m2_die1",
+      "object_type": "core",
+      "die_id": "die1",
+      "area_mm2": 0.3259,
+      "scan": {
+        "chain_count": 1,
+        "max_chain_length_bits": 315,
+        "pattern_count": 73,
+        "requires_capture": true,
+        "response_bits_per_pattern": 315
+      },
+      "bist": {
+        "enabled": false
+      },
+      "power": {
+        "shift_power_w": 0.3046,
+        "capture_power_w": 0.6619,
+        "access_power_w": 0.0588
+      },
+      "thermal_region": "thermal_die1",
+      "supported_recipes": [
+        "S",
+        "F",
+        "H"
+      ],
+      "required_resources": {
+        "dwr_segments": [
+          "dwr_die1"
+        ],
+        "preferred_fpp_channel": "fpp_interposer"
+      }
+    },
+    {
+      "object_id": "d695_m3_die2",
+      "object_type": "core",
+      "die_id": "die2",
+      "area_mm2": 0.1684,
+      "scan": {
+        "chain_count": 1,
+        "max_chain_length_bits": 32,
+        "pattern_count": 75,
+        "requires_capture": true,
+        "response_bits_per_pattern": 32
+      },
+      "bist": {
+        "enabled": false
+      },
+      "power": {
+        "shift_power_w": 0.193,
+        "capture_power_w": 0.4452,
+        "access_power_w": 0.0509
+      },
+      "thermal_region": "thermal_die2",
+      "supported_recipes": [
+        "S",
+        "F",
+        "H"
+      ],
+      "required_resources": {
+        "dwr_segments": [
+          "dwr_die2"
+        ],
+        "preferred_fpp_channel": "fpp_interposer"
+      }
+    },
+    {
+      "object_id": "d695_m4_die3",
+      "object_type": "memory",
+      "die_id": "die3",
+      "area_mm2": 0.3195,
+      "scan": {
+        "chain_count": 4,
+        "max_chain_length_bits": 54,
+        "pattern_count": 105,
+        "requires_capture": true,
+        "response_bits_per_pattern": 54
+      },
+      "bist": {
+        "enabled": true,
+        "engine_id": "bist_d695_m4_die3",
+        "config_bits": 96,
+        "local_cycles": 50000,
+        "readout_bits": 128,
+        "bist_clock_hz": 100000000
+      },
+      "power": {
+        "shift_power_w": 0.3001,
+        "capture_power_w": 0.653,
+        "access_power_w": 0.0585,
+        "bist_power_w": 0.4842
+      },
+      "thermal_region": "thermal_die3",
+      "supported_recipes": [
+        "S",
+        "F",
+        "B",
+        "H"
+      ],
+      "required_resources": {
+        "dwr_segments": [
+          "dwr_die3"
+        ],
+        "preferred_fpp_channel": "fpp_interposer",
+        "bist_engine": "bist_d695_m4_die3"
+      }
+    },
+    {
+      "object_id": "d695_m5_die0",
+      "object_type": "core",
+      "die_id": "die0",
+      "area_mm2": 1.35,
+      "scan": {
+        "chain_count": 32,
+        "max_chain_length_bits": 45,
+        "pattern_count": 110,
+        "requires_capture": true,
+        "response_bits_per_pattern": 45
+      },
+      "bist": {
+        "enabled": false
+      },
+      "power": {
+        "shift_power_w": 1.03,
+        "capture_power_w": 2.07,
+        "access_power_w": 0.11
+      },
+      "thermal_region": "thermal_die0",
+      "supported_recipes": [
+        "S",
+        "F",
+        "H"
+      ],
+      "required_resources": {
+        "dwr_segments": [
+          "dwr_die0"
+        ],
+        "preferred_fpp_channel": "fpp_interposer"
+      }
+    },
+    {
+      "object_id": "d695_m6_die1",
+      "object_type": "core",
+      "die_id": "die1",
+      "area_mm2": 1.2921,
+      "scan": {
+        "chain_count": 16,
+        "max_chain_length_bits": 41,
+        "pattern_count": 234,
+        "requires_capture": true,
+        "response_bits_per_pattern": 41
+      },
+      "bist": {
+        "enabled": false
+      },
+      "power": {
+        "shift_power_w": 0.989,
+        "capture_power_w": 1.9904,
+        "access_power_w": 0.1071
+      },
+      "thermal_region": "thermal_die1",
+      "supported_recipes": [
+        "S",
+        "F",
+        "H"
+      ],
+      "required_resources": {
+        "dwr_segments": [
+          "dwr_die1"
+        ],
+        "preferred_fpp_channel": "fpp_interposer"
+      }
+    },
+    {
+      "object_id": "d695_m7_die2",
+      "object_type": "core",
+      "die_id": "die2",
+      "area_mm2": 0.5381,
+      "scan": {
+        "chain_count": 16,
+        "max_chain_length_bits": 34,
+        "pattern_count": 95,
+        "requires_capture": true,
+        "response_bits_per_pattern": 34
+      },
+      "bist": {
+        "enabled": false
+      },
+      "power": {
+        "shift_power_w": 0.4549,
+        "capture_power_w": 0.9536,
+        "access_power_w": 0.0694
+      },
+      "thermal_region": "thermal_die2",
+      "supported_recipes": [
+        "S",
+        "F",
+        "H"
+      ],
+      "required_resources": {
+        "dwr_segments": [
+          "dwr_die2"
+        ],
+        "preferred_fpp_channel": "fpp_interposer"
+      }
+    },
+    {
+      "object_id": "d695_m8_die3",
+      "object_type": "memory",
+      "die_id": "die3",
+      "area_mm2": 0.2828,
+      "scan": {
+        "chain_count": 4,
+        "max_chain_length_bits": 46,
+        "pattern_count": 97,
+        "requires_capture": true,
+        "response_bits_per_pattern": 46
+      },
+      "bist": {
+        "enabled": true,
+        "engine_id": "bist_d695_m8_die3",
+        "config_bits": 96,
+        "local_cycles": 50000,
+        "readout_bits": 128,
+        "bist_clock_hz": 100000000
+      },
+      "power": {
+        "shift_power_w": 0.2741,
+        "capture_power_w": 0.6026,
+        "access_power_w": 0.0566,
+        "bist_power_w": 0.4552
+      },
+      "thermal_region": "thermal_die3",
+      "supported_recipes": [
+        "S",
+        "F",
+        "B",
+        "H"
+      ],
+      "required_resources": {
+        "dwr_segments": [
+          "dwr_die3"
+        ],
+        "preferred_fpp_channel": "fpp_interposer",
+        "bist_engine": "bist_d695_m8_die3"
+      }
+    },
+    {
+      "object_id": "d695_m9_die0",
+      "object_type": "core",
+      "die_id": "die0",
+      "area_mm2": 0.3086,
+      "scan": {
+        "chain_count": 32,
+        "max_chain_length_bits": 54,
+        "pattern_count": 12,
+        "requires_capture": true,
+        "response_bits_per_pattern": 54
+      },
+      "bist": {
+        "enabled": false
+      },
+      "power": {
+        "shift_power_w": 0.2924,
+        "capture_power_w": 0.6381,
+        "access_power_w": 0.0579
+      },
+      "thermal_region": "thermal_die0",
+      "supported_recipes": [
+        "S",
+        "F",
+        "H"
+      ],
+      "required_resources": {
+        "dwr_segments": [
+          "dwr_die0"
+        ],
+        "preferred_fpp_channel": "fpp_interposer"
+      }
+    },
+    {
+      "object_id": "d695_m10_die1",
+      "object_type": "core",
+      "die_id": "die1",
+      "area_mm2": 1.0011,
+      "scan": {
+        "chain_count": 32,
+        "max_chain_length_bits": 55,
+        "pattern_count": 68,
+        "requires_capture": true,
+        "response_bits_per_pattern": 55
+      },
+      "bist": {
+        "enabled": false
+      },
+      "power": {
+        "shift_power_w": 0.7828,
+        "capture_power_w": 1.5902,
+        "access_power_w": 0.0926
+      },
+      "thermal_region": "thermal_die1",
+      "supported_recipes": [
+        "S",
+        "F",
+        "H"
+      ],
+      "required_resources": {
+        "dwr_segments": [
+          "dwr_die1"
+        ],
+        "preferred_fpp_channel": "fpp_interposer"
+      }
+    },
+    {
+      "object_id": "sensor_die3_hotspot",
+      "object_type": "instrument",
+      "die_id": "die3",
+      "area_mm2": 0.05,
+      "instrument": {
+        "network_depth": 2,
+        "address_bits": 16,
+        "readout_bits": 32,
+        "requires_readback": true
+      },
+      "power": {
+        "access_power_w": 0.04
+      },
+      "thermal_region": "thermal_die3",
+      "supported_recipes": [
+        "S"
+      ],
+      "required_resources": {
+        "instrument_network": "instr_die3"
+      }
+    }
+  ],
+  "interconnects": [
+    {
+      "link_id": "link_die0_die1",
+      "source_die": "die0",
+      "target_die": "die1",
+      "link_type": "interposer_ucie_like",
+      "test_mode": "DWR_EXTEST",
+      "dwr_segments": [
+        "dwr_die0",
+        "dwr_die1"
+      ],
+      "route_resource": "ucie_adv_die0_die1",
+      "estimated_test_bits": 8192,
+      "power_w": 0.25
+    },
+    {
+      "link_id": "link_die0_die2",
+      "source_die": "die0",
+      "target_die": "die2",
+      "link_type": "interposer_ucie_like",
+      "test_mode": "DWR_EXTEST",
+      "dwr_segments": [
+        "dwr_die0",
+        "dwr_die2"
+      ],
+      "route_resource": "ucie_adv_die0_die2",
+      "estimated_test_bits": 8192,
+      "power_w": 0.25
+    },
+    {
+      "link_id": "link_die1_die3",
+      "source_die": "die1",
+      "target_die": "die3",
+      "link_type": "interposer_ucie_like",
+      "test_mode": "DWR_EXTEST",
+      "dwr_segments": [
+        "dwr_die1",
+        "dwr_die3"
+      ],
+      "route_resource": "ucie_adv_die1_die3",
+      "estimated_test_bits": 12288,
+      "power_w": 0.3
+    },
+    {
+      "link_id": "link_die2_die3",
+      "source_die": "die2",
+      "target_die": "die3",
+      "link_type": "interposer_ucie_like",
+      "test_mode": "DWR_EXTEST",
+      "dwr_segments": [
+        "dwr_die2",
+        "dwr_die3"
+      ],
+      "route_resource": "ucie_adv_die2_die3",
+      "estimated_test_bits": 12288,
+      "power_w": 0.3
+    }
+  ],
+  "resource_groups": {
+    "serial_access_groups": [
+      {
+        "group_id": "serial_access_path",
+        "capacity": 1,
+        "members": [
+          "ptap0",
+          "stap_die1",
+          "stap_die2",
+          "stap_die3"
+        ]
+      }
+    ],
+    "fpp_capacity_groups": [
+      {
+        "group_id": "fpp_interposer_lanes",
+        "capacity": 8,
+        "members": [
+          "fpp_interposer_lane0",
+          "fpp_interposer_lane1",
+          "fpp_interposer_lane2",
+          "fpp_interposer_lane3",
+          "fpp_interposer_lane4",
+          "fpp_interposer_lane5",
+          "fpp_interposer_lane6",
+          "fpp_interposer_lane7"
+        ]
+      }
+    ],
+    "dwr_conflict_groups": [
+      {
+        "group_id": "dwr_group_die0",
+        "capacity": 1,
+        "members": [
+          "dwr_die0"
+        ]
+      },
+      {
+        "group_id": "dwr_group_die1",
+        "capacity": 1,
+        "members": [
+          "dwr_die1"
+        ]
+      },
+      {
+        "group_id": "dwr_group_die2",
+        "capacity": 1,
+        "members": [
+          "dwr_die2"
+        ]
+      },
+      {
+        "group_id": "dwr_group_die3",
+        "capacity": 1,
+        "members": [
+          "dwr_die3"
+        ]
+      }
+    ],
+    "bist_engine_groups": [
+      {
+        "group_id": "bist_d695_m4_die3",
+        "capacity": 1,
+        "members": [
+          "d695_m4_die3"
+        ]
+      },
+      {
+        "group_id": "bist_d695_m8_die3",
+        "capacity": 1,
+        "members": [
+          "d695_m8_die3"
+        ]
+      }
+    ],
+    "power_domains": [
+      {
+        "domain_id": "pdn_package",
+        "max_power_w": 10.0,
+        "dies": [
+          "die0",
+          "die1",
+          "die2",
+          "die3"
+        ]
+      }
+    ],
+    "thermal_regions": [
+      {
+        "region_id": "thermal_die0",
+        "die_id": "die0",
+        "max_temperature_c": 85.0
+      },
+      {
+        "region_id": "thermal_die1",
+        "die_id": "die1",
+        "max_temperature_c": 85.0
+      },
+      {
+        "region_id": "thermal_die2",
+        "die_id": "die2",
+        "max_temperature_c": 85.0
+      },
+      {
+        "region_id": "thermal_die3",
+        "die_id": "die3",
+        "max_temperature_c": 85.0
+      }
+    ]
+  },
+  "thermal_adjacency": [
+    {
+      "source_region": "thermal_die0",
+      "target_region": "thermal_die1",
+      "coupling_type": "horizontal",
+      "coupling_weight": 0.45,
+      "avoid_concurrent_high_power": true
+    },
+    {
+      "source_region": "thermal_die0",
+      "target_region": "thermal_die2",
+      "coupling_type": "horizontal",
+      "coupling_weight": 0.45,
+      "avoid_concurrent_high_power": true
+    },
+    {
+      "source_region": "thermal_die1",
+      "target_region": "thermal_die3",
+      "coupling_type": "horizontal",
+      "coupling_weight": 0.35,
+      "avoid_concurrent_high_power": true
+    },
+    {
+      "source_region": "thermal_die2",
+      "target_region": "thermal_die3",
+      "coupling_type": "horizontal",
+      "coupling_weight": 0.35,
+      "avoid_concurrent_high_power": true
+    }
+  ]
+}

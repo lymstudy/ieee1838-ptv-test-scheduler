@@ -1,0 +1,4 @@
+schedule_id,makespan_s,peak_temperature_c,peak_region,peak_time_s,over_limit_duration_s,violation_count
+m4_greedy,0.0050046399999999994,25.02829928549768,thermal_die3,0.0050046399999999994,0.0,0
+m5_cpsat,0.00396392,25.02828167822814,thermal_die3,0.003962282,0.0,0
+m6_alns,0.00396392,25.028281793572766,thermal_die3,0.003961,0.0,0

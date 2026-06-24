@@ -1,0 +1,13 @@
+case_id,source_soc,scale,topology_type,die_count,tower_count,selected_module_count,target_count,total_scan_bits,total_patterns,case_path
+m10_small_d695_3d_stack,d695,small,3d_stack,4,1,10,14,6763,881,configs/cases/m10/m10_small_d695_3d_stack.json
+m10_small_d695_2_5d_interposer,d695,small,2_5d_interposer,4,1,10,14,6763,881,configs/cases/m10/m10_small_d695_2_5d_interposer.json
+m10_small_d695_5_5d_multi_tower,d695,small,5_5d_multi_tower,4,2,10,14,6763,881,configs/cases/m10/m10_small_d695_5_5d_multi_tower.json
+m10_medium_p22810_3d_stack,p22810,medium,3d_stack,6,1,16,22,22921,24584,configs/cases/m10/m10_medium_p22810_3d_stack.json
+m10_medium_p22810_2_5d_interposer,p22810,medium,2_5d_interposer,6,1,16,22,22921,24584,configs/cases/m10/m10_medium_p22810_2_5d_interposer.json
+m10_medium_p22810_5_5d_multi_tower,p22810,medium,5_5d_multi_tower,6,3,16,22,22921,24584,configs/cases/m10/m10_medium_p22810_5_5d_multi_tower.json
+m10_large_p34392_3d_stack,p34392,large,3d_stack,8,1,20,28,21745,66349,configs/cases/m10/m10_large_p34392_3d_stack.json
+m10_large_p34392_2_5d_interposer,p34392,large,2_5d_interposer,8,1,20,28,21745,66349,configs/cases/m10/m10_large_p34392_2_5d_interposer.json
+m10_large_p34392_5_5d_multi_tower,p34392,large,5_5d_multi_tower,8,4,20,28,21745,66349,configs/cases/m10/m10_large_p34392_5_5d_multi_tower.json
+m10_xlarge_p93791_3d_stack,p93791,xlarge,3d_stack,12,1,24,36,91849,22208,configs/cases/m10/m10_xlarge_p93791_3d_stack.json
+m10_xlarge_p93791_2_5d_interposer,p93791,xlarge,2_5d_interposer,12,1,24,36,91849,22208,configs/cases/m10/m10_xlarge_p93791_2_5d_interposer.json
+m10_xlarge_p93791_5_5d_multi_tower,p93791,xlarge,5_5d_multi_tower,12,6,24,36,91849,22208,configs/cases/m10/m10_xlarge_p93791_5_5d_multi_tower.json

@@ -238,6 +238,42 @@ class SystemModel:
                 factor += float(edge.get("coupling_weight", 0.0))
         return factor
 
+    def layer_conduction_factor(self, thermal_region: str) -> float:
+        thermal_model = self.raw.get("thermal_model", {})
+        self_weight = float(thermal_model.get("self_heating_weight", 1.0))
+        vertical_weight = float(thermal_model.get("vertical_coupling_weight", 0.35))
+        distance_decay = float(thermal_model.get("layer_distance_decay", 0.5))
+
+        region_to_die = {
+            str(die.get("thermal", {}).get("region_id")): die
+            for die in self.dies
+        }
+        target_die = region_to_die.get(thermal_region)
+        if not target_die:
+            return self_weight
+
+        target_layer = int(target_die.get("layer_index", 0))
+        factor = self_weight
+        for edge in self.raw.get("thermal_adjacency", []):
+            if edge.get("coupling_type") != "vertical":
+                continue
+            if thermal_region == edge.get("source_region"):
+                other_region = str(edge.get("target_region"))
+            elif thermal_region == edge.get("target_region"):
+                other_region = str(edge.get("source_region"))
+            else:
+                continue
+
+            other_die = region_to_die.get(other_region)
+            if not other_die:
+                continue
+            layer_distance = abs(target_layer - int(other_die.get("layer_index", target_layer)))
+            if layer_distance <= 0:
+                layer_distance = 1
+            coupling = float(edge.get("coupling_weight", 0.0))
+            factor += vertical_weight * coupling * (distance_decay ** (layer_distance - 1))
+        return factor
+
     def cooling_factor(self, die_id: str) -> float:
         die = self.dies_by_id[die_id]
         return float(die.get("thermal", {}).get("cooling_factor", 1.0)) or 1.0
@@ -325,6 +361,10 @@ class SystemModel:
         _require_positive(float(self.timing["default_bist_clock_hz"]), "default BIST clock")
         _require_non_negative(float(self.timing.get("capture_time_s", 0.0)), "capture_time_s")
         _require_non_negative(float(self.timing.get("mode_update_time_s", 0.0)), "mode_update_time_s")
+        thermal_model = self.raw.get("thermal_model", {})
+        _require_non_negative(float(thermal_model.get("self_heating_weight", 1.0)), "self_heating_weight")
+        _require_non_negative(float(thermal_model.get("vertical_coupling_weight", 0.35)), "vertical_coupling_weight")
+        _require_non_negative(float(thermal_model.get("layer_distance_decay", 0.5)), "layer_distance_decay")
 
         for die in self.dies:
             size = die.get("size_um", {})

@@ -1,0 +1,24 @@
+SocName f2126
+TotalModules 5
+Options Power 0 XY 0
+
+Module 0 Level 0 Inputs 52 Outputs 140 Bidirs 196 ScanChains 0 :
+Module 0 TotalTests 0
+
+Module 1 Level 1 Inputs 356 Outputs 529 Bidirs 0 ScanChains 8 : 1000 999 999 999 999 999 998 997
+Module 1 TotalTests 1
+Module 1 Test 1 ScanUse 1 TamUse 1 Patterns 334
+
+Module 2 Level 1 Inputs 85 Outputs 139 Bidirs 0 ScanChains 16 : 319 319 319 319 319 319 319 319 319 319 319 319 319 318 318 319
+Module 2 TotalTests 1
+Module 2 Test 1 ScanUse 1 TamUse 1 Patterns 422
+
+Module 3 Level 1 Inputs 30 Outputs 20 Bidirs 0 ScanChains 1 : 452
+Module 3 TotalTests 1
+Module 3 Test 1 ScanUse 1 TamUse 1 Patterns 103
+
+Module 4 Level 1 Inputs 30 Outputs 20 Bidirs 0 ScanChains 1 : 452
+Module 4 TotalTests 1
+Module 4 Test 1 ScanUse 1 TamUse 1 Patterns 103
+
+

@@ -36,6 +36,11 @@
     "max_ir_drop_v": 0.12,
     "max_concurrent_capture": 1
   },
+  "thermal_model": {
+    "self_heating_weight": 1.0,
+    "vertical_coupling_weight": 0.35,
+    "layer_distance_decay": 0.5
+  },
   "dies": [
     {
       "die_id": "die0",

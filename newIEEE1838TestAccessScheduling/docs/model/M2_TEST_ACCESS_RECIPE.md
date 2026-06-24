@@ -9,8 +9,9 @@ M2 将 M1 的 IEEE 1838-compatible 系统模型转换为候选 Test Access Recip
 - 读取并校验 M1 JSON 输入。
 - 为可测试 core、memory、instrument 生成 S/F/B/H recipe。
 - 为 die-to-die interconnect 生成 I recipe。
-- 估算每个 recipe 的访问时间、数据传输时间、本地执行时间、读回时间、峰值功耗、FPP lane 占用、DWR segment 占用和热风险。
-- 输出候选 recipe CSV 表。
+- 生成 phase-level 资源模型，记录每个 phase 的串行访问、FPP lane、DWR segment、功耗和热区域占用。
+- 估算每个 recipe 的访问时间、数据传输时间、本地执行时间、读回时间、串行资源时间、FPP 时间、峰值功耗、thermal risk 和 thermal load。
+- 输出 refined recipe 汇总表和 phase summary 表。
 
 本阶段不做全局调度，不做帕累托剪枝，也不声称 bit-accurate IEEE 1838 仿真。
 
@@ -44,7 +45,8 @@ python experiments/generate_m2_recipes.py
 默认输出：
 
 ```text
-results/tables/m2_recipe_summary.csv
+results/tables/m2_recipe_summary_refined.csv
+results/tables/m2_recipe_phase_summary.csv
 ```
 
 ## 输出字段
@@ -72,6 +74,17 @@ results/tables/m2_recipe_summary.csv
 | `route_resource` | 互连测试相关 routing 资源 |
 | `estimated_bits` | 估算处理 bit 数 |
 | `notes` | 建模说明 |
+| `test_method` | 测试方法，如 `ATPG_SCAN`、`LBIST`、`MBIST`、`EXTEST` |
+| `access_mechanism` | 访问机制，如 `PTAP_STAP_SERIAL`、`FPP_PARALLEL`、`LOCAL_BIST`、`HYBRID`、`DWR_EXTEST` |
+| `test_endpoint` | 测试端点，如 `internal_scan`、`logic_bist`、`memory_bist`、`interconnect_extest`、`instrument_tdr` |
+| `bist_type` | BIST 类型，非 BIST 为空 |
+| `phase_count` | phase 数量 |
+| `serial_time_s` | phase-level 串行资源占用时间 |
+| `fpp_time_s` | phase-level FPP 数据传输时间 |
+| `thermal_load` | 功率、时间和热耦合共同形成的热负载代理指标 |
+| `max_fpp_lanes_required` | 任一 phase 的最大 FPP lane 占用 |
+| `lane_occupancy` | phase-level `duration_s * fpp_lanes_required` 的总和 |
+| `phase_resources` | JSON 字符串形式的 phase-level 资源占用 |
 
 ## 估算公式
 
@@ -105,9 +118,18 @@ thermal_risk =
 
 该热风险只用于候选 recipe 排序、剪枝和后续调度启发，不等同于 HotSpot 或真实热仿真结果。
 
+热负载代理：
+
+```text
+thermal_load =
+  peak_power_w * total_time_s * layer_conduction_factor / cooling_factor
+```
+
+该指标用于区分“高功率短时间”和“中功率长时间”的 recipe。
+
 ## M2 到 M3 的接口
 
-M3 帕累托剪枝应直接读取 `m2_recipe_summary.csv` 或调用 `RecipeGenerator.generate_all()`，按以下维度筛掉被支配 recipe：
+M3 帕累托剪枝应直接读取 `m2_recipe_summary_refined.csv` 或调用 `RecipeGenerator.generate_all()`，按以下维度筛掉被支配 recipe：
 
 - `total_time_s`
 - `peak_power_w`

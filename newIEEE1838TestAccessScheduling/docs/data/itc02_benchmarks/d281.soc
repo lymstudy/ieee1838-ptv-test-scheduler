@@ -1,0 +1,45 @@
+SocName d281
+TotalModules 9
+Options Power 0 XY 0
+
+Module 0 Level 0 Inputs 0 Outputs 0 Bidirs 0 ScanChains 0 :
+Module 0 TotalTests 0
+
+Module 1 Level 1 Inputs 60 Outputs 26 Bidirs 0 ScanChains 0 :
+Module 1 TotalTests 2
+Module 1 Test 1 ScanUse 1 TamUse 1 Patterns 26
+Module 1 Test 2 ScanUse 0 TamUse 0 Patterns 256
+
+Module 2 Level 1 Inputs 233 Outputs 140 Bidirs 0 ScanChains 0 :
+Module 2 TotalTests 2
+Module 2 Test 1 ScanUse 1 TamUse 1 Patterns 158
+Module 2 Test 2 ScanUse 0 TamUse 0 Patterns 2048
+
+Module 3 Level 1 Inputs 207 Outputs 108 Bidirs 0 ScanChains 0 :
+Module 3 TotalTests 2
+Module 3 Test 1 ScanUse 1 TamUse 1 Patterns 96
+Module 3 Test 2 ScanUse 0 TamUse 0 Patterns 2048
+
+Module 4 Level 1 Inputs 45 Outputs 52 Bidirs 0 ScanChains 4 : 8 7 7 7
+Module 4 TotalTests 2
+Module 4 Test 1 ScanUse 1 TamUse 1 Patterns 90
+Module 4 Test 2 ScanUse 0 TamUse 0 Patterns 256
+
+Module 5 Level 1 Inputs 214 Outputs 228 Bidirs 0 ScanChains 6 : 32 32 32 32 32 19
+Module 5 TotalTests 2
+Module 5 Test 1 ScanUse 1 TamUse 1 Patterns 118
+Module 5 Test 2 ScanUse 0 TamUse 0 Patterns 256
+
+Module 6 Level 1 Inputs 32 Outputs 32 Bidirs 0 ScanChains 2 : 9 9 
+Module 6 TotalTests 2
+Module 6 Test 1 ScanUse 1 TamUse 1 Patterns 80
+Module 6 Test 2 ScanUse 0 TamUse 0 Patterns 256
+
+Module 7 Level 1 Inputs 700 Outputs 790 Bidirs 0 ScanChains 20 : 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 32 30
+Module 7 TotalTests 1
+Module 7 Test 1 ScanUse 1 TamUse 0 Patterns 2048
+
+Module 8 Level 1 Inputs 32 Outputs 32 Bidirs 0 ScanChains 2 : 9 9 
+Module 8 TotalTests 2
+Module 8 Test 1 ScanUse 1 TamUse 1 Patterns 58
+Module 8 Test 2 ScanUse 0 TamUse 0 Patterns 1024

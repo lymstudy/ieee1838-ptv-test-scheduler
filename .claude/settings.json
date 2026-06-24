@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pdftotext -layout -f 1 -l 20 \"/d/studydoc/master/research/newIEEE1838TestAccessScheduling/docs/data/open3dbench_2503.12946.pdf\" -)"
+    ]
+  }
+}
