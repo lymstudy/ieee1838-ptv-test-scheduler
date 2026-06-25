@@ -34,6 +34,7 @@ class ScheduledPhase:
     fpp_channel: str
     dwr_segments: str
     route_resource: str
+    exclusive_resource: str
     power_w: float
     thermal_region: str
     resource_notes: str
@@ -181,6 +182,7 @@ def _schedule_recipe(
                 fpp_channel=str(phase.get("fpp_channel", "")),
                 dwr_segments=";".join(str(segment) for segment in phase.get("dwr_segments", [])),
                 route_resource=str(phase.get("route_resource", "")),
+                exclusive_resource=str(phase.get("exclusive_resource", "")),
                 power_w=float(phase.get("power_w", 0.0) or 0.0),
                 thermal_region=str(phase.get("thermal_region", "")),
                 resource_notes=str(phase.get("notes", "")),
@@ -275,6 +277,8 @@ def _resources_fit(model: SystemModel, candidate: dict[str, object], active: lis
 
     if not _dwr_groups_fit(model, candidate, active):
         return False
+    if not _exclusive_resources_fit(candidate, active):
+        return False
     if not _bist_engine_groups_fit(model, candidate, active):
         return False
     return True
@@ -291,6 +295,13 @@ def _dwr_groups_fit(model: SystemModel, candidate: dict[str, object], active: li
         if used > int(group.get("capacity", 1)):
             return False
     return True
+
+
+def _exclusive_resources_fit(candidate: dict[str, object], active: list[ScheduledPhase]) -> bool:
+    resource = str(candidate.get("exclusive_resource", ""))
+    if not resource:
+        return True
+    return all(phase.exclusive_resource != resource for phase in active)
 
 
 def _bist_engine_groups_fit(model: SystemModel, candidate: dict[str, object], active: list[ScheduledPhase]) -> bool:

@@ -89,3 +89,98 @@ newIEEE1838TestAccessScheduling/
 - M11 algorithm study docs: `docs/model/M11_ALGORITHM_STUDY.md`
 - M11 algorithm study runner: `experiments/run_m11_algorithm_study.py`
 - M11 outputs: `results/tables/m11_algorithm_comparison.csv` and `results/reports/m11_algorithm_study_report.md`
+
+## M12 Thermal Validation Artifacts
+
+- M12 thermal validation docs: `docs/model/M12_THERMAL_VALIDATION.md`
+- M12 thermal validation runner: `experiments/run_m12_thermal_validation.py`
+- HotSpot-compatible exporter: `src/evaluators/hotspot_export.py`
+- M12 outputs: `results/tables/m12_thermal_validation_summary.csv`, `results/tables/m12_thermal_hotspots.csv`, `results/tables/m12_temperature_trace.csv`, and `results/reports/m12_thermal_validation_report.md`
+- M12 HotSpot inputs: `results/hotspot/m12/` and `results/hotspot/m12_hotspot_export_manifest.csv`
+
+## M12b HotSpot Remote Validation Artifacts
+
+- M12b HotSpot validation docs: `docs/model/M12B_HOTSPOT_VALIDATION.md`
+- M12b remote validation runner: `experiments/run_m12_hotspot_remote_validation.py`
+- M12b outputs: `results/tables/m12_hotspot_validation_summary.csv` and `results/reports/m12_hotspot_validation_report.md`
+- M12b pulled HotSpot outputs: `results/hotspot/m12b_outputs/`
+
+## M13 Visualization Artifacts
+
+- M13 visualization docs: `docs/model/M13_VISUALIZATION_SUMMARY.md`
+- M13 visualization runner: `experiments/generate_m13_visualizations.py`
+- M13 figures: `results/figures/m13/`
+- M13 figure index: `results/tables/m13_figure_index.csv`
+- M13 report: `results/reports/m13_visual_summary.md`
+
+## M14 Paper Experiment Draft Artifacts
+
+- M14 experiment chapter docs: `docs/model/M14_EXPERIMENT_CHAPTER_DRAFT.md`
+- M14 experiment chapter runner: `experiments/generate_m14_experiment_chapter.py`
+- M14 draft report: `results/reports/m14_experiment_chapter_draft.md`
+- M14 artifact index: `results/tables/m14_experiment_artifact_index.csv`
+- Scope: narrative and table/figure explanation only; do not rerun experiments unless a gap is found.
+
+## M15 Chinese Experiment Chapter Artifacts
+
+- M15 Chinese chapter docs: `docs/model/M15_CHINESE_EXPERIMENT_CHAPTER.md`
+- M15 Chinese chapter runner: `experiments/generate_m15_chinese_experiment_chapter.py`
+- M15 Chinese draft report: `results/reports/m15_chinese_experiment_chapter_draft.md`
+- M15 caption index: `results/tables/m15_caption_index.csv`
+- Scope: Chinese paper-style experiment narrative and figure/table captions only.
+
+## M16 Paper Value Figures Artifacts
+
+- M16 paper figure docs: `docs/model/M16_PAPER_VALUE_FIGURES.md`
+- M16 paper figure runner: `experiments/generate_m16_paper_value_figures.py`
+- M16 xlarge schedule: `results/schedules/m16_xlarge_5_5d_m4_greedy_schedule.csv`
+- M16 figures: `results/figures/m16/`
+- M16 figure index: `results/tables/m16_figure_index.csv`
+- M16 report: `results/reports/m16_paper_value_figures_report.md`
+- Scope: main paper figures that replace the weaker M13 representative Gantt.
+
+## M17 Innovation Support Audit Artifacts
+
+- M17 innovation support docs: `docs/model/M17_INNOVATION_SUPPORT.md`
+- M17 innovation support runner: `experiments/run_m17_innovation_support.py`
+- M17 path/schedule ablation table: `results/tables/m17_path_schedule_ablation.csv`
+- M17 innovation support matrix: `results/tables/m17_innovation_support_matrix.csv`
+- M17 report: `results/reports/m17_innovation_support_report.md`
+- Scope: evidence audit for paper innovation claims; weak or partial support is reported explicitly.
+
+## M18 Resource-Pressure Study Artifacts
+
+- M18 resource-pressure docs: `docs/model/M18_RESOURCE_PRESSURE_STUDY.md`
+- M18 pressure case generator: `experiments/generate_m18_pressure_cases.py`
+- M18 pressure study runner: `experiments/run_m18_pressure_study.py`
+- M18 generated cases: `configs/cases/m18/`
+- M18 manifest: `data/derived/m18_pressure_case_manifest.csv`
+- M18 outputs: `results/tables/m18_pressure_study.csv` and `results/reports/m18_pressure_study_report.md`
+- Scope: controlled ablation showing why path selection must be coupled with resource-aware scheduling.
+
+## M19 Pressure Figure Artifacts
+
+- M19 pressure figure docs: `docs/model/M19_PRESSURE_FIGURES.md`
+- M19 figure generator: `experiments/generate_m19_pressure_figures.py`
+- M19 schedule exports: `results/schedules/m19/`
+- M19 figures: `results/figures/m19/`
+- M19 figure index: `results/tables/m19_figure_index.csv`
+- M19 report: `results/reports/m19_pressure_figures_report.md`
+- Scope: paper-facing figures explaining the M18 controlled resource-pressure result.
+
+## M21 Innovation Pressure Suite Artifacts
+
+- M21 pressure-suite docs: `docs/model/M21_INNOVATION_PRESSURE_SUITE.md`
+- M21 pressure case generator: `experiments/generate_m21_innovation_pressure_suite.py`
+- M21 pressure runner: `experiments/run_m21_innovation_pressure_suite.py`
+- M21 generated cases: `configs/cases/m21/`
+- M21 manifest: `data/derived/m21_innovation_pressure_manifest.csv`
+- M21 outputs: `results/tables/m21_innovation_pressure_detail.csv`, `results/tables/m21_topology_pressure_summary.csv`, `results/tables/m21_claim_support.csv`, and `results/reports/m21_innovation_pressure_report.md`
+- Scope: ITC'02-derived pressure suite for stronger path-schedule and topology evidence.
+
+## M22 Mechanism Ablation Artifacts
+
+- M22 mechanism-ablation docs: `docs/model/M22_MECHANISM_ABLATION.md`
+- M22 mechanism-ablation runner: `experiments/run_m22_mechanism_ablation.py`
+- M22 outputs: `results/tables/m22_mechanism_ablation_detail.csv`, `results/tables/m22_mechanism_ablation_summary.csv`, `results/tables/m22_topology_ablation_summary.csv`, and `results/reports/m22_mechanism_ablation_report.md`
+- Scope: controlled ablation proving that path-schedule gains require shared-resource pressure plus alternative access paths.

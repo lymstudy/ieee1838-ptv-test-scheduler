@@ -18,6 +18,7 @@ class RecipePhase:
     fpp_channel: str = ""
     dwr_segments: tuple[str, ...] = ()
     route_resource: str = ""
+    exclusive_resource: str = ""
     power_w: float = 0.0
     thermal_region: str = ""
     notes: str = ""
@@ -104,12 +105,14 @@ class RecipeGenerator:
         thermal_region = self.model.dies_by_id[die_id]["thermal"]["region_id"]
         risk = self._thermal_risk(die_id, thermal_region, peak_power, area_mm2=1.0)
         access_power = 0.0
+        route_resource = str(link.get("route_resource", ""))
+        test_session = f"interconnect_session_{route_resource or link['link_id']}"
         phase_list = [
             RecipePhase("CONFIG_ACCESS_PATH", self.model.serial_time_s(setup_bits), True, power_w=access_power, thermal_region=thermal_region),
             RecipePhase("CONFIG_DWR_MODE", self.model.serial_time_s(mode_bits) + update_time, True, dwr_segments=tuple(dwr_segments), power_w=access_power, thermal_region=thermal_region),
-            RecipePhase("DWR_SHIFT_IN", self.model.serial_time_s(payload_bits), True, dwr_segments=tuple(dwr_segments), route_resource=str(link.get("route_resource", "")), power_w=peak_power, thermal_region=thermal_region),
-            RecipePhase("DWR_CAPTURE", capture_time, False, dwr_segments=tuple(dwr_segments), route_resource=str(link.get("route_resource", "")), power_w=peak_power, thermal_region=thermal_region),
-            RecipePhase("DWR_SHIFT_OUT", self.model.serial_time_s(payload_bits + dwr_bits), True, dwr_segments=tuple(dwr_segments), route_resource=str(link.get("route_resource", "")), power_w=peak_power, thermal_region=thermal_region),
+            RecipePhase("DWR_SHIFT_IN", self.model.serial_time_s(payload_bits), True, dwr_segments=tuple(dwr_segments), route_resource=route_resource, exclusive_resource=test_session, power_w=peak_power, thermal_region=thermal_region),
+            RecipePhase("DWR_CAPTURE", capture_time, False, dwr_segments=tuple(dwr_segments), route_resource=route_resource, exclusive_resource=test_session, power_w=peak_power, thermal_region=thermal_region),
+            RecipePhase("DWR_SHIFT_OUT", self.model.serial_time_s(payload_bits + dwr_bits), True, dwr_segments=tuple(dwr_segments), route_resource=route_resource, exclusive_resource=test_session, power_w=peak_power, thermal_region=thermal_region),
         ]
         phase_summary = self._phase_summary(phase_list, die_id, thermal_region, peak_power, total_time)
         return TestAccessRecipe(
@@ -132,7 +135,7 @@ class RecipeGenerator:
             fpp_lanes_required=0,
             fpp_channel="",
             dwr_segments=";".join(dwr_segments),
-            route_resource=str(link.get("route_resource", "")),
+            route_resource=route_resource,
             estimated_bits=serial_bits,
             notes="DWR EXTEST interconnect recipe",
             test_method="EXTEST",
@@ -151,6 +154,7 @@ class RecipeGenerator:
         dwr_bits = self.model.dwr_payload_bits(dwr_segments)
         access_power = float(obj.get("power", {}).get("access_power_w", 0.0))
         thermal_region = str(obj.get("thermal_region", ""))
+        test_session = self._test_session_resource(obj)
 
         if obj.get("object_type") == "instrument":
             instrument = obj.get("instrument", {})
@@ -189,9 +193,9 @@ class RecipeGenerator:
             phase_list = [
                 RecipePhase("CONFIG_ACCESS_PATH", self.model.serial_time_s(setup_bits), True, power_w=access_power, thermal_region=thermal_region),
                 RecipePhase("CONFIG_SCAN_OR_DWR_MODE", self.model.serial_time_s(mode_bits) + update_time, True, dwr_segments=tuple(dwr_segments), power_w=access_power, thermal_region=thermal_region),
-                RecipePhase("SERIAL_SHIFT_IN", self.model.serial_time_s(stimulus_bits), True, power_w=shift_power, thermal_region=thermal_region),
-                RecipePhase("CAPTURE", capture_time, False, power_w=capture_power, thermal_region=thermal_region),
-                RecipePhase("SERIAL_SHIFT_OUT", self.model.serial_time_s(response_bits + dwr_bits), True, dwr_segments=tuple(dwr_segments), power_w=shift_power, thermal_region=thermal_region),
+                RecipePhase("SERIAL_SHIFT_IN", self.model.serial_time_s(stimulus_bits), True, exclusive_resource=test_session, power_w=shift_power, thermal_region=thermal_region),
+                RecipePhase("CAPTURE", capture_time, False, exclusive_resource=test_session, power_w=capture_power, thermal_region=thermal_region),
+                RecipePhase("SERIAL_SHIFT_OUT", self.model.serial_time_s(response_bits + dwr_bits), True, dwr_segments=tuple(dwr_segments), exclusive_resource=test_session, power_w=shift_power, thermal_region=thermal_region),
             ]
             estimated_bits = setup_bits + mode_bits + stimulus_bits + response_bits + dwr_bits
             notes = "serial PTAP/STAP access to internal scan interface"
@@ -259,6 +263,7 @@ class RecipeGenerator:
         total_time = access_time + data_time + capture_time + update_time
         access_power = float(obj.get("power", {}).get("access_power_w", 0.0))
         thermal_region = str(obj.get("thermal_region", ""))
+        test_session = self._test_session_resource(obj)
         shift_power = float(obj.get("power", {}).get("shift_power_w", 0.0)) + 0.03 * lanes + access_power
         capture_power = float(obj.get("power", {}).get("capture_power_w", 0.0)) + access_power
         peak_power = max(
@@ -270,9 +275,9 @@ class RecipeGenerator:
             RecipePhase("CONFIG_ACCESS_PATH", self.model.serial_time_s(setup_bits), True, power_w=access_power, thermal_region=thermal_region),
             RecipePhase("CONFIG_FPP", self.model.serial_time_s(fpp_config_bits), True, fpp_channel=channel, power_w=access_power, thermal_region=thermal_region),
             RecipePhase("CONFIG_SCAN_OR_DWR_MODE", self.model.serial_time_s(mode_bits) + update_time, True, dwr_segments=tuple(dwr_segments), power_w=access_power, thermal_region=thermal_region),
-            RecipePhase("FPP_SHIFT_IN", stimulus_bits / bandwidth, False, lanes, channel, tuple(dwr_segments), power_w=shift_power, thermal_region=thermal_region),
-            RecipePhase("CAPTURE", capture_time, False, power_w=capture_power, thermal_region=thermal_region),
-            RecipePhase("FPP_SHIFT_OUT", response_bits / bandwidth, False, lanes, channel, tuple(dwr_segments), power_w=shift_power, thermal_region=thermal_region),
+            RecipePhase("FPP_SHIFT_IN", stimulus_bits / bandwidth, False, lanes, channel, tuple(dwr_segments), exclusive_resource=test_session, power_w=shift_power, thermal_region=thermal_region),
+            RecipePhase("CAPTURE", capture_time, False, exclusive_resource=test_session, power_w=capture_power, thermal_region=thermal_region),
+            RecipePhase("FPP_SHIFT_OUT", response_bits / bandwidth, False, lanes, channel, tuple(dwr_segments), exclusive_resource=test_session, power_w=shift_power, thermal_region=thermal_region),
         ]
         phase_summary = self._phase_summary(phase_list, die_id, thermal_region, peak_power, total_time)
         legality_note = self._fpp_legality_note(channel, lanes)
@@ -323,10 +328,11 @@ class RecipeGenerator:
         peak_power = float(obj.get("power", {}).get("bist_power_w", 0.0)) + access_power
         risk = self._object_thermal_risk(obj, peak_power)
         thermal_region = str(obj.get("thermal_region", ""))
+        test_session = self._test_session_resource(obj)
         bist_type = "MBIST" if obj.get("object_type") == "memory" else "LBIST"
         phase_list = [
             RecipePhase("CONFIG_BIST", access_time, True, power_w=access_power, thermal_region=thermal_region),
-            RecipePhase("LOCAL_BIST_RUN", local_time, False, 0, power_w=peak_power, thermal_region=thermal_region, notes="external access resources released"),
+            RecipePhase("LOCAL_BIST_RUN", local_time, False, 0, exclusive_resource=test_session, power_w=peak_power, thermal_region=thermal_region, notes="external TAP resources released; local test session remains occupied"),
             RecipePhase("READ_BIST_RESULT", readback_time, True, power_w=access_power, thermal_region=thermal_region),
         ]
         phase_summary = self._phase_summary(phase_list, die_id, thermal_region, peak_power, total_time)
@@ -390,6 +396,7 @@ class RecipeGenerator:
         total_time = access_time + data_time + capture_time + update_time + readback_time
         access_power = float(obj.get("power", {}).get("access_power_w", 0.0))
         thermal_region = str(obj.get("thermal_region", ""))
+        test_session = self._test_session_resource(obj)
         shift_power = float(obj.get("power", {}).get("shift_power_w", 0.0)) + 0.02 * lanes + access_power
         capture_power = float(obj.get("power", {}).get("capture_power_w", 0.0)) + access_power
         peak_power = max(
@@ -401,9 +408,9 @@ class RecipeGenerator:
             RecipePhase("CONFIG_ACCESS_PATH", self.model.serial_time_s(setup_bits), True, power_w=access_power, thermal_region=thermal_region),
             RecipePhase("CONFIG_FPP", self.model.serial_time_s(fpp_config_bits), True, fpp_channel=channel, power_w=access_power, thermal_region=thermal_region),
             RecipePhase("CONFIG_SCAN_OR_DWR_MODE", self.model.serial_time_s(mode_bits) + update_time, True, dwr_segments=tuple(dwr_segments), power_w=access_power, thermal_region=thermal_region),
-            RecipePhase("FPP_SHIFT_IN", stimulus_bits / bandwidth, False, lanes, channel, tuple(dwr_segments), power_w=shift_power, thermal_region=thermal_region),
-            RecipePhase("CAPTURE", capture_time, False, power_w=capture_power, thermal_region=thermal_region),
-            RecipePhase("FPP_SHIFT_OUT", response_bits / bandwidth, False, lanes, channel, tuple(dwr_segments), power_w=shift_power, thermal_region=thermal_region),
+            RecipePhase("FPP_SHIFT_IN", stimulus_bits / bandwidth, False, lanes, channel, tuple(dwr_segments), exclusive_resource=test_session, power_w=shift_power, thermal_region=thermal_region),
+            RecipePhase("CAPTURE", capture_time, False, exclusive_resource=test_session, power_w=capture_power, thermal_region=thermal_region),
+            RecipePhase("FPP_SHIFT_OUT", response_bits / bandwidth, False, lanes, channel, tuple(dwr_segments), exclusive_resource=test_session, power_w=shift_power, thermal_region=thermal_region),
             RecipePhase("SERIAL_STATUS_READBACK", readback_time, True, power_w=access_power, thermal_region=thermal_region),
         ]
         phase_summary = self._phase_summary(phase_list, die_id, thermal_region, peak_power, total_time)
@@ -458,6 +465,12 @@ class RecipeGenerator:
             return str(channel)
         channels = self.model.access.get("fpp_channels", [])
         return str(channels[0]["channel_id"]) if channels else ""
+
+    def _test_session_resource(self, obj: dict[str, Any]) -> str:
+        resource = obj.get("required_resources", {}).get("test_session_group")
+        if resource:
+            return str(resource)
+        return f"test_session_{obj['die_id']}"
 
     def _object_thermal_risk(self, obj: dict[str, Any], peak_power: float) -> float:
         area = float(obj.get("area_mm2", 1.0)) or 1.0
@@ -587,6 +600,7 @@ def write_recipe_phases_csv(recipes: list[TestAccessRecipe], output_path: str | 
         "fpp_channel",
         "dwr_segments",
         "route_resource",
+        "exclusive_resource",
         "power_w",
         "thermal_region",
         "notes",
@@ -610,6 +624,7 @@ def write_recipe_phases_csv(recipes: list[TestAccessRecipe], output_path: str | 
                         "fpp_channel": phase["fpp_channel"],
                         "dwr_segments": ";".join(phase["dwr_segments"]),
                         "route_resource": phase["route_resource"],
+                        "exclusive_resource": phase.get("exclusive_resource", ""),
                         "power_w": phase["power_w"],
                         "thermal_region": phase["thermal_region"],
                         "notes": phase["notes"],

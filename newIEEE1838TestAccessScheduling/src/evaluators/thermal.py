@@ -251,6 +251,7 @@ def _scheduled_phase_from_row(row: dict[str, str]) -> ScheduledPhase:
         fpp_channel=row["fpp_channel"],
         dwr_segments=row["dwr_segments"],
         route_resource=row["route_resource"],
+        exclusive_resource=row.get("exclusive_resource", ""),
         power_w=float(row["power_w"]),
         thermal_region=row["thermal_region"],
         resource_notes=row["resource_notes"],

@@ -1,1 +1,2 @@
 ortools>=9.10
+matplotlib>=3.8

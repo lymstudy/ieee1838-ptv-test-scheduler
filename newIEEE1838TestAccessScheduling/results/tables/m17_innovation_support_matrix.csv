@@ -1,0 +1,6 @@
+innovation_id,support_status,evidence,recommended_wording,remaining_gap
+test_access_recipe_model,supported,"12 cases, total_targets=300, total_candidate_recipes=1179, recipes_per_target=3.93",提出 Test Access Recipe 抽象，将 S/F/B/I 等 IEEE 1838 访问方式统一为可调度候选路径。,需要在正文中强调这是建模贡献，不是工业 DFT 自动抽取工具。
+path_schedule_joint_optimization,supported,"cases=12, avg_joint_gain_vs_best_fixed=-0.066%, cases_gain_gt_1pct=0; M18 pressure cases=2, cases_gain_ge_20pct=2, best_joint_gain=46.67%",普通 sweep 中联合优化优势不稳定；但在共享 BIST engine 与 FPP lane 并存的资源压力场景中，联合 recipe 选择与调度能通过混合 BIST/FPP 路径显著缩短测试时间。,需要把 M18 明确写成受控资源压力消融，不要泛化为所有 benchmark 上的压倒性优势。
+unified_2_5d_3d_5_5d_model,supported,"12 cases; dies=[4, 6, 8, 12]; targets=[14, 22, 28, 36]; recipes=[57, 77, 89, 111, 121, 136, 151, 184]; topologies=['2_5d_interposer', '3d_stack', '5_5d_multi_tower']; topology avg speedup spread=0.154",构建覆盖 2.5D/3D/5.5D 的统一 benchmark 建模与实验框架。,还需要在模型章节明确三类拓扑的资源差异，而不只报告同一 workload 的不同命名。
+thermal_aware_validation,partial,"hotspot_ok_rows=6, cases=3, ranking_matches=3/3",支持热感知评估与代表性 HotSpot 离线验证，不建议表述为完整电热闭环优化。,HotSpot 样本仍少，且尚未把 HotSpot 反馈重新加入调度器。
+cpsat_alns_hybrid,weak,"m5_ok=6, m6_ok=3, m6_non_ok=3",CP-SAT 可作为精修求解器；ALNS 当前应作为扩展原型，暂不作为核心实验创新点。,需要让 ALNS 在 medium/large case 上稳定运行并优于或快于单独 CP-SAT，才能作为强创新点。

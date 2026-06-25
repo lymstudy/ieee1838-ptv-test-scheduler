@@ -72,6 +72,21 @@ def test_bist_local_execution_can_overlap() -> None:
     assert local_runs[1].start_s < local_runs[0].end_s
 
 
+def test_exclusive_test_session_prevents_non_serial_overlap() -> None:
+    model = load_system_model(CASE_PATH)
+    rows = [
+        _exclusive_row("target_a", "recipe_a", "test_session_shared"),
+        _exclusive_row("target_b", "recipe_b", "test_session_shared"),
+    ]
+
+    result = greedy_schedule(model, rows)
+    active = [phase for phase in result.phases if phase.exclusive_resource == "test_session_shared"]
+
+    assert len(active) == 2
+    assert active[0].end_s <= active[1].start_s or active[1].end_s <= active[0].start_s
+    assert result.makespan_s == pytest.approx(20.0)
+
+
 def test_schedule_writers_create_outputs(tmp_path) -> None:
     model, rows = _m3_rows()
     result = greedy_schedule(model, rows)
@@ -137,5 +152,38 @@ def _bist_row(target_id: str, die_id: str, recipe_id: str, power_w: float) -> di
         "lane_occupancy": 0.0,
         "peak_power_w": power_w,
         "thermal_risk": power_w,
+        "phase_resources": json.dumps(phases),
+    }
+
+
+def _exclusive_row(target_id: str, recipe_id: str, exclusive_resource: str) -> dict[str, object]:
+    phases = [
+        {
+            "phase_name": "LOCAL_EXECUTION",
+            "duration_s": 10.0,
+            "serial_required": False,
+            "fpp_lanes_required": 0,
+            "fpp_channel": "",
+            "dwr_segments": [],
+            "route_resource": "",
+            "exclusive_resource": exclusive_resource,
+            "power_w": 0.1,
+            "thermal_region": "thermal_die0",
+            "notes": "",
+        }
+    ]
+    return {
+        "recipe_id": recipe_id,
+        "target_id": target_id,
+        "target_kind": "core",
+        "die_id": "die0",
+        "recipe_type": "B",
+        "variant": "local",
+        "total_time_s": 10.0,
+        "serial_time_s": 0.0,
+        "fpp_time_s": 0.0,
+        "lane_occupancy": 0.0,
+        "peak_power_w": 0.1,
+        "thermal_risk": 0.1,
         "phase_resources": json.dumps(phases),
     }

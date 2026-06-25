@@ -1,0 +1,13 @@
+ablation_id,topology_type,case_count,avg_best_joint_gain_percent,min_best_joint_gain_percent,max_best_joint_gain_percent,avg_joint_f_count,avg_joint_h_count,avg_temperature_spread_c
+m10_original_control,2_5d_interposer,4,0.0,0.0,0.0,17.5,0.0,0.09638129436836262
+m10_original_control,3d_stack,4,0.0,0.0,0.0,17.5,0.0,0.10877826379000322
+m10_original_control,5_5d_multi_tower,4,0.0,0.0,0.0,17.5,0.0,0.10814178481761161
+bist_private_control,2_5d_interposer,4,0.0,0.0,0.0,0.0,0.0,6.293865638507353
+bist_private_control,3d_stack,4,0.0,0.0,0.0,0.0,0.0,23.844041614928926
+bist_private_control,5_5d_multi_tower,4,0.0,0.0,0.0,0.0,0.0,19.79111235559774
+shared_bist_no_parallel_escape,2_5d_interposer,4,0.0,0.0,0.0,0.0,0.0,2.2859926431746285
+shared_bist_no_parallel_escape,3d_stack,4,0.0,0.0,0.0,0.0,0.0,7.396821596512407
+shared_bist_no_parallel_escape,5_5d_multi_tower,4,0.0,0.0,0.0,0.0,0.0,9.956410242220768
+shared_bist_with_parallel_escape,2_5d_interposer,4,19.121578807911902,9.997354546181622,24.988274732625452,4.25,0.0,4.419342437782231
+shared_bist_with_parallel_escape,3d_stack,4,35.2511113526076,29.99624047119429,37.495083977878465,6.25,0.0,9.215189997623105
+shared_bist_with_parallel_escape,5_5d_multi_tower,4,23.13783253050819,12.517662303646878,33.32567225925075,3.25,0.0,11.693935758875137

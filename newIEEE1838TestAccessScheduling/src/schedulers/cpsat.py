@@ -136,6 +136,10 @@ def solve_cpsat_schedule(
         ]
         _add_cumulative(cp, group_items, lambda _item: 1, int(group.get("capacity", 1)))
 
+    for resource in sorted({item["phase"]["exclusive_resource"] for item in intervals if item["phase"]["exclusive_resource"]}):
+        resource_items = [item for item in intervals if item["phase"]["exclusive_resource"] == resource]
+        cp.AddNoOverlap([item["interval"] for item in resource_items])
+
     makespan = cp.NewIntVar(0, horizon, "makespan")
     for spec in recipe_specs:
         spec_items = [item for item in intervals if item["spec"]["recipe_id"] == spec["recipe_id"]]
@@ -178,6 +182,7 @@ def solve_cpsat_schedule(
                     fpp_channel=phase["fpp_channel"],
                     dwr_segments=";".join(phase["dwr_segments"]),
                     route_resource=phase["route_resource"],
+                    exclusive_resource=phase["exclusive_resource"],
                     power_w=phase["power_w"],
                     thermal_region=phase["thermal_region"],
                     resource_notes=phase["notes"],
@@ -225,6 +230,7 @@ def _phase_spec(phase: dict[str, Any]) -> dict[str, Any]:
         "fpp_channel": str(phase.get("fpp_channel", "")),
         "dwr_segments": [str(segment) for segment in phase.get("dwr_segments", [])],
         "route_resource": str(phase.get("route_resource", "")),
+        "exclusive_resource": str(phase.get("exclusive_resource", "")),
         "power_w": float(phase.get("power_w", 0.0) or 0.0),
         "thermal_region": str(phase.get("thermal_region", "")),
         "notes": str(phase.get("notes", "")),

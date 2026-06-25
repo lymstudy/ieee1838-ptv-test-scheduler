@@ -1,0 +1,6 @@
+figure_id,path,title,source,notes
+m13_m10_speedup_nominal_lane8,results/figures/m13/m13_m10_speedup_nominal_lane8.png,M10 nominal lane-8 speedup,results/tables/m10_benchmark_sweep.csv,Uses m4_greedy rows at power_profile=nominal and lane_count=8.
+m13_m11_algorithm_makespan,results/figures/m13/m13_m11_algorithm_makespan.png,M11 mean normalized makespan by algorithm,results/tables/m11_algorithm_comparison.csv,Averages successful rows across M11 representative cases; lower is better.
+m13_m12b_proxy_hotspot_peak_comparison,results/figures/m13/m13_m12b_proxy_hotspot_peak_comparison.png,M12b proxy and HotSpot peak comparison,results/tables/m12_hotspot_validation_summary.csv,Two-panel plot avoids implying direct numeric equivalence between proxy and HotSpot temperatures.
+m13_hotspot_trace_heatmap_medium_3d_m4_greedy,results/figures/m13/m13_hotspot_trace_heatmap_medium_3d_m4_greedy.png,HotSpot block-level temperature heatmap,results/hotspot/m12b_outputs/m10_medium_p22810_3d_stack__m4_greedy.ttrace,Uses the representative medium 3D m4_greedy HotSpot .ttrace output.
+m13_representative_m4_greedy_gantt,results/figures/m13/m13_representative_m4_greedy_gantt.png,Representative M4 greedy Gantt view,results/schedules/m8_m4_greedy_schedule.csv,Plots scan/capture phases from the existing representative schedule CSV.

@@ -111,6 +111,10 @@ def test_f_recipe_has_phase_level_serial_and_fpp_semantics() -> None:
     assert by_name["FPP_SHIFT_OUT"]["serial_required"] is False
     assert by_name["FPP_SHIFT_IN"]["fpp_lanes_required"] == 1
     assert by_name["FPP_SHIFT_OUT"]["fpp_lanes_required"] == 1
+    assert by_name["CONFIG_ACCESS_PATH"]["serial_required"] is True
+    assert by_name["CONFIG_FPP"]["serial_required"] is True
+    assert by_name["FPP_SHIFT_IN"]["exclusive_resource"] == "test_session_die0"
+    assert by_name["CAPTURE"]["exclusive_resource"] == "test_session_die0"
 
 
 def test_b_recipe_distinguishes_lbist_and_mbist_phase_resources() -> None:
@@ -128,6 +132,7 @@ def test_b_recipe_distinguishes_lbist_and_mbist_phase_resources() -> None:
     assert memory_phases["CONFIG_BIST"]["serial_required"] is True
     assert memory_phases["LOCAL_BIST_RUN"]["serial_required"] is False
     assert memory_phases["LOCAL_BIST_RUN"]["fpp_lanes_required"] == 0
+    assert memory_phases["LOCAL_BIST_RUN"]["exclusive_resource"] == "test_session_die2"
     assert memory_phases["READ_BIST_RESULT"]["serial_required"] is True
     assert memory_recipe.readback_time_s == pytest.approx(model.serial_time_s(setup_bits * 0.5 + readout_bits))
 

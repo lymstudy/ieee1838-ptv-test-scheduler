@@ -1,0 +1,25 @@
+case_id,target_id,target_kind,die_id,recipe_id,recipe_type,phase_index,phase_name,start_s,end_s,duration_s,serial_required,fpp_lanes_required,fpp_channel,dwr_segments,route_resource,power_w,thermal_region,resource_notes
+m18_shared_bist_8die_3d_stack,m18_mem06_die6,memory,die6,B_m18_mem06_die6_local_bist,B,0,CONFIG_BIST,0.0,1.152e-05,1.152e-05,True,0,,,,0.05,thermal_die6,
+m18_shared_bist_8die_3d_stack,m18_mem05_die5,memory,die5,B_m18_mem05_die5_local_bist,B,0,CONFIG_BIST,1.152e-05,2.1760000000000002e-05,1.024e-05,True,0,,,,0.05,thermal_die5,
+m18_shared_bist_8die_3d_stack,m18_mem06_die6,memory,die6,B_m18_mem06_die6_local_bist,B,1,LOCAL_BIST_RUN,1.152e-05,0.00601152,0.006,False,0,,,,1.25,thermal_die6,external access resources released
+m18_shared_bist_8die_3d_stack,m18_mem04_die4,memory,die4,B_m18_mem04_die4_local_bist,B,0,CONFIG_BIST,2.1760000000000002e-05,3.0720000000000004e-05,8.96e-06,True,0,,,,0.05,thermal_die4,
+m18_shared_bist_8die_3d_stack,m18_mem07_die7,memory,die7,B_m18_mem07_die7_local_bist,B,0,CONFIG_BIST,3.0720000000000004e-05,4.3520000000000003e-05,1.28e-05,True,0,,,,0.05,thermal_die7,
+m18_shared_bist_8die_3d_stack,m18_mem03_die3,memory,die3,B_m18_mem03_die3_local_bist,B,0,CONFIG_BIST,4.3520000000000003e-05,5.1200000000000004e-05,7.68e-06,True,0,,,,0.05,thermal_die3,
+m18_shared_bist_8die_3d_stack,m18_mem02_die2,memory,die2,B_m18_mem02_die2_local_bist,B,0,CONFIG_BIST,5.1200000000000004e-05,5.7600000000000004e-05,6.4e-06,True,0,,,,0.05,thermal_die2,
+m18_shared_bist_8die_3d_stack,m18_mem01_die1,memory,die1,B_m18_mem01_die1_local_bist,B,0,CONFIG_BIST,5.7600000000000004e-05,6.272000000000001e-05,5.12e-06,True,0,,,,0.05,thermal_die1,
+m18_shared_bist_8die_3d_stack,m18_mem00_die0,memory,die0,B_m18_mem00_die0_local_bist,B,0,CONFIG_BIST,6.272000000000001e-05,6.656000000000001e-05,3.84e-06,True,0,,,,0.05,thermal_die0,
+m18_shared_bist_8die_3d_stack,m18_mem06_die6,memory,die6,B_m18_mem06_die6_local_bist,B,2,READ_BIST_RESULT,0.00601152,0.00601888,7.36e-06,True,0,,,,0.05,thermal_die6,
+m18_shared_bist_8die_3d_stack,m18_mem05_die5,memory,die5,B_m18_mem05_die5_local_bist,B,1,LOCAL_BIST_RUN,0.00601152,0.012011520000000001,0.006,False,0,,,,1.25,thermal_die5,external access resources released
+m18_shared_bist_8die_3d_stack,m18_mem05_die5,memory,die5,B_m18_mem05_die5_local_bist,B,2,READ_BIST_RESULT,0.012011520000000001,0.012018240000000001,6.72e-06,True,0,,,,0.05,thermal_die5,
+m18_shared_bist_8die_3d_stack,m18_mem04_die4,memory,die4,B_m18_mem04_die4_local_bist,B,1,LOCAL_BIST_RUN,0.012011520000000001,0.018011520000000003,0.006,False,0,,,,1.25,thermal_die4,external access resources released
+m18_shared_bist_8die_3d_stack,m18_mem04_die4,memory,die4,B_m18_mem04_die4_local_bist,B,2,READ_BIST_RESULT,0.018011520000000003,0.0180176,6.08e-06,True,0,,,,0.05,thermal_die4,
+m18_shared_bist_8die_3d_stack,m18_mem07_die7,memory,die7,B_m18_mem07_die7_local_bist,B,1,LOCAL_BIST_RUN,0.018011520000000003,0.02401152,0.006,False,0,,,,1.25,thermal_die7,external access resources released
+m18_shared_bist_8die_3d_stack,m18_mem07_die7,memory,die7,B_m18_mem07_die7_local_bist,B,2,READ_BIST_RESULT,0.02401152,0.024019520000000003,8e-06,True,0,,,,0.05,thermal_die7,
+m18_shared_bist_8die_3d_stack,m18_mem03_die3,memory,die3,B_m18_mem03_die3_local_bist,B,1,LOCAL_BIST_RUN,0.02401152,0.03001152,0.006,False,0,,,,1.25,thermal_die3,external access resources released
+m18_shared_bist_8die_3d_stack,m18_mem03_die3,memory,die3,B_m18_mem03_die3_local_bist,B,2,READ_BIST_RESULT,0.03001152,0.03001696,5.44e-06,True,0,,,,0.05,thermal_die3,
+m18_shared_bist_8die_3d_stack,m18_mem02_die2,memory,die2,B_m18_mem02_die2_local_bist,B,1,LOCAL_BIST_RUN,0.03001152,0.03601152,0.006,False,0,,,,1.25,thermal_die2,external access resources released
+m18_shared_bist_8die_3d_stack,m18_mem02_die2,memory,die2,B_m18_mem02_die2_local_bist,B,2,READ_BIST_RESULT,0.03601152,0.03601632,4.8e-06,True,0,,,,0.05,thermal_die2,
+m18_shared_bist_8die_3d_stack,m18_mem01_die1,memory,die1,B_m18_mem01_die1_local_bist,B,1,LOCAL_BIST_RUN,0.03601152,0.04201152,0.006,False,0,,,,1.25,thermal_die1,external access resources released
+m18_shared_bist_8die_3d_stack,m18_mem01_die1,memory,die1,B_m18_mem01_die1_local_bist,B,2,READ_BIST_RESULT,0.04201152,0.04201568,4.16e-06,True,0,,,,0.05,thermal_die1,
+m18_shared_bist_8die_3d_stack,m18_mem00_die0,memory,die0,B_m18_mem00_die0_local_bist,B,1,LOCAL_BIST_RUN,0.04201152,0.048011519999999995,0.006,False,0,,,,1.25,thermal_die0,external access resources released
+m18_shared_bist_8die_3d_stack,m18_mem00_die0,memory,die0,B_m18_mem00_die0_local_bist,B,2,READ_BIST_RESULT,0.048011519999999995,0.048015039999999995,3.52e-06,True,0,,,,0.05,thermal_die0,

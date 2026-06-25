@@ -1,0 +1,8 @@
+artifact_id,artifact_type,path,caption,paper_usage
+m16_ieee1838_resource_gantt_xlarge,figure,results/figures/m16/m16_ieee1838_resource_gantt_xlarge.png,图 1 xlarge 5.5D 场景下 IEEE 1838-aware 测试调度资源层甘特图,用于展示 PTAP/STAP、FPP lane、DWR/scan 和目标测试事务在正式大规模 case 中的资源占用关系。
+m16_power_temperature_hotspot_composite,figure,results/figures/m16/m16_power_temperature_hotspot_composite.png,图 2 功耗曲线、温度曲线与 HotSpot 热点分布综合图,用于展示调度方法对系统功耗、热代理温度趋势和 HotSpot block-level 热点分布的影响。
+m16_method_comparison_normalized,figure,results/figures/m16/m16_method_comparison_normalized.png,图 3 不同调度方法的多指标归一化对比,用于说明测试时间收益、功耗/温度代价和 FPP 利用之间的权衡关系。
+m16_benchmark_coverage_matrix,figure,results/figures/m16/m16_benchmark_coverage_matrix.png,图 4 benchmark 规模与拓扑覆盖矩阵,用于直接说明正式实验覆盖 4/6/8/12 die、三类封装拓扑、目标数和 recipe 数，而不是早期小示例。
+m10_benchmark_sweep,table,results/tables/m10_benchmark_sweep.csv,表 1 M10 benchmark suite 的规模、拓扑和资源敏感性实验结果,用于支撑大规模覆盖实验和 M4 贪心调度的加速比分析。
+m11_algorithm_comparison,table,results/tables/m11_algorithm_comparison.csv,表 2 M11 不同基线与本文方法的调度结果对比,用于支撑算法对比和消融实验叙述。
+m12b_hotspot_validation,table,results/tables/m12_hotspot_validation_summary.csv,表 3 M12b 代表性调度结果的 HotSpot 离线验证结果,用于支撑热代理趋势验证和热模型局限性讨论。
