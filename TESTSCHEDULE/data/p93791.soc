@@ -1,0 +1,134 @@
+SocName p93791
+TotalModules 33
+Options Power 0 XY 0
+
+Module 0 Level 0 Inputs 103 Outputs 79 Bidirs 66 ScanChains 0 :
+Module 0 TotalTests 0
+
+Module 1 Level 1 Inputs 109 Outputs 32 Bidirs 72 ScanChains 46 : 168 168 166 166 163 163 163 163 162 162 162 162 151 151 151 151 151 151 150 146 146 146 146 146 146 146 146 146 146 146 146 146 146 146 146 146 146 145 145 145 145 143 143 141 141 1
+Module 1 TotalTests 1
+Module 1 Test 1 ScanUse 1 TamUse 1 Patterns 409
+
+Module 2 Level 2 Inputs 40 Outputs 34 Bidirs 0 ScanChains 0 :
+Module 2 TotalTests 1
+Module 2 Test 1 ScanUse 1 TamUse 1 Patterns 192
+
+Module 3 Level 2 Inputs 40 Outputs 29 Bidirs 0 ScanChains 0 :
+Module 3 TotalTests 1
+Module 3 Test 1 ScanUse 1 TamUse 1 Patterns 648
+
+Module 4 Level 1 Inputs 15 Outputs 30 Bidirs 72 ScanChains 23 : 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 5 4 4 4 4 4 4 4
+Module 4 TotalTests 1
+Module 4 Test 1 ScanUse 1 TamUse 1 Patterns 11
+
+Module 5 Level 1 Inputs 102 Outputs 80 Bidirs 66 ScanChains 0 :
+Module 5 TotalTests 1
+Module 5 Test 1 ScanUse 1 TamUse 1 Patterns 6127
+
+Module 6 Level 1 Inputs 417 Outputs 324 Bidirs 72 ScanChains 46 : 521 521 521 521 521 521 521 521 521 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 520 500 500 500 500 500 500 500
+Module 6 TotalTests 1
+Module 6 Test 1 ScanUse 1 TamUse 1 Patterns 218
+
+Module 7 Level 2 Inputs 9 Outputs 32 Bidirs 0 ScanChains 0 :
+Module 7 TotalTests 1
+Module 7 Test 1 ScanUse 1 TamUse 1 Patterns 177
+
+Module 8 Level 2 Inputs 9 Outputs 32 Bidirs 0 ScanChains 0 :
+Module 8 TotalTests 1
+Module 8 Test 1 ScanUse 1 TamUse 1 Patterns 177
+
+Module 9 Level 2 Inputs 43 Outputs 34 Bidirs 0 ScanChains 0 :
+Module 9 TotalTests 1
+Module 9 Test 1 ScanUse 1 TamUse 1 Patterns 192
+
+Module 10 Level 2 Inputs 267 Outputs 128 Bidirs 0 ScanChains 0 :
+Module 10 TotalTests 1
+Module 10 Test 1 ScanUse 1 TamUse 1 Patterns 1164
+
+Module 11 Level 1 Inputs 146 Outputs 68 Bidirs 72 ScanChains 11 : 82 82 82 81 81 81 18 18 17 17 17
+Module 11 TotalTests 1
+Module 11 Test 1 ScanUse 1 TamUse 1 Patterns 187
+
+Module 12 Level 1 Inputs 289 Outputs 8 Bidirs 72 ScanChains 46 : 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 93 92 92 92 92 92 92 92 92 92 92 92 92 92
+Module 12 TotalTests 1
+Module 12 Test 1 ScanUse 1 TamUse 1 Patterns 391
+
+Module 13 Level 1 Inputs 111 Outputs 31 Bidirs 72 ScanChains 46 : 219 219 219 219 219 219 219 219 219 219 219 219 219 218 218 218 218 218 218 218 218 218 218 218 218 218 218 207 207 207 207 206 206 206 206 206 206 174 174 174 174 174 174 174 173 173
+Module 13 TotalTests 1
+Module 13 Test 1 ScanUse 1 TamUse 1 Patterns 194
+
+Module 14 Level 1 Inputs 111 Outputs 31 Bidirs 72 ScanChains 46 : 219 219 219 219 219 219 219 219 219 219 219 219 219 218 218 218 218 218 218 218 218 218 218 218 218 218 218 207 207 207 207 206 206 206 206 206 206 174 174 174 174 174 174 174 173 173
+Module 14 TotalTests 1
+Module 14 Test 1 ScanUse 1 TamUse 1 Patterns 194
+
+Module 15 Level 2 Inputs 44 Outputs 34 Bidirs 0 ScanChains 0 :
+Module 15 TotalTests 1
+Module 15 Test 1 ScanUse 1 TamUse 1 Patterns 288
+
+Module 16 Level 2 Inputs 137 Outputs 64 Bidirs 0 ScanChains 0 :
+Module 16 TotalTests 1
+Module 16 Test 1 ScanUse 1 TamUse 1 Patterns 396
+
+Module 17 Level 1 Inputs 144 Outputs 67 Bidirs 72 ScanChains 43 : 150 150 150 150 150 150 150 150 149 149 149 149 149 149 149 149 149 149 149 149 149 149 149 149 149 149 149 149 149 149 149 149 149 149 149 148 148 146 146 145 145 145 145
+Module 17 TotalTests 1
+Module 17 Test 1 ScanUse 1 TamUse 1 Patterns 216
+
+Module 18 Level 2 Inputs 79 Outputs 34 Bidirs 0 ScanChains 0 :
+Module 18 TotalTests 1
+Module 18 Test 1 ScanUse 1 TamUse 1 Patterns 42
+
+Module 19 Level 1 Inputs 466 Outputs 365 Bidirs 72 ScanChains 44 : 100 100 100 100 100 100 100 100 100 100 100 100 100 100 100 100 100 99 99 99 99 99 99 98 98 98 98 98 98 98 98 98 98 98 98 98 98 98 98 98 98 97 97 97
+Module 19 TotalTests 1
+Module 19 Test 1 ScanUse 1 TamUse 1 Patterns 210
+
+Module 20 Level 1 Inputs 136 Outputs 12 Bidirs 72 ScanChains 44 : 181 181 181 181 180 180 180 180 180 180 180 180 180 180 180 180 180 180 180 180 180 180 180 168 168 168 168 168 168 168 168 168 168 168 168 168 168 157 133 133 133 133 133 132
+Module 20 TotalTests 1
+Module 20 Test 1 ScanUse 1 TamUse 1 Patterns 416
+
+Module 21 Level 2 Inputs 79 Outputs 34 Bidirs 0 ScanChains 0 :
+Module 21 TotalTests 1
+Module 21 Test 1 ScanUse 1 TamUse 1 Patterns 42
+
+Module 22 Level 2 Inputs 42 Outputs 34 Bidirs 0 ScanChains 0 :
+Module 22 TotalTests 1
+Module 22 Test 1 ScanUse 1 TamUse 1 Patterns 42
+
+Module 23 Level 1 Inputs 105 Outputs 28 Bidirs 72 ScanChains 46 : 175 175 175 175 171 171 171 171 171 171 171 171 171 171 171 171 171 171 171 171 171 171 171 171 171 171 171 171 171 171 171 171 170 170 170 170 170 170 170 170 170 155 155 155 155 1
+Module 23 TotalTests 1
+Module 23 Test 1 ScanUse 1 TamUse 1 Patterns 234
+
+Module 24 Level 2 Inputs 17 Outputs 4 Bidirs 0 ScanChains 0 :
+Module 24 TotalTests 1
+Module 24 Test 1 ScanUse 1 TamUse 1 Patterns 3072
+
+Module 25 Level 2 Inputs 29 Outputs 16 Bidirs 0 ScanChains 0 :
+Module 25 TotalTests 1
+Module 25 Test 1 ScanUse 1 TamUse 1 Patterns 2688
+
+Module 26 Level 2 Inputs 42 Outputs 34 Bidirs 0 ScanChains 0 :
+Module 26 TotalTests 1
+Module 26 Test 1 ScanUse 1 TamUse 1 Patterns 96
+
+Module 27 Level 1 Inputs 30 Outputs 7 Bidirs 72 ScanChains 46 : 68 68 68 68 68 68 68 68 68 68 68 68 68 68 68 68 68 68 68 68 68 68 68 68 68 68 67 67 67 67 67 67 67 67 67 67 67 67 67 67 60 60 50 50 50 50
+Module 27 TotalTests 1
+Module 27 Test 1 ScanUse 1 TamUse 1 Patterns 916
+
+Module 28 Level 2 Inputs 109 Outputs 50 Bidirs 0 ScanChains 0 :
+Module 28 TotalTests 1
+Module 28 Test 1 ScanUse 1 TamUse 1 Patterns 396
+
+Module 29 Level 1 Inputs 117 Outputs 42 Bidirs 72 ScanChains 35 : 189 188 188 188 188 188 187 187 187 187 187 187 186 186 186 186 186 186 186 186 186 186 186 186 186 186 186 186 186 186 186 185 185 185 185
+Module 29 TotalTests 1
+Module 29 Test 1 ScanUse 1 TamUse 1 Patterns 172
+
+Module 30 Level 2 Inputs 43 Outputs 34 Bidirs 0 ScanChains 0 :
+Module 30 TotalTests 1
+Module 30 Test 1 ScanUse 1 TamUse 1 Patterns 192
+
+Module 31 Level 2 Inputs 148 Outputs 70 Bidirs 0 ScanChains 0 :
+Module 31 TotalTests 1
+Module 31 Test 1 ScanUse 1 TamUse 1 Patterns 204
+
+Module 32 Level 2 Inputs 268 Outputs 128 Bidirs 0 ScanChains 0 :
+Module 32 TotalTests 1
+Module 32 Test 1 ScanUse 1 TamUse 1 Patterns 3084

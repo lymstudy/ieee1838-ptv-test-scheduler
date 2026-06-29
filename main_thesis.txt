@@ -1,0 +1,68 @@
+--- PAGE 1 ---
+面向 IEEE 1838 兼容异构集成系统的电热感知测试
+访问路径生成与协同调度方法  
+摘要： 
+随着 2.5D/3D 异构集成和  Chiplet 系统的发展，测试访问路径
+呈现出多层级、多通道和强约束并存的特点。 IEEE 1838 为三维堆叠
+集成电路提供了标准化测试访问架构， 然而该架构下的  PTAP/STAP 
+串行级联机制使得测试访问呈现严格的层级依赖， 导致传统的独立任
+务装箱调度策略难以直接适用； 在实际测试过程中， PTAP/STAP 串行
+访问、DWR 分段访问、 FPP 并行传输以及  BIST 本地执行往往同时存
+在，若仅采用固定路径或单一带宽分配策略，容易造成测试时间过长
+、资源利用率不足以及局部功耗和温度过高等问题。针对上述问题，
+本文提出一种面向  IEEE 1838 兼容异构集成系统的电热功耗感知测
+试路径生成与协同调度方法。首先，将芯粒、内核、 DWR、STAP、FPP 
+lane、TSV 及中介层互连统一建模为异构测试访问图；随后，提出  
+Test Access Recipe 模型，将串行访问、并行访问、自测试、混合
+访问和互连测试抽象为可调度的候选测试配方；在此基础上，引入  
+CP-SAT 与ALNS相结合的混合优化框架，在串行访问互斥、 FPP lane 
+占用、TSV/互连资源、功耗上限、热邻接冲突和  BIST 阶段依赖等约
+束下，联合优化测试路径选择与测试时序。该方法可避免传统 “先定
+路径、再做调度 ”带来的局部受限问题，并通过热风险评估与温度反
+馈机制降低热点叠加风险。本文工作为先进封装场景下  IEEE 1838 
+兼容测试访问 优化提供了一种可扩展的建模与调度思路。  
+关键词： IEEE 1838 ；异构集成；测试访问路径；测试调度；电
+热感知； CP-SAT；ALNS；先进封装  
+  
+
+--- PAGE 2 ---
+Electro -Thermal -Aware Test Access Path Generation and 
+Co-Scheduling for IEEE 1838 -Compliant Heterogeneous 
+Integration  
+Abstract： 
+With the development of 2.5D/3D heterogeneous integration and 
+Chiplet systems, test access paths are characterized by multi -hierarchy, 
+multi -channel configuration and stringent constraints. IEEE 1838 provides 
+a standardized test access architecture for thr ee-dimensional stacked 
+integrated circuits. Nevertheless, the serial cascading mechanism of 
+PTAP/STAP in this architecture imposes strict hierarchical dependencies 
+on test access, making conventional independent -task bin -packing 
+scheduling strategies inapp licable directly. In practical testing scenarios, 
+serial PTAP/STAP access, segmented DWR access, parallel FPP 
+transmission and local BIST execution often coexist simultaneously. 
+Adopting fixed paths or a single bandwidth allocation strategy tends to 
+result  in excessive test time, low resource utilization, excessive local power 
+consumption and overheating issues. To address the above problems, this 
+paper proposes a thermal -power -aware test path generation and 
+collaborative scheduling method for IEEE 1838 -compliant heterogeneous 
+integration systems. Firstly, chiplets, cores, DWRs, STAPs, FPP lanes, 
+TSVs and interposer interconnections are uniformly modeled as a 
+heterogeneous test access graph. Secondly, a Test Access Recipe model is 
+proposed to abstract serial  access, parallel access, self -test, mixed access 
+and interconnection test into schedulable candidate test recipes. On this 
+basis, a hybrid optimization framework combining CP -SAT and ALNS is 
+introduced to jointly optimize test path selection and test timi ng under 
+multiple constraints including mutual exclusion for serial access, FPP lane 
+occupation, TSV/interconnection resource limits, power consumption caps, 
+thermal adjacency conflicts and BIST phase dependencies. The proposed 
+method eliminates local opti mization limitations induced by the traditional 
+"path determination prior to scheduling" scheme, and mitigates hotspot 
+superposition risks via thermal risk evaluation and temperature feedback 
+mechanisms. This research provides a scalable modeling and sched uling 
+paradigm for the optimization of IEEE 1838 -compliant test access in 
+advanced packaging applications.  
+Keywords  
+IEEE 1838; heterogeneous integration; test access path; test scheduling; 
+thermal -power awareness; CP -SAT; ALNS; advanced packaging  
+ 
+

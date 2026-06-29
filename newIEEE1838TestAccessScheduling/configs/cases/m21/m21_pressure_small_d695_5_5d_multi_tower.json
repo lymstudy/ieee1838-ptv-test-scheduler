@@ -713,7 +713,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank0"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "d695_m6_die1",
@@ -754,7 +763,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank0"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "d695_m10_die2",
@@ -795,7 +813,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank1"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "d695_m7_die3",
@@ -836,7 +863,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank1"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "d695_m2_die0",
@@ -877,7 +913,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank0"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "d695_m4_die1",
@@ -918,7 +963,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank0"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "d695_m9_die2",
@@ -959,7 +1013,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank1"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "d695_m8_die3",
@@ -1000,7 +1063,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank1"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "d695_m3_die0",
@@ -1041,7 +1113,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank0"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "d695_m1_die1",
@@ -1082,7 +1163,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank0"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "sensor_m10_small_d695_5_5d_multi_tower",
@@ -1104,7 +1194,15 @@
       ],
       "required_resources": {
         "instrument_network": "instr_die3"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "IJTAG",
+        "INTEST"
+      ],
+      "transport_options": [
+        "serial"
+      ]
     }
   ],
   "interconnects": [

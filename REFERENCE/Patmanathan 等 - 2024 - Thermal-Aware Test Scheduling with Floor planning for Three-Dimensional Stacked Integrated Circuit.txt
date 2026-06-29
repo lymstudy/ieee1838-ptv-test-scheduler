@@ -1,0 +1,450 @@
+--- PAGE 1 ---
+2024 IEEE International Conference on Semiconductor and Electronics (ICSE) 
+ 
+979-8-3503-7831-3/24/$31.00 ©2024 IEEE  
+ Thermal-Aware Test Scheduling with Floor 
+planning for Three- Dimensional Stacked Integrated 
+Circuit  
+Ganesan Patmanathan  
+Department of Electronic 
+System Engineering, Malaysia-
+Japan International Institute of 
+Technology,  
+University Technology of 
+Malaysia, 
+Kuala Lumpur, Malaysia 
+ganesan.sp1999@graduate.utm.
+my  Chia Yee Ooi 
+Department of Electronic 
+System Engineering, Malaysia-
+Japan International Institute of 
+Technology,  
+University Technology of 
+Malaysia, 
+Kuala Lumpur, Malaysia 
+ooichiayee@utm.my  Nordinah Ismail 
+Department of Electronic 
+System Engineering, Malaysia-
+Japan International Institute of 
+Technology,  
+University Technology of 
+Malaysia, 
+Kuala Lumpur, Malaysia 
+nordinahismail@gmail.com  Siti Rahmah Aid 
+Department of Electronic 
+System Engineering, Malaysia-
+Japan International Institute of 
+Technology,  
+University Technology of 
+Malaysia, 
+Kuala Lumpur, Malaysia 
+sitirahmah.aid@utm.my  
+Abstract—Testing a three-dimensional stacked integrated 
+circuit (3D-SIC) remains a challenging problem, as generating 
+an optimized test schedule to mini mize test time is complicated 
+due to the numerous variables involved. Accessing upper dies 
+is only feasible through the bottom die, necessitating the 
+extension of Test Access Mechanisms (TAMs) via Through-
+Silicon Vias (TSVs). Limited primary I/O pins, TSVs, and 
+TAM width require efficient resource allocation. Thermal 
+management is crucial due to high core power consumption 
+and uneven distribution, which pose the risk of overheating. 
+Advanced concurrent test scheduling is essential to effectively 
+allocate resources and maintain power and temperature limits. 
+This research proposes thermal-aware test scheduling 
+optimization combined with floor planning for 3D-SICs, 
+aiming to minimize test schedule time while addressing 
+resource and power constraints. Experimental results using 
+several ITC'02 benchmark circuits demonstrate an average 
+estimated improvement of 0.2% in test schedule time when 
+utilizing test scheduling with floor planning compared to test 
+scheduling without floor planning.  
+Keywords —3D-SIC, test scheduling, tes t time, floor planning, 
+thermal-aware 
+I. INTRODUCTION  
+Integrating entire electronic systems onto a single chip is 
+the prevailing trend. Despite advancements in integrated 
+circuit (IC) technology enabling smaller feature sizes, 
+conventional System-on-Chips (2D-ICs) are growing wider 
+due to increased demand for semiconductor devices with 
+enhanced features. However, this growth poses challenges to 
+circuit performance due to lengthy horizontal interconnects 
+between cores. To address this issue, three-dimensional 
+stacked integrated circuit (3D-SIC) technology has emerged. 
+It involves stacking circuit components into multiple layers 
+with vertical interconnections (TSVs), thereby reducing 
+horizontal interconnect lengths and offering improved 
+functionality, bandwidth, and a smaller footprint [1-4].  
+Despite the advantages of 3D-SICs, testing is challenging 
+due to vertically stacked dies. Test data transmission between 
+the test pins and the cores on different dies, relies on test 
+access mechanisms (TAMs) and TSVs [1]. However, due to 
+the limited availability of test resources such as test pins, TAMs, and TSVs, a test schedule with efficient allocation 
+and utilization of these resources are essential, but finding an 
+optimal solution is inherently complex [2-4]. Consequently, 
+researchers use heuristics and approximation algorithms to 
+create near-optimal test schedules, aiming to minimize test 
+schedule time effectively [5-7]. 
+Testing concurrently multiple cores in a 3D-SIC can 
+reduce test schedule time but increase power consumption, 
+risking system-level power limits and core damage [2-4]. 
+Concurrent testing of adjacent cores with higher power 
+density (hot modules) can create hotspots, compromising 
+chip reliability [8]. Therefore, researchers frequently employ 
+power and thermal-aware test scheduling strategies to 
+manage test concurrency, ensuring that the overall power 
+consumption and temperature of the 3D-SIC remain within 
+system limits [8-10]. Furthermore, the placement of cores 
+within the stack and their test duration impact heat 
+dissipation capabilities. Cores further from the heat sink 
+dissipate heat slower, regardless of their power consumption. 
+Longer test times generate more heat, exacerbating potential 
+hotspots. Therefore, test scheduling must consider core heat 
+dissipation, ensuring adequate space around cores for heat 
+dissipation to prevent hotspo t formation and irreversible 
+damage to the 3D-SIC [8-9]. 
+Heat from hot modules transfers to cooler adjacent cores, 
+so placing them next to non-hot modules can prevent hotspot 
+formation and allow for more concurrent testing [11]. 
+However, when positioned far from the heat sink, hot 
+modules may dissipate heat less effectively, raising the 3D-
+SIC temperature. Ideally, hot modules should be closer to the 
+heat sink, often at the top of the stack, but this increases costs 
+due to additional TSVs. Therefore, relying solely on 
+resource, power, and thermal-aware test scheduling is 
+inadequate; thermal-aware floor planning that considers 
+TAM placement is crucial for optimizing test schedule 
+quality, an aspect often overlooked in previous research.  
+II. METHODOLOGY  
+A. Problem Formulation 
+Given a 3D-SIC to be designed with (i) the maximum 
+allowable number of stacks, (ii) the maximum TAM width .
+1712024 IEEE International Conference on Semiconductor Electronics (ICSE) | 979-8-3503-7831-3/24/$31.00 ©2024 IEEE | DOI: 10.1109/ICSE62991.2024.10681395
+Authorized licensed use limited to: WUHAN UNIVERSITY OF TECHNOLOGY. Downloaded on June 22,2026 at 02:27:06 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 2 ---
+limit, Wmax, (iii) the maximum TSV limit, TSVmax, (iv) 
+the number of cores, Ci, (v) the number of I/O terminals per 
+Ci, (vi) the number of internal scan chains per Ci, (vii) the 
+length of each internal scan chain, (viii) the number of test 
+patterns associated with each Ci, (ix) maximum power limit, 
+Pmax, (x) maximum thermal limit, Tmax. A co-optimization 
+of thermal-aware test scheduling and floor planning 
+techniques was performed to obtain a test schedule for 3D-
+SIC with minimal test time under Pmax, Tmax, and resource 
+constraints. 
+The study's methodology, depicted in Fig. 1, illustrates 
+the co-optimization process for thermal-aware test 
+scheduling with floor planning, taking into account resource 
+and power constraints. The main objective is to develop a 
+test scheduling technique for 3D-SICs aimed at minimizing 
+overall test time..  
+B. Pareto Test Cubes 
+To support modular testing and optimize the utilization of 
+TAM widths and core I/O pins, several wrapper designs were 
+created for each core using the Design Wrapper heuristic 
+based on the Best Fit Decreasing (BFD) algorithm, as 
+proposed in [12]. Test times for each wrapper design were 
+calculated, resulting in a range of test times for each core 
+across various TAM widths. Pareto-optimal points were 
+identified based on these calculations. Each core under a 
+specific Pareto optimal wrapper design was represented as a 
+3-dimensional cube, with dimensions corresponding to TAM 
+width, power consumption, and test time. 
+C. Ant Colony Optimization 
+The Ant Colony Optimization (ACO) algorithm was used 
+to select pareto cubes for 3D-SIC floor planning and test scheduling. In ACO, each core was denoted as Ci (1 ≤ i ≤ N), 
+where N represented the total number of cores in the 3D-
+SIC. Each core Ci was associated with a collection of pareto-
+optimal cubes (Ri). For each cube (ri) in the set Ri, the 
+dimensions are represented: the height as the allocated TAM 
+width for the jth wrapper configuration, wij; the width as the 
+corresponding test time, T(wij); and the third dimension as 
+the corresponding peak power, P(wij). 
+ACO leveraged both pheromone trail values and heuristic 
+favourability to find solutions. In this study, the heuristic 
+favourability, denoted as Wprefer, represented the preferred 
+TAM width for Ci. Initially, the pareto cube from the set Ri 
+with the highest TAM width, which represented the lowest 
+test time, was selected as Wprefer for each Ci. Subsequently, 
+the Wprefer value for each Ci was updated to its 
+corresponding pareto cube from the set of cubes of the global 
+best ant (Rglobal), which resulted in the lowest test schedule 
+time, to prevent the search from becoming too focused on 
+local optima. The pheromone trail value, denoted as ߬(݅,݆ ,)
+represented the attractiveness of choosing a pareto cube with 
+TAM width ݆ for C݅ .The probability of selecting TAM width 
+݆ for C݅ was calculated based on (1), where α was the relative 
+importance of ߬(݅,݆ ,)and β  was the relative importance of 
+TAM width, wij [13]. 
+            ܾ݋ݎ݌ሺ݅ǡ݆ሻൌሾ߬ሺ݅ǡ݆ሻሿߙήߚ
+σሺሾ߬ሺ݅ǡ݆ሻሿߙήߚሻݔܹܽ݉
+݆ൌͳ 
+ (1) 
+In the ACO algorithm, a set number of ants were 
+randomly placed within test cubes during initialization. Each 
+ant selected test cubes for cores iteratively. After N-1 
+iterations, the ants had chosen  a test cube for each core. 
+These cubes were used for thermal-aware 3D-SIC floor 
+planning, generating multiple floor plans. Each floorplan 
+underwent thermal-aware test scheduling with power and 
+TAM constraints, producing test schedule time. The set of 
+cubes resulting in the shortest test schedule time was denoted 
+as Rglobal, while Rlocal signified the optimal solution 
+discovered during the current iteration of the ACO, primarily 
+used for updating the pheromone trail. This process 
+continued until reaching the maximum cycle count or 
+stagnation, where all ants selected the same cubes with 
+identical test times. 
+D. Thermal-aware 3D Floor planning  
+The set of cubes chosen by each ant undergoes a thermal-
+aware floor planning process using a greedy algorithm. The 
+purpose of generating a floor plan for each ant is to explore 
+different configurations and find the most optimal layout 
+considering both thermal factors and TAMs. The inputs 
+include the number of 3D-SIC layers and the maximum layer 
+area, as well as information for each core such as its area (ai), 
+power density (pij), and TAM width (wij). Subsequently, the 
+hot modules of the 3D-SIC are identified by calculating the 
+average power density (p_avg) of all cores in the set. A core 
+with a power density value greater than the average is 
+designated as the hot module within the set. To mitigate 
+hotspots and manage peak temperatures, special attention is 
+given to the placement of the hot module, strategically 
+arranging its position [11].  
+In this research, the optimal placement of the hot module 
+involves several considerations. First, it is important to avoid 
+ 
+Fig. 1.  Co-optimization procedure for thermal-aware test 
+scheduling and floor planning in 3D-SICs 
+172Authorized licensed use limited to: WUHAN UNIVERSITY OF TECHNOLOGY. Downloaded on June 22,2026 at 02:27:06 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 3 ---
+placing hot modules in close proximity to each other to 
+prevent localized temperature build-up and potential thermal 
+issues within the chip. Secondly, positioning the hot module 
+closer to the heat sink is beneficial for efficient heat 
+dissipation and helps maintain temperatures within 
+acceptable limits. Lastly, placing the hot module at the edge 
+of the layer can enhance heat dissipation by increasing 
+exposure to ambient air. Adhering to these guidelines can 
+improve the overall thermal performance and reliability of 
+the 3D-SIC 
+Moreover, this research considers a scenario where the 
+heat sink is placed on the top layer of the 3D-SIC. Some hot 
+modules may necessitate a larger TAM width. Positioning 
+these hot modules closer to the heat sink would increase the 
+number of required TSVs for test access. Therefore, it is 
+crucial to carefully balance the trade-off between power 
+density and TAM width to achieve advantages in two key 
+areas: reducing the overall temperature of the system and 
+optimizing TSV utilization. A trade-off function (TFi) that 
+describes this trade-off between TAM width (wij) and power 
+density (pij) is then calculated for each hot module using (2), 
+where γ and δ represent the relative importance of wij and 
+pij, respectively. 
+            TFi = ( γ*wij)+ (δ*pij)  (2) 
+E. Relative Heat Dissipation Factor 
+For each ant, parameters such as the number of layers in 
+the 3D-SIC, the maximum surface area of each layer, the 
+thickness of the 3D-SIC, thermal interface material (TIM) 
+thickness, the thickness of each die layer, the placement of 
+each core within the 3D-SIC, the area of each core, and the 
+power trace value of each core are derived from the 
+preceding subsections. These parameters serve as inputs for 
+computing the Relative Heat Dissipation Factor (RHDF) for 
+each Ci in the 3D-SIC. The RHDF values for each core are 
+computed for each ant (each floorplan) based on (3) [8]. 
+            RHDF = HHDF*VHDF*Power trace (3) 
+The Horizontal Heat Dissipation Function (HHDF) for 
+each Ci in a layer is determined by measuring its distance 
+from the four edges of the layer in the horizontal plane. The 
+HHDF is computed as the sum of these distances, reflecting 
+the core's heat dissipation capability in the horizontal 
+direction. Conversely, the Vertical Heat Dissipation Function 
+(VHDF) considers the layer's position within the stack 
+relative to the heat sink. It quantifies heat dissipation by 
+calculating the distance of each layer from the heat sink. The 
+Relative Heat Dissipation Factor (RHDF) for each Ci is then 
+derived from the product of HHDF and VHDF, providing an 
+index that evaluates the core's heat dissipation capability 
+based on its vertical and horizontal positioning within the 
+stack. Additionally, the RHDF accounts for the core's power 
+trace value and the duration of testing, represented by the 
+number of clock cycles applied during testing. This 
+comprehensive assessment ensures an accurate evaluation of 
+each core's relative heat dissipation capability [8]. 
+F. Thermal-aware Test Scheduling 
+After obtaining a set of cubes from the ACO algorithm 
+and generating the 3D-SIC floorplan, the cores (cubes) for 
+each ant are sorted in a non-increasing order based on their 
+RHDF values from the previous subsection. This sorting step prioritizes cores with lower heat dissipation capability, which 
+may generate higher heat during testing mode, in the 
+scheduling process. Subsequently, the 3D bin packing 
+algorithm takes a set of cubes and the corresponding RHDF 
+list for an ant, along Wmax, Pmax, and Tmax as inputs. The 
+primary objective of the algorithm is to optimize the 
+scheduling of these cubes while ensuring that, throughout the 
+generated schedule, the total TAM width usage does not 
+exceed Wmax, the total power consumption remains below 
+Pmax, and the maximum temperature remains below Tmax. 
+The scheduling process begins by selecting the first cube 
+from the RHDF list and placing it in a 3D bin. Subsequently, 
+the next cube is chosen from the RHDF list, and the 
+adjacency exclusion principle is applied. This principle 
+ensures that the next cube can only be scheduled if it is not 
+adjacent in the 3D-SIC floorplan to the previously scheduled 
+cube within the same test session. This approach allocates 
+sufficient space around the tested core to effectively dissipate 
+generated heat, preventing heat accumulation and hotspot 
+formation. If the next cube is  adjacent to the previously 
+scheduled cube within the same test session, it is placed in a 
+temporary list to be scheduled in the subsequent test session. 
+Before scheduling the next selected cube based on the 
+adjacency exclusion principle, the algorithm checks the 
+availability of unallocated TAM width compared to the TAM 
+requirement of the cube to determine if test concurrency is 
+feasible. Next, it verifies the total power consumption to 
+ensure that Pmax is adhered to throughout the test session if 
+the cube is scheduled. Additionally, the algorithm checks the 
+maximum temperature of the test session using the HotSpot 
+6.0 tool [14] to ensure that Tmax is adhered to throughout 
+the test session if the cube is scheduled. If the cube satisfies 
+Wmax, Pmax, and Tmax, it is scheduled within the 3D bin. 
+However, if the cube fails to meet any of these limits, it is 
+placed in a temporary list for scheduling in the subsequent 
+test session. 
+III. RESULT AND DISCUSSION  
+To implement and evaluate the proposed test scheduling 
+and floor planning techniques for 3D-SICs, widely 
+recognized ITC'02 SoC benchmark circuits were utilized 
+[15]. These benchmarks were established as standardized 
+representative designs commonly employed in integrated 
+circuit testing research. This study utilized core information 
+ 
+Fig. 2. A stack of 3D-SIC with cores from the p93791 SoC. 
+173Authorized licensed use limited to: WUHAN UNIVERSITY OF TECHNOLOGY. Downloaded on June 22,2026 at 02:27:06 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 4 ---
+from four benchmark SOCs: d695 (an academic benchmark), 
+and the industrial SOCs p22810, p34392 and p93791. The 
+3D-SIC and thermal parameters used in this research were 
+adopted from [8].  
+The thermal-aware floor planning based on a greedy 
+algorithm able to place hot modules such that hot modules 
+are not adjacent to each other but are next to non-hot 
+modules, as shown in Fig. 2, where cores with red borders 
+are hot modules, and cores with blue borders are non-hot 
+modules. Fig. 2 shows a stack of 3D-SIC with cores from the 
+p93791 SoC. However, the thermal-aware floor planning 
+process, which uses a greedy algorithm, cannot guarantee 
+that all hot modules are placed at the edge of the layer. This 
+limitation may affect the optimal heat dissipation capabilities 
+of the system. The reliance on a greedy algorithm means it 
+may not always find the globally optimal solution, 
+potentially resulting in less efficient thermal management. 
+Despite these challenges, the optimal placement strategy 
+employed in this research still facilitates efficient heat 
+dissipation during testing. It helps maintain the temperature 
+within acceptable limits, as heat was effectively dissipated to 
+the adjacent cores and the heat sink. Additionally, the 
+strategic arrangement of hot modules, considering factors 
+like proximity to the heat sink and avoidance of proximity to 
+each other, contributes to improved thermal performance. 
+Since heat dissipation of hot modules were improved by 
+thermal-aware floor planning, more cores was able to be 
+tested concurrently, as the temperature of 3D-SIC able to 
+remain under the system-level temperature limit. Hence, the 
+overall test schedule time of a 3D-SIC was reduced. Table 1 
+shows a comparison of test schedule times for the p93791 
+3D-SIC with and without floor planning. The schedule time 
+was shorter when floor planning was applied . 
+IV. CONCLUSION  
+In conclusion, this paper proposed a co-optimization 
+technique that integrates thermal-aware test scheduling and 
+floor planning for 3D-SICs, addressing resource and power 
+constraints to minimize total test schedule time. The method 
+effectively reduces both test time and power consumption for 
+the entire 3D-SIC while adhering to temperature and 
+resource limitations. This integrated approach of test 
+scheduling with floor planning surpasses the test scheduling 
+approach without floor planning, proving that the proposed 
+method results in enhanced and optimized testing for 3D-
+SICs. To address the limitations of the greedy algorithm in 
+thermal-aware floor planning, future research could explore 
+alternative algorithms with better global optimization 
+capabilities, such as Genetic Algorithms, Simulated Annealing, or Particle Swarm Optimization. Additionally, 
+integrating more established floor planning techniques with 
+the test scheduling method could enhance heat dissipation 
+and overall system performance. 
+ACKNOWLEDGMENT  
+The authors would like to acknowledge that this research 
+was supported by UTM Fundamental Research Grant 
+numbered 22H19. 
+REFERENCES  
+[1] H. Vohra and A. Singh, "Test architecture optimization algorithms for 
+coarse-grain partitioned 3D system-on-chip," Computers and 
+Electrical Engineering, vol. 101, Article 108049, 2022, doi: 
+10.1016/j.compeleceng.2022.108049. 
+[2] S. Chatterjee, S. K. Roy, C. Giri, and H. Rahaman, "Frequency-scaled 
+thermal-aware test scheduling for 3D ICs using machine learning 
+based temperature estimation," Microelectronics Journal, vol. 128, 
+Article 105535, 2022, doi: 10.1016/j.mejo.2022.105535. 
+[3] R. Karmakar, A. Agarwal, and S. Chattopadhyay, "Test Infrastructure 
+Development and Test Scheduling of 3D-Stacked ICs under Resource 
+and Power Constraints," in Proc. IEEE 24th Asian Test Symposium 
+(ATS), 2015, pp. 73-78, doi: 10.1109/ATS.2015.20. 
+[4] S. Chatterjee, S. K. Roy, C. Giri, and H. Rahaman, "An Efficient Test 
+Scheduling to Co-optimize Test Time and Peak Power for 3D ICs," in 
+Proc. 2020 International Symposium on Devices, Circuits and 
+Systems (ISDCS), 2020, pp. 1-6, doi: 
+10.1109/ISDCS49393.2020.9263015. 
+[5] X. Wu, Y. Chen, K. Chakrabarty, and Y. Xie, "Test-access 
+mechanism optimization for core-based three-dimensional SOCs," 
+Microelectronics Journal, 2010, vol. 41, pp. 601-615, 
+doi:10.1016/j.mejo.2010.06.015. 
+[6] S. K. Roy, P. Ghosh, H. Rahaman, and C. Giri, "Session Based Core 
+Test Scheduling for 3D SOCs," in Proc. 2014 IEEE Computer Society 
+Annual Symposium on VLSI, 2014, pp. 196-201, doi: 
+10.1109/ISVLSI.2014.61. 
+[7] B. Noia, K. Chakrabarty, and Y. Xie, "Test-wrapper optimization for 
+embedded cores in TSV-based three-dimensional SOCs," in Proc. 
+2009 IEEE International Conference on Computer Design, 2009, pp. 
+70-77, doi: 10.1109/ICCD.2009.5413172. 
+[8] I. Rawat and V. Singh, "Temperature efficient parallel test scheduling 
+for higher order 3D stacked SoCs," in Proc. 2021 International 
+Conference on Computing, Communication, and Intelligent Systems 
+(ICCCIS), 2021, pp. 804-809, doi: 
+10.1109/ICCCIS51004.2021.9397211. 
+[9] I. Rawat, M. K. Gupta, and V. Singh, "Temperature and time efficient 
+parallel test scheduling for 3D stacked SoCs," in Proc. 2015 IEEE 
+International Conference on Research in Computational Intelligence 
+and Communication Networks (ICRCICN), 2015, pp. 306-311, doi: 
+10.1109/ICRCICN.2015.7434255.  
+[10] C.-J. Shih et al., "Thermal-Aware Test Schedule and TAM Co-
+Optimization for Three-Dimensional IC," Active and Passive 
+Electronic Components, 2012, doi: 10.1155/2012/763572. 
+[11] T. Ni et al., "Temperature-Aware Floor planning for Fixed-Outline 
+3D ICs," IEEE Access, 2019, vol. 7, pp. 139787-139794, doi: 
+10.1109/ACCESS.2019.2942839. 
+[12] V. Iyengar, K. Chakrabarty, and E. J. Marinissen, "Test wrapper and 
+test access mechanism co-optimization for system-on-chip," in Proc. 
+International Test Conf., 2001, pp. 1023-1032, doi: 
+10.1109/TEST.2001.966728. 
+[13] J. H. Ahn and S. Kang, "SoC Test Scheduling Algorithm Using ACO-
+Based Rectangle Packing," Computational Intelligence, 2006, pp. 
+655-660, doi: 10.1007/978-3-540-37275-2_82. 
+[14] R. Zhang, M. Stan, and K. Skadron, "HotSpot 6.0: Validation, 
+Acceleration and Extension," University of Virginia Dept. of 
+Computer Science Tech Report, 2015, doi: 10.18130/V3HV1Z. 
+[15] E. J. Marinissen, V. Iyengar, and K. Chakrabarty, "A set of 
+benchmarks for modular testing of SOCs," in Proc. International Test 
+Conf., 2002, pp. 519-528, doi: 10.1109/TEST.2002.1041802.
+ TABLE I.  COMPARISON OF TEST TIME FOR P93791  3D-SIC 
+TAM Test schedule time without 
+floor planning Test schedule time with 
+floor planning 
+16 1804033 1803812 
+24 1209389 1208901 
+32 1023984 1022134 
+40 778902 775981 
+48 619001 617410 
+56 520930 519781 
+174Authorized licensed use limited to: WUHAN UNIVERSITY OF TECHNOLOGY. Downloaded on June 22,2026 at 02:27:06 UTC from IEEE Xplore.  Restrictions apply. 

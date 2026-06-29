@@ -1,0 +1,9 @@
+case_id,scale,target_count,variable_count,constraint_count,recipe_count,pareto_recipe_count,time_limit_s,solver_status,makespan_s,solver_wall_time_s,best_objective_bound_s,optimality_gap_percent,num_booleans,num_branches,num_conflicts,notes
+m10_small_d695_3d_stack,small,14,577,561,77,48,1,FEASIBLE,0.00122644,1.0155814,0.0011646,5.042236065359909,264,318,0,Within 5.04% of optimum
+m10_small_d695_3d_stack,small,14,577,561,77,48,10,FEASIBLE,0.00122644,10.0486775,0.001164704,5.033756237565651,457,511,0,Within 5.03% of optimum
+m10_small_d695_3d_stack,small,14,577,561,77,48,60,FEASIBLE,0.00122644,60.0358074,0.001165515,4.967629888131509,500,554,0,Within 4.97% of optimum
+m10_medium_p22810_3d_stack,medium,22,1057,1019,121,84,5,FEASIBLE,0.00227316,5.0382359,0.00215348,5.264917559696635,901,995,0,Within 5.26% of optimum
+m10_medium_p22810_3d_stack,medium,22,1057,1019,121,84,30,FEASIBLE,0.00227188,30.0627257,0.002153481,5.211498846770073,593,687,0,Within 5.21% of optimum
+m10_medium_p22810_3d_stack,medium,22,1057,1019,121,84,120,FEASIBLE,0.00227188,120.05622960000001,0.002153485,5.211322781132801,616,710,0,Within 5.21% of optimum
+m10_large_p34392_3d_stack,large,28,1294,1249,151,103,10,FEASIBLE,0.003487637,10.1490766,0.003313881,4.9820551852156685,866,981,0,Within 4.98% of optimum
+m10_large_p34392_3d_stack,large,28,1294,1249,151,103,60,FEASIBLE,0.00348364,60.0712204,0.003313881,4.873035101215976,882,997,0,Within 4.87% of optimum

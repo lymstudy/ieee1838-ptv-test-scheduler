@@ -4,7 +4,7 @@ import csv
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence, Union
 
 from src.model import SystemModel
 
@@ -52,22 +52,76 @@ class ScheduleResult:
     fpp_lane_time_s: float
 
 
-def greedy_schedule(model: SystemModel, recipe_rows: list[dict[str, object]]) -> ScheduleResult:
-    if not recipe_rows:
+def _normalize_rows(
+    rows: list[dict[str, object]] | list[Any],
+) -> tuple[list[dict[str, object]], str]:
+    """Normalize input to a list of phase-capable dicts + detect scheduling mode.
+
+    Returns (normalized_rows, mode) where mode is one of:
+      - "recipe": old model — recipes are mutually exclusive per target_id
+      - "task":   new model — each task is mandatory; one variant per task_id
+    """
+    if not rows:
         raise SchedulingError("no recipe rows supplied")
 
-    groups: dict[str, list[dict[str, object]]] = {}
-    for row in recipe_rows:
-        groups.setdefault(str(row["target_id"]), []).append(row)
+    first = rows[0]
+    # If the items are dicts already, check if they carry a task_id key
+    if isinstance(first, dict):
+        has_task_id = any("task_id" in r for r in rows if isinstance(r, dict))  # type: ignore[attr-defined]
+        if has_task_id:
+            # New model: CompilationVariant already converted to dicts
+            return list(rows), "task"  # type: ignore[arg-type]
+        # Old model: plain dict rows
+        return list(rows), "recipe"  # type: ignore[arg-type]
 
+    # Otherwise, try to call .to_recipe_row() on each item (CompilationVariant)
+    normalized: list[dict[str, object]] = []
+    for item in rows:
+        converter = getattr(item, "to_recipe_row", None)
+        if converter is None:
+            raise SchedulingError(
+                f"unsupported row type: {type(item).__name__} — "
+                f"expected dict or object with to_recipe_row() method"
+            )
+        normalized.append(converter())
+    return normalized, "task"
+
+
+def greedy_schedule(
+    model: SystemModel,
+    rows_or_variants: list[dict[str, object]] | list[Any],
+) -> ScheduleResult:
+    """Build a greedy schedule.
+
+    Supports two input modes:
+
+    OLD (recipe mode) — list of RecipeRow-style dicts:
+        One recipe per target.  Groups by ``target_id`` and picks
+        exactly one recipe for each target.
+
+    NEW (task mode) — list of CompilationVariant objects (or their
+    dict equivalents):
+        Groups by ``task_id``.  Every task is mandatory — the
+        scheduler picks exactly one variant per task and schedules
+        all tasks.
+    """
+    rows, mode = _normalize_rows(rows_or_variants)  # type: ignore[arg-type]
+
+    # --- group rows according to current mode --------------------------------
+    groups: dict[str, list[dict[str, object]]] = {}
+    group_key = "task_id" if mode == "task" else "target_id"
+    for row in rows:
+        groups.setdefault(str(row[group_key]), []).append(row)
+
+    # --- greedy selection ----------------------------------------------------
     scheduled: list[ScheduledPhase] = []
     selected: list[dict[str, object]] = []
-    for target_id in _target_order(groups):
+    for group_id in _group_order(groups, mode):
         best_phases: list[ScheduledPhase] | None = None
         best_row: dict[str, object] | None = None
         best_key: tuple[float, float, float, int, str] | None = None
 
-        for row in sorted(groups[target_id], key=_recipe_order_key):
+        for row in sorted(groups[group_id], key=_recipe_order_key):
             try:
                 trial = _schedule_recipe(model, row, scheduled)
             except SchedulingError:
@@ -86,11 +140,13 @@ def greedy_schedule(model: SystemModel, recipe_rows: list[dict[str, object]]) ->
                 best_phases = trial
 
         if best_row is None or best_phases is None:
-            raise SchedulingError(f"no legal recipe found for target {target_id}")
+            label = "task" if mode == "task" else "target"
+            raise SchedulingError(f"no legal variant found for {label} {group_id}")
 
         selected.append(best_row)
         scheduled.extend(best_phases)
 
+    # --- assemble result -----------------------------------------------------
     phases = sorted(scheduled, key=lambda phase: (phase.start_s, phase.end_s, phase.target_id, phase.phase_index))
     return ScheduleResult(
         case_id=model.case_id,
@@ -189,6 +245,13 @@ def _schedule_recipe(
             )
         )
         earliest = end
+
+    # Annotate with task_id when present (new task model)
+    if "task_id" in row:
+        task_id = str(row["task_id"])
+        for tp in trial:
+            object.__setattr__(tp, "recipe_id", f"{tp.recipe_id}|task={task_id}")
+
     return trial
 
 
@@ -331,12 +394,13 @@ def _parse_phase_resources(row: dict[str, object]) -> list[dict[str, object]]:
     return rows
 
 
-def _target_order(groups: dict[str, list[dict[str, object]]]) -> list[str]:
+def _group_order(groups: dict[str, list[dict[str, object]]], mode: str) -> list[str]:
+    """Sort groups (targets or tasks) by thermal risk (descending), then id."""
     return sorted(
         groups,
-        key=lambda target_id: (
-            -max(float(row.get("thermal_risk", 0.0)) for row in groups[target_id]),
-            target_id,
+        key=lambda gid: (
+            -max(float(row.get("thermal_risk", 0.0)) for row in groups[gid]),
+            gid,
         ),
     )
 

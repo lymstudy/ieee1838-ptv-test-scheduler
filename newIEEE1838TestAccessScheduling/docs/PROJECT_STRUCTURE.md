@@ -31,7 +31,7 @@ newIEEE1838TestAccessScheduling/
 ## 分区原则
 
 - `configs/cases/` 是后续算法的主输入来源，不直接把实验参数写死在代码里。
-- `src/model/` 先承接 M1 阶段的 IEEE 1838 结构对象；后续代码应从这里读取统一模型。
+- `src/model/` 先承接 M1 阶段的 IEEE 1838 结构对象及可选组件（如 FPP，IEEE 1838-2019 Clause 7）；后续代码应从这里读取统一模型。
 - `src/recipes/` 只负责从模型生成候选 Test Access Recipe，不负责全局调度。
 - `src/schedulers/` 只负责选择 recipe 和安排时间，不直接散落输入解析逻辑。
 - `src/evaluators/` 统一计算 TAT、资源利用率、功耗、温度、违规次数等指标。

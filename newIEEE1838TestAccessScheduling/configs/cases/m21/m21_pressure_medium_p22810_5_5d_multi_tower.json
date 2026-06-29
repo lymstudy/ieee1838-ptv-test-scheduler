@@ -895,7 +895,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank0"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m2_die1",
@@ -936,7 +945,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank0"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m1_die2",
@@ -977,7 +995,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank1"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m25_die3",
@@ -1018,7 +1045,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank1"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m21_die4",
@@ -1059,7 +1095,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank2"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m5_die5",
@@ -1100,7 +1145,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank2"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m9_die0",
@@ -1141,7 +1195,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank0"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m7_die1",
@@ -1182,7 +1245,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank0"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m18_die2",
@@ -1223,7 +1295,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank1"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m3_die3",
@@ -1264,7 +1345,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank1"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m8_die4",
@@ -1305,7 +1395,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank2"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m6_die5",
@@ -1346,7 +1445,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank2"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m12_die0",
@@ -1387,7 +1495,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank0"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m11_die1",
@@ -1428,7 +1545,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank0"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m20_die2",
@@ -1469,7 +1595,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank1"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p22810_m4_die3",
@@ -1510,7 +1645,16 @@
         ],
         "preferred_fpp_channel": "fpp_multitower",
         "bist_engine": "m21_bist_tower_bank1"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "sensor_m10_medium_p22810_5_5d_multi_tower",
@@ -1532,7 +1676,15 @@
       ],
       "required_resources": {
         "instrument_network": "instr_die5"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "IJTAG",
+        "INTEST"
+      ],
+      "transport_options": [
+        "serial"
+      ]
     }
   ],
   "interconnects": [

@@ -10,7 +10,7 @@ M10 must answer:
 - Does the model run on multiple ITC'02 workloads, not just one or two examples?
 - Do the same 3D, 2.5D, and 5.5D topology generators work across small and large
   test workloads?
-- How sensitive is the schedule to FPP lane count and package power budget?
+- How sensitive is the schedule to FPP lane count (optional, IEEE 1838-2019 Clause 7) and package power budget?
 
 ## Inputs
 
@@ -62,7 +62,7 @@ Default sweep dimensions:
 
 | Dimension | Values | Reason |
 | --- | --- | --- |
-| FPP lanes | 2, 8, 16 | narrow, nominal, and wide access capacity |
+| FPP lanes (optional, IEEE 1838-2019 Clause 7) | 2, 8, 16 | narrow, nominal, and wide access capacity |
 | Power budget | tight, nominal, relaxed | exposes power-constrained scheduling behavior |
 | Methods | pure serial, M4 greedy | scalable first-pass comparison |
 

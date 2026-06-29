@@ -9,7 +9,7 @@ M2 将 M1 的 IEEE 1838-compatible 系统模型转换为候选 Test Access Recip
 - 读取并校验 M1 JSON 输入。
 - 为可测试 core、memory、instrument 生成 S/F/B/H recipe。
 - 为 die-to-die interconnect 生成 I recipe。
-- 生成 phase-level 资源模型，记录每个 phase 的串行访问、FPP lane、DWR segment、功耗和热区域占用。
+- 生成 phase-level 资源模型，记录每个 phase 的串行访问、FPP lane（optional, IEEE 1838-2019 Clause 7）、DWR segment、功耗和热区域占用。
 - 估算每个 recipe 的访问时间、数据传输时间、本地执行时间、读回时间、串行资源时间、FPP 时间、峰值功耗、thermal risk 和 thermal load。
 - 输出 refined recipe 汇总表和 phase summary 表。
 
@@ -20,9 +20,9 @@ M2 将 M1 的 IEEE 1838-compatible 系统模型转换为候选 Test Access Recip
 | 类型 | 含义 | 主要资源语义 |
 | --- | --- | --- |
 | `S` | Serial recipe | PTAP/STAP/DWR 串行访问 |
-| `F` | FPP recipe | 串行配置 + FPP bulk data transfer |
+| `F` | FPP recipe（optional, IEEE 1838-2019 Clause 7） | 串行配置 + FPP bulk data transfer |
 | `B` | BIST recipe | 串行配置/读回 + 本地 BIST 执行 |
-| `H` | Hybrid recipe | 串行配置 + FPP 数据传输 + 短串行状态读回 |
+| `H` | Hybrid recipe（optional, IEEE 1838-2019 Clause 7） | 串行配置 + FPP 数据传输 + 短串行状态读回 |
 | `I` | Interconnect recipe | DWR EXTEST 风格互连测试 |
 
 ## 代码入口
@@ -68,14 +68,14 @@ results/tables/m2_recipe_phase_summary.csv
 | `peak_power_w` | 估算峰值功耗 |
 | `thermal_risk` | 热风险代理指标 |
 | `serial_access_required` | 是否需要串行访问阶段 |
-| `fpp_lanes_required` | 占用 FPP lane 数 |
-| `fpp_channel` | 使用的 FPP channel |
+| `fpp_lanes_required` | 占用 FPP lane 数（optional, IEEE 1838-2019 Clause 7；非 FPP recipe 此项为 0）|
+| `fpp_channel` | 使用的 FPP channel（optional, IEEE 1838-2019 Clause 7）|
 | `dwr_segments` | 引用的 DWR segment |
 | `route_resource` | 互连测试相关 routing 资源 |
 | `estimated_bits` | 估算处理 bit 数 |
 | `notes` | 建模说明 |
 | `test_method` | 测试方法，如 `ATPG_SCAN`、`LBIST`、`MBIST`、`EXTEST` |
-| `access_mechanism` | 访问机制，如 `PTAP_STAP_SERIAL`、`FPP_PARALLEL`、`LOCAL_BIST`、`HYBRID`、`DWR_EXTEST` |
+| `access_mechanism` | 访问机制，如 `PTAP_STAP_SERIAL`、`FPP_PARALLEL`（optional, IEEE 1838-2019 Clause 7）、`LOCAL_BIST`、`HYBRID`（optional, IEEE 1838-2019 Clause 7）、`DWR_EXTEST` |
 | `test_endpoint` | 测试端点，如 `internal_scan`、`logic_bist`、`memory_bist`、`interconnect_extest`、`instrument_tdr` |
 | `bist_type` | BIST 类型，非 BIST 为空 |
 | `phase_count` | phase 数量 |
@@ -94,7 +94,7 @@ results/tables/m2_recipe_phase_summary.csv
 serial_time = bits / ptap_tck_hz
 ```
 
-FPP 数据传输时间：
+FPP 数据传输时间（IEEE 1838-2019 Clause 7, optional）：
 
 ```text
 fpp_time = data_bits / (lanes * lane_bandwidth_bps)

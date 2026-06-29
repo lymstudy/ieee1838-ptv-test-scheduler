@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import math
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Sequence, Union
 
 from src.model import SystemModel
 
@@ -25,12 +25,46 @@ class CpSatSolveInfo:
     wall_time_s: float
 
 
+def _normalize_cpsat_rows(
+    rows: list[dict[str, object]] | list[Any],
+) -> tuple[list[dict[str, object]], str]:
+    """Normalize input + return ("recipe" | "task")."""
+    if not rows:
+        raise ValueError("no rows supplied")
+    first = rows[0]
+    if isinstance(first, dict):
+        has_task_id = any("task_id" in r for r in rows if isinstance(r, dict))  # type: ignore[attr-defined]
+        return list(rows), "task" if has_task_id else "recipe"  # type: ignore[arg-type]
+
+    normalized: list[dict[str, object]] = []
+    for item in rows:
+        converter = getattr(item, "to_recipe_row", None)
+        if converter is None:
+            raise ValueError(
+                f"unsupported row type: {type(item).__name__} — "
+                f"expected dict or object with to_recipe_row() method"
+            )
+        normalized.append(converter())
+    return normalized, "task"
+
+
 def solve_cpsat_schedule(
     model: SystemModel,
-    recipe_rows: list[dict[str, object]],
+    rows_or_variants: list[dict[str, object]] | list[Any],
     time_limit_s: float = 10.0,
     workers: int = 8,
 ) -> tuple[ScheduleResult, CpSatSolveInfo]:
+    """Solve the scheduling problem with CP-SAT.
+
+    Supports two input modes:
+
+    OLD (recipe mode) — list of RecipeRow-style dicts:
+        One recipe per target.  ``AddExactlyOne`` per ``target_id``.
+
+    NEW (task mode) — list of CompilationVariant objects (or their
+    dict equivalents):
+        ``AddExactlyOne`` per ``task_id``.  Every task is mandatory.
+    """
     try:
         from ortools.sat.python import cp_model
     except ImportError as exc:
@@ -38,10 +72,11 @@ def solve_cpsat_schedule(
             "OR-Tools is not installed. Install project dependencies with: python -m pip install -r requirements.txt"
         ) from exc
 
-    if not recipe_rows:
-        raise ValueError("no recipe rows supplied")
+    rows, mode = _normalize_cpsat_rows(rows_or_variants)  # type: ignore[arg-type]
+    if not rows:
+        raise ValueError("no rows supplied")
 
-    recipe_specs = [_recipe_spec(row) for row in recipe_rows]
+    recipe_specs = [_recipe_spec(row) for row in rows]
     horizon = sum(sum(phase["duration_ticks"] for phase in spec["phases"]) for spec in recipe_specs)
     horizon = max(horizon, 1)
 
@@ -78,13 +113,22 @@ def solve_cpsat_schedule(
                 }
             )
 
-    for target_id in sorted({spec["target_id"] for spec in recipe_specs}):
+    # --- variant selection constraint (differs by mode) -----------------
+    if mode == "task":
+        # New model: pick exactly one variant per TASK, all tasks mandatory
+        group_key = "task_id"
+    else:
+        # Old model: pick exactly one recipe per TARGET
+        group_key = "target_id"
+
+    for gid in sorted({spec[group_key] for spec in recipe_specs}):
         cp.AddExactlyOne(
             selected_by_recipe[spec["recipe_id"]]
             for spec in recipe_specs
-            if spec["target_id"] == target_id
+            if spec[group_key] == gid
         )
 
+    # --- resource constraints (same for both modes) ---------------------
     serial_intervals = [item["interval"] for item in intervals if item["phase"]["serial_required"]]
     if int(model.resource_limits.get("ptap_ports", 1)) == 1:
         cp.AddNoOverlap(serial_intervals)
@@ -210,7 +254,7 @@ def solve_cpsat_schedule(
 
 def _recipe_spec(row: dict[str, object]) -> dict[str, Any]:
     phases = json.loads(str(row.get("phase_resources", "[]")))
-    return {
+    spec: dict[str, Any] = {
         "row": row,
         "recipe_id": str(row["recipe_id"]),
         "target_id": str(row["target_id"]),
@@ -219,6 +263,10 @@ def _recipe_spec(row: dict[str, object]) -> dict[str, Any]:
         "recipe_type": str(row.get("recipe_type", "")),
         "phases": [_phase_spec(phase) for phase in phases],
     }
+    # Carry task_id when present (new task model)
+    if "task_id" in row:
+        spec["task_id"] = str(row["task_id"])
+    return spec
 
 
 def _phase_spec(phase: dict[str, Any]) -> dict[str, Any]:

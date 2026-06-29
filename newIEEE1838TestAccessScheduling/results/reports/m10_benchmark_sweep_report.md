@@ -9,8 +9,8 @@
 | topology | rows | avg_norm_vs_serial | avg_speedup |
 | --- | ---: | ---: | ---: |
 | 2_5d_interposer | 36 | 0.1009 | 37.01 |
-| 3d_stack | 36 | 0.1050 | 31.30 |
-| 5_5d_multi_tower | 36 | 0.1033 | 35.92 |
+| 3d_stack | 36 | 0.1050 | 31.43 |
+| 5_5d_multi_tower | 36 | 0.1034 | 35.79 |
 
 ## Best M4 Row Per Scale
 

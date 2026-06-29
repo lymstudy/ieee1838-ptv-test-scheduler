@@ -181,6 +181,10 @@ def thermal_profile_variant(model: SystemModel, profile: str) -> SystemModel:
     raw = deepcopy(model.raw)
     raw["thermal_model"]["vertical_coupling_weight"] = float(raw["thermal_model"].get("vertical_coupling_weight", 0.35)) * 3.0
     raw["thermal_model"]["horizontal_coupling_weight"] = float(raw["thermal_model"].get("horizontal_coupling_weight", 0.2)) * 3.0
+    # Prevent double-scaling: stress_proxy applies 40x R and 50x C reduction at the model
+    # level, so set proxy_resistance_multiplier=1 to avoid additional scaling in thermal.py
+    raw["thermal_model"]["proxy_resistance_multiplier"] = 1.0
+    raw["thermal_model"]["proxy_capacitance_divider"] = 1.0
     for die in raw["dies"]:
         thermal = die["thermal"]
         thermal["thermal_resistance_c_per_w"] = float(thermal.get("thermal_resistance_c_per_w", 1.0)) * 40.0

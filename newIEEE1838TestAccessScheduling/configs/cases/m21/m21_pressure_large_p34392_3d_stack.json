@@ -1077,7 +1077,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m2_die1",
@@ -1118,7 +1127,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m10_die2",
@@ -1159,7 +1177,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m19_die3",
@@ -1200,7 +1227,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m5_die4",
@@ -1241,7 +1277,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m8_die5",
@@ -1282,7 +1327,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m4_die6",
@@ -1323,7 +1377,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m11_die7",
@@ -1364,7 +1427,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m3_die0",
@@ -1405,7 +1477,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m1_die1",
@@ -1446,7 +1527,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m15_die2",
@@ -1487,7 +1577,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m13_die3",
@@ -1528,7 +1627,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m6_die4",
@@ -1569,7 +1677,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m9_die5",
@@ -1610,7 +1727,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m17_die6",
@@ -1651,7 +1777,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m7_die7",
@@ -1692,7 +1827,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m14_die0",
@@ -1733,7 +1877,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m0_die1",
@@ -1774,7 +1927,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m12_die2",
@@ -1815,7 +1977,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "p34392_m16_die3",
@@ -1856,7 +2027,16 @@
         ],
         "preferred_fpp_channel": "fpp_3d_stack",
         "bist_engine": "m21_bist_global_stack"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "sensor_m10_large_p34392_3d_stack",
@@ -1878,7 +2058,15 @@
       ],
       "required_resources": {
         "instrument_network": "instr_die7"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "IJTAG",
+        "INTEST"
+      ],
+      "transport_options": [
+        "serial"
+      ]
     }
   ],
   "interconnects": [

@@ -11,7 +11,7 @@
 | pure_serial | baseline | 6 | 1.0000 | 1.00 |
 | fixed_fastest | baseline | 6 | 0.1819 | 22.80 |
 | tam_like | baseline | 6 | 0.1819 | 22.80 |
-| low_power | baseline | 6 | 0.1929 | 20.47 |
+| low_power | baseline | 6 | 0.1930 | 20.44 |
 | m4_all_recipes | ablation | 6 | 0.1819 | 22.80 |
 | m4_greedy | proposed | 6 | 0.1819 | 22.80 |
 | m5_cpsat | proposed | 6 | 0.1814 | 22.86 |

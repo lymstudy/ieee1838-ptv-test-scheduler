@@ -1,0 +1,9 @@
+case_id,condition,condition_label,scheduler,status,error,makespan_s,task_count,scheduled_task_count,bist_task_count,bist_overlap_ratio,tap_utilization,fpp_utilization,peak_power_w,peak_temperature_c,peak_thermal_region,thermal_violations,solver_status,solver_wall_time_s
+v4_core_4die_task,pure_serial,"Pure Serial (no BIST, no FPP)",greedy,ok,,0.10192272,10,10,0,0.0,0.9999018864488702,0.0,2.7600000000000002,56.910376305806075,thermal_die1,0,,0.0
+v4_core_4die_task,pure_serial,"Pure Serial (no BIST, no FPP)",cpsat,ok,,0.10191272,10,10,0,0.0,1.0,0.0,4.12,56.63967677423565,thermal_die2,0,OPTIMAL,0.0462407
+v4_core_4die_task,bist_parallel,"BIST Parallel (per-die engines, no FPP)",greedy,ok,,0.10556896,12,12,2,0.28735111111111,0.9655360818179888,0.0,3.13,69.62795027510622,thermal_die1,0,,0.0
+v4_core_4die_task,bist_parallel,"BIST Parallel (per-die engines, no FPP)",cpsat,ok,,0.10193064,12,12,2,0.0,0.9999999999999999,0.0,3.6,64.63973883267704,thermal_die2,0,OPTIMAL,0.0537366
+v4_core_4die_task,bist_fpp,"BIST+FPP (per-die engines, 8 FPP lanes)",greedy,ok,,0.005539560000000001,12,12,2,0.4444444444444444,0.1090194889124768,0.02856725082858566,6.46,119.01871106177475,thermal_die2,4,,0.0
+v4_core_4die_task,bist_fpp,"BIST+FPP (per-die engines, 8 FPP lanes)",cpsat,ok,,0.00553216,12,12,2,0.4444444444444444,0.10916531698287826,0.028605463327163353,6.76,96.2440582160319,thermal_die2,6,OPTIMAL,0.141815
+v4_core_4die_task,bist_fpp_thermal,"BIST+FPP+Thermal (all mechanisms, thermal monitoring)",greedy,ok,,0.005539560000000001,12,12,2,0.4444444444444444,0.1090194889124768,0.02856725082858566,6.46,119.01871106177475,thermal_die2,4,,0.0
+v4_core_4die_task,bist_fpp_thermal,"BIST+FPP+Thermal (all mechanisms, thermal monitoring)",cpsat,ok,,0.00553216,12,12,2,0.4444444444444444,0.10916531698287829,0.028605463327163353,6.29,96.31425377366648,thermal_die2,3,OPTIMAL,0.20224140000000002

@@ -1,0 +1,7 @@
+case_id,method_id,makespan_s,peak_power_w,num_sessions,num_targets,solver_status,solver_wall_time_s
+m10_small_d695_3d_stack,habiby_pbo,0.001242,5.52,7,14,OPTIMAL,0.105
+m10_medium_p22810_3d_stack,habiby_pbo,0.002977,6.57,9,22,OPTIMAL,0.132
+m10_large_p34392_3d_stack,habiby_pbo,0.004569,6.33,11,28,OPTIMAL,0.157
+m21_pressure_small_d695_3d_stack,habiby_pbo,0.178505,9.52,7,14,OPTIMAL,0.093
+m21_pressure_medium_p22810_3d_stack,habiby_pbo,5.146587,14.08,9,22,OPTIMAL,0.131
+m21_pressure_large_p34392_3d_stack,habiby_pbo,7.273877,18.64,11,28,OPTIMAL,0.157

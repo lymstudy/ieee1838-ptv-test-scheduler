@@ -1,0 +1,6 @@
+case_id,topology,condition_id,method_id,status,error,makespan_s,makespan_us,serial_busy_ratio,fpp_utilization,bist_overlap_ratio,max_concurrent_bist,peak_temperature_c,thermal_violations,selected_recipe_types,task_count,variant_count,scheduled_task_count,peak_power_w,solver_status,solver_wall_time_s,die_count,fpp_lane_count,bist_engine_count
+v4_small_3d_stack,3d_stack,serial_baseline,m5_cpsat,ok,,0.22842892,228428.92,1.0,0.0,0.0,0,44.860162419202624,0,I+IJTAG+S,6,6,6,2.6500000000000004,OPTIMAL,0.0226728,3,0,0
+v4_small_3d_stack,3d_stack,bist_only,m5_cpsat,ok,,0.22844172,228441.72,1.0000000000000002,0.0,0.42857142857142894,2,50.184350648737286,0,B+I+IJTAG+S,8,8,8,4.63,OPTIMAL,0.0313048,3,0,2
+v4_small_3d_stack,3d_stack,fpp_only,m5_cpsat,ok,,0.1284262,128426.2,1.0000000000000002,0.002433304107728797,0.0,0,49.761899676169506,0,F+I+IJTAG+S,6,9,6,2.85,OPTIMAL,0.050421200000000006,3,4,0
+v4_small_3d_stack,3d_stack,bist_fpp,m5_cpsat,ok,,0.128439,128439.0,1.0000000000000002,0.0024330616090128387,0.42857142857142894,2,54.54329851784452,0,B+F+I+IJTAG+S,8,11,8,4.63,OPTIMAL,0.17734950000000002,3,4,2
+v4_small_3d_stack,3d_stack,bist_fpp_thermal,m5_cpsat,ok,,0.128439,128439.0,1.0000000000000002,0.0024330616090128387,0.42857142857142894,2,54.5420029405499,0,B+F+I+IJTAG+S,8,11,8,4.63,OPTIMAL,0.11249980000000001,3,4,2

@@ -1,0 +1,22 @@
+{
+  "case_id": "p22810_3d_stack",
+  "soc_file": "p22810.soc",
+  "topology": "3D",
+  "chiplet_count": 6,
+  "total_fpp_lanes": 16,
+  "fpp_probability": 0.8,
+  "max_power_w": 10.0,
+  "max_temperature_c": 85.0,
+  "ambient_temperature_c": 25.0,
+  "ptap_tck_hz": 50000000,
+  "bist_clock_hz": 100000000,
+  "fpp_lane_bandwidth_bps": 300000000,
+  "thermal_resistance_range": [
+    3.0,
+    6.0
+  ],
+  "thermal_capacitance_range": [
+    0.005,
+    0.015
+  ]
+}

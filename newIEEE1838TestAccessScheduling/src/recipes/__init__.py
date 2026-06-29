@@ -1,3 +1,12 @@
+# --- NEW physically correct model ---
+from .generator import (
+    CompilationVariant,
+    TaskGenerator,
+    TestTask,
+    rows_from_variants,
+)
+
+# --- OLD deprecated model (backward compat) ---
 from .generator import RecipeGenerator, RecipePhase, TestAccessRecipe, write_recipe_phases_csv, write_recipes_csv
 from .pruning import (
     ParetoPruningResult,
@@ -11,6 +20,12 @@ from .pruning import (
 )
 
 __all__ = [
+    # NEW
+    "CompilationVariant",
+    "TaskGenerator",
+    "TestTask",
+    "rows_from_variants",
+    # OLD (deprecated, backward compat)
     "ParetoPruningResult",
     "RecipeGenerator",
     "RecipePhase",

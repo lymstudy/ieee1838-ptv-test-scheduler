@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+import warnings
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -20,8 +21,130 @@ def _require_non_negative(value: float, field_name: str) -> None:
         raise ModelValidationError(f"{field_name} must be non-negative, got {value!r}")
 
 
+@dataclass()
+class TestObject:
+    """A testable entity within a die.
+
+    This class separates the concept of *test type* (what test is being run)
+    from *transport method* (how test data moves to/from the die), aligning
+    with the IEEE 1838-2019 physical model.
+
+    Test types (``test_types``):
+      - INTEST: Internal scan test on core/logic/memory logic
+      - EXTEST: Interconnect test between dies (via DWR boundary scan)
+      - BIST: Built-in self-test running locally on-die
+      - IJTAG: Instrument access (sensors, monitors, PLLs, etc.)
+
+    Transport methods (``transport_options``):
+      - serial: Via PTAP/STAP serial chain (IEEE 1838 Clauses 6-8, mandatory)
+      - fpp: Via FPP parallel lanes (IEEE 1838 Clause 7, optional)
+      - local: BIST execution is local to the die (no off-die transport needed)
+
+    The ``supported_recipes`` field is kept for backward compatibility with
+    existing JSON case files and expresses the same information in a
+    compact form. If ``test_types`` and/or ``transport_options`` are not
+    explicitly set, they are derived from ``supported_recipes`` automatically.
+    """
+
+    # Object identification (from JSON fields)
+    object_id: str
+    die_id: str
+    object_type: str  # "core", "memory", "instrument"
+    supported_recipes: list[str] = field(default_factory=list)
+
+    # Explicit test type declarations (computed from supported_recipes if not set)
+    test_types: list[str] = field(default_factory=list)
+    # Expected values: "INTEST", "EXTEST", "BIST", "IJTAG"
+
+    # Transport options available for this test object
+    transport_options: list[str] = field(default_factory=list)
+    # Expected values: "serial", "fpp"
+    # "serial" is always available (mandatory PTAP)
+    # "fpp" is available if FPP lanes connect to this object's die
+
+    # BIST configuration (mirrors obj["bist"] for convenience)
+    bist_enabled: bool = False
+
+    # ---- Private raw data for properties not yet extracted ----
+    _raw: dict[str, Any] = field(default_factory=dict, repr=False)
+
+    def __post_init__(self) -> None:
+        """Derive test_types and transport_options from supported_recipes if needed."""
+        if not self.test_types:
+            types: list[str] = []
+            if "S" in self.supported_recipes or "F" in self.supported_recipes:
+                types.append("INTEST")
+            if "B" in self.supported_recipes or "H" in self.supported_recipes:
+                if "BIST" not in types:
+                    types.append("BIST")
+            if "I" in self.supported_recipes:
+                types.append("EXTEST")
+            # IJTAG-like instrument access via serial is implicit from object_type
+            if self.object_type == "instrument":
+                types.append("IJTAG")
+            # Sort for deterministic output
+            self.test_types = types
+
+        if not self.transport_options:
+            options: list[str] = ["serial"]  # serial is always available (mandatory PTAP)
+            if "F" in self.supported_recipes or "H" in self.supported_recipes:
+                options.append("fpp")
+            self.transport_options = options
+
+    @classmethod
+    def from_dict(cls, obj: dict[str, Any]) -> "TestObject":
+        """Create a TestObject from a raw JSON dictionary, with backward compat."""
+        bist = obj.get("bist", {})
+        return cls(
+            object_id=str(obj["object_id"]),
+            die_id=str(obj["die_id"]),
+            object_type=str(obj.get("object_type", "core")),
+            supported_recipes=[str(r) for r in obj.get("supported_recipes", [])],
+            test_types=[str(t) for t in obj.get("test_types", [])],
+            transport_options=[str(t) for t in obj.get("transport_options", [])],
+            bist_enabled=bool(bist.get("enabled", False)),
+            _raw=obj,
+        )
+
+    @property
+    def has_fpp(self) -> bool:
+        """True if FPP transport is available for this test object."""
+        return "fpp" in self.transport_options
+
+    @property
+    def has_serial(self) -> bool:
+        """True if serial (PTAP/STAP) transport is available."""
+        return "serial" in self.transport_options
+
+
+# ---- SystemModel ----
+
 @dataclass(frozen=True)
 class SystemModel:
+    """IEEE 1838-2019 compatible system model for multi-die test access scheduling.
+
+    FPP (Flexible Parallel Port)
+    -----------------------------
+    FPP is an OPTIONAL but standard-defined component of IEEE 1838-2019
+    (Clauses 5.5.3, 6.5, Clause 7). FPP uses independent physical lanes,
+    configured via TAP. It is NOT a proposed extension -- it is part of the
+    published standard.
+
+    The FPP-related fields (fpp_channels, fpp_lanes) under ``ieee1838_access``
+    represent standard IEEE 1838 FPP resources as defined in Clause 7.
+    FPP channels are partitionable groups of lanes; each lane is an independent
+    physical connection with its own bandwidth and DWR segment binding.
+
+    Resource limits and resource groups
+    -----------------------------------
+    ``resource_limits`` constrains the scheduling algorithm's choices:
+      - total_fpp_lanes: maximum lanes available system-wide
+      - ... (other limits as defined by the case JSON)
+
+    ``resource_groups`` defines logical groupings that the scheduler must
+    respect (e.g., thermal_regions for power-aware scheduling).
+    """
+
     raw: dict[str, Any]
     source_path: Path | None = None
 
@@ -47,7 +170,13 @@ class SystemModel:
 
     @property
     def test_objects(self) -> list[dict[str, Any]]:
+        """Raw test object dictionaries (backward compatible)."""
         return self.raw["test_objects"]
+
+    @property
+    def typed_test_objects(self) -> list[TestObject]:
+        """Test object instances with typed test_types and transport_options fields."""
+        return [TestObject.from_dict(obj) for obj in self.raw["test_objects"]]
 
     @property
     def interconnects(self) -> list[dict[str, Any]]:
@@ -324,14 +453,49 @@ class SystemModel:
 
     def _validate_test_objects(self, dies_by_id: dict[str, dict[str, Any]]) -> None:
         segment_ids = set(self.dwr_segments_by_id)
+
+        # Build set of die IDs that have FPP lane connectivity
+        fpp_die_ids: set[str] = set()
+        for lane in self.access.get("fpp_lanes", []):
+            for lane_die in lane.get("connects", {}).get("dies", []):
+                fpp_die_ids.add(str(lane_die))
+
         for obj in self.test_objects:
+            obj_id = str(obj["object_id"])
+            supported = set(obj.get("supported_recipes", []))
+
             if obj["die_id"] not in dies_by_id:
-                raise ModelValidationError(f"test object {obj['object_id']} references unknown die")
+                raise ModelValidationError(f"test object {obj_id} references unknown die")
             for segment_id in obj.get("required_resources", {}).get("dwr_segments", []):
                 if segment_id not in segment_ids:
                     raise ModelValidationError(
-                        f"test object {obj['object_id']} references unknown DWR segment"
+                        f"test object {obj_id} references unknown DWR segment"
                     )
+
+            # NEW: consistency checks between supported_recipes and configuration
+            # Warn if BIST is enabled but "B" not in supported_recipes
+            bist = obj.get("bist", {})
+            if bist.get("enabled", False) and "B" not in supported:
+                warnings.warn(
+                    f"test object {obj_id}: bist.enabled=True but 'B' not in "
+                    f"supported_recipes; BIST recipe will not be generated"
+                )
+
+            # Warn if "F" in supported_recipes but no FPP lanes reach this die
+            if "F" in supported and obj["die_id"] not in fpp_die_ids:
+                warnings.warn(
+                    f"test object {obj_id}: 'F' in supported_recipes but no FPP lanes "
+                    f"are configured for die {obj['die_id']}; FPP recipes will have no lane options"
+                )
+
+            # Warn if EXTEST ("I") in supported_recipes for a non-interconnect object
+            # EXTEST (interconnect test) is typically for interconnects, not test_objects
+            if "I" in supported:
+                warnings.warn(
+                    f"test object {obj_id}: 'I' (EXTEST / interconnect test) in "
+                    f"supported_recipes; EXTEST is typically for interconnects, not "
+                    f"standalone test objects"
+                )
 
     def _validate_interconnects(self, dies_by_id: dict[str, dict[str, Any]]) -> None:
         segment_ids = set(self.dwr_segments_by_id)

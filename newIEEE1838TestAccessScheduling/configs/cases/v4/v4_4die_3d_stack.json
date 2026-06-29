@@ -1,0 +1,642 @@
+{
+  "model_version": "m1-ieee1838-computable-v4",
+  "case_id": "v4_4die_3d_stack",
+  "description": "v4 4-die 3D stack benchmark with per-die BIST engines and mandatory task-based model per IEEE 1838 Section 0.4 corrected physical model. FPP is NOT on every die -- only die0 and die2 have FPP hardware; die1 and die3 use serial TAP only. Each die with BIST gets its own independent engine, enabling simultaneous BIST execution across dies.",
+  "provenance_notes": [
+    "v4 task model: test_objects declare mandatory test_types and transport_options, not recipe picks.",
+    "FPP per-die: only die0 and die2 have FPP lanes physically connected. die1 and die3 use serial TAP only. This is the real IEEE 1838 model -- FPP is optional (Clause 7), not every die has it.",
+    "Per-die BIST engines: each die with BIST-capable targets gets its own engine (capacity=1 per engine), mimicking real hardware design.",
+    "TAP time-multiplexing: serial TAP is the only shared bottleneck; BIST tasks release TAP during local execution, enabling interleaving.",
+    "DWR segment lengths and FPP lane counts are model assumptions aligned with industrial 3D stack dimensions.",
+    "Thermal RC parameters are proxy values suitable for relative comparison between algorithms."
+  ],
+  "units": {
+    "time": "s",
+    "frequency": "Hz",
+    "bandwidth": "bit/s",
+    "length": "um",
+    "area": "mm2",
+    "power": "W",
+    "temperature": "C",
+    "voltage": "V",
+    "resistance": "ohm"
+  },
+  "package": {
+    "topology_type": "3d_stack",
+    "tower_count": 1,
+    "die_count": 4,
+    "primary_entry_die": "die0",
+    "thermal_boundary": "top_heat_sink",
+    "ambient_temperature_c": 25.0
+  },
+  "timing": {
+    "ptap_tck_hz": 50000000,
+    "default_bist_clock_hz": 100000000,
+    "default_fpp_lane_bandwidth_bps": 4000000000,
+    "capture_time_s": 1e-06,
+    "mode_update_time_s": 1e-06
+  },
+  "resource_limits": {
+    "ptap_ports": 1,
+    "total_fpp_lanes": 8,
+    "max_total_power_w": 30.0,
+    "max_temperature_c": 85.0,
+    "max_ir_drop_v": 0.12,
+    "max_concurrent_capture": 1
+  },
+  "thermal_model": {
+    "self_heating_weight": 1.0,
+    "vertical_coupling_weight": 0.5,
+    "horizontal_coupling_weight": 0.2,
+    "layer_distance_decay": 0.5
+  },
+  "dies": [
+    {
+      "die_id": "die0",
+      "role": "primary",
+      "tower_id": "tower0",
+      "layer_index": 0,
+      "access_parent_die": null,
+      "position_um": { "x": 0, "y": 0, "z": 0 },
+      "size_um": { "width": 1000, "height": 1000 },
+      "thermal": {
+        "region_id": "thermal_die0",
+        "thermal_resistance_c_per_w": 0.55,
+        "thermal_capacitance_j_per_c": 0.16,
+        "heat_sink_distance_rank": 1,
+        "cooling_factor": 0.95
+      },
+      "pdn": {
+        "supply_voltage_v": 0.8,
+        "self_resistance_ohm": 0.03,
+        "shared_resistance_ohm": 0.015
+      },
+      "_v4_fpp": "die0 HAS FPP lanes (primary entry die, FPP master)"
+    },
+    {
+      "die_id": "die1",
+      "role": "secondary",
+      "tower_id": "tower0",
+      "layer_index": 1,
+      "access_parent_die": "die0",
+      "position_um": { "x": 0, "y": 0, "z": 50 },
+      "size_um": { "width": 1000, "height": 1000 },
+      "thermal": {
+        "region_id": "thermal_die1",
+        "thermal_resistance_c_per_w": 0.59,
+        "thermal_capacitance_j_per_c": 0.16,
+        "heat_sink_distance_rank": 2,
+        "cooling_factor": 0.91
+      },
+      "pdn": {
+        "supply_voltage_v": 0.8,
+        "self_resistance_ohm": 0.036,
+        "shared_resistance_ohm": 0.019
+      },
+      "_v4_fpp": "die1 does NOT have FPP -- serial TAP only"
+    },
+    {
+      "die_id": "die2",
+      "role": "secondary",
+      "tower_id": "tower0",
+      "layer_index": 2,
+      "access_parent_die": "die0",
+      "position_um": { "x": 0, "y": 0, "z": 100 },
+      "size_um": { "width": 1000, "height": 1000 },
+      "thermal": {
+        "region_id": "thermal_die2",
+        "thermal_resistance_c_per_w": 0.63,
+        "thermal_capacitance_j_per_c": 0.16,
+        "heat_sink_distance_rank": 3,
+        "cooling_factor": 0.87
+      },
+      "pdn": {
+        "supply_voltage_v": 0.8,
+        "self_resistance_ohm": 0.042,
+        "shared_resistance_ohm": 0.023
+      },
+      "_v4_fpp": "die2 HAS FPP lanes"
+    },
+    {
+      "die_id": "die3",
+      "role": "secondary",
+      "tower_id": "tower0",
+      "layer_index": 3,
+      "access_parent_die": "die2",
+      "position_um": { "x": 0, "y": 0, "z": 150 },
+      "size_um": { "width": 1000, "height": 1000 },
+      "thermal": {
+        "region_id": "thermal_die3",
+        "thermal_resistance_c_per_w": 0.67,
+        "thermal_capacitance_j_per_c": 0.16,
+        "heat_sink_distance_rank": 4,
+        "cooling_factor": 0.83
+      },
+      "pdn": {
+        "supply_voltage_v": 0.8,
+        "self_resistance_ohm": 0.048,
+        "shared_resistance_ohm": 0.027
+      },
+      "_v4_fpp": "die3 does NOT have FPP -- serial TAP only"
+    }
+  ],
+  "ieee1838_access": {
+    "ptap": {
+      "ptap_id": "ptap0",
+      "die_id": "die0",
+      "tck_hz": 50000000,
+      "exclusive": true,
+      "control_bits_per_access": 64
+    },
+    "staps": [
+      {
+        "stap_id": "stap_die1",
+        "die_id": "die1",
+        "parent_die": "die0",
+        "select_bits": 32,
+        "bypass_bits": 1,
+        "exclusive_path_group": "serial_access_path"
+      },
+      {
+        "stap_id": "stap_die2",
+        "die_id": "die2",
+        "parent_die": "die0",
+        "select_bits": 32,
+        "bypass_bits": 1,
+        "exclusive_path_group": "serial_access_path"
+      },
+      {
+        "stap_id": "stap_die3",
+        "die_id": "die3",
+        "parent_die": "die2",
+        "select_bits": 32,
+        "bypass_bits": 1,
+        "exclusive_path_group": "serial_access_path"
+      }
+    ],
+    "three_dcrs": [
+      { "register_id": "3dcr_die0", "die_id": "die0", "bit_length": 32, "controls": ["dwr_die0"] },
+      { "register_id": "3dcr_die1", "die_id": "die1", "bit_length": 32, "controls": ["dwr_die1"] },
+      { "register_id": "3dcr_die2", "die_id": "die2", "bit_length": 32, "controls": ["dwr_die2"] },
+      { "register_id": "3dcr_die3", "die_id": "die3", "bit_length": 32, "controls": ["dwr_die3"] }
+    ],
+    "dwr_segments": [
+      {
+        "segment_id": "dwr_die0", "die_id": "die0", "bit_length": 256,
+        "supported_modes": ["EXTEST", "IF", "OF", "MISSION"],
+        "serial_access": true, "fpp_access": true,
+        "parallel_group": "dwr_group_die0", "mode_config_bits": 16
+      },
+      {
+        "segment_id": "dwr_die1", "die_id": "die1", "bit_length": 280,
+        "supported_modes": ["EXTEST", "IF", "OF", "MISSION"],
+        "serial_access": true, "fpp_access": false,
+        "parallel_group": "dwr_group_die1", "mode_config_bits": 16
+      },
+      {
+        "segment_id": "dwr_die2", "die_id": "die2", "bit_length": 300,
+        "supported_modes": ["EXTEST", "IF", "OF", "MISSION"],
+        "serial_access": true, "fpp_access": true,
+        "parallel_group": "dwr_group_die2", "mode_config_bits": 16
+      },
+      {
+        "segment_id": "dwr_die3", "die_id": "die3", "bit_length": 320,
+        "supported_modes": ["EXTEST", "IF", "OF", "MISSION"],
+        "serial_access": true, "fpp_access": false,
+        "parallel_group": "dwr_group_die3", "mode_config_bits": 16
+      }
+    ],
+    "fpp_channels": [
+      {
+        "channel_id": "fpp_3d_stack",
+        "source_die": "die0",
+        "target_scope": "package",
+        "config_bits": 64,
+        "max_lanes": 8
+      }
+    ],
+    "_v4_fpp_comment": "FPP lanes only connect to die0 and die2. die1 and die3 do NOT have FPP hardware connections -- they use serial TAP only.",
+    "fpp_lanes": [
+      {
+        "lane_id": "fpp_lane0", "channel_id": "fpp_3d_stack",
+        "direction": "bidirectional", "bandwidth_bps": 4000000000,
+        "registered": true, "requires_clock_lane": true,
+        "connects": { "dies": ["die0","die2"], "dwr_segments": ["dwr_die0","dwr_die2"] },
+        "mutual_exclusion_group": "fpp_lane0_dir"
+      },
+      {
+        "lane_id": "fpp_lane1", "channel_id": "fpp_3d_stack",
+        "direction": "bidirectional", "bandwidth_bps": 4000000000,
+        "registered": true, "requires_clock_lane": true,
+        "connects": { "dies": ["die0","die2"], "dwr_segments": ["dwr_die0","dwr_die2"] },
+        "mutual_exclusion_group": "fpp_lane1_dir"
+      },
+      {
+        "lane_id": "fpp_lane2", "channel_id": "fpp_3d_stack",
+        "direction": "bidirectional", "bandwidth_bps": 4000000000,
+        "registered": true, "requires_clock_lane": false,
+        "connects": { "dies": ["die0","die2"], "dwr_segments": ["dwr_die0","dwr_die2"] },
+        "mutual_exclusion_group": "fpp_lane2_dir"
+      },
+      {
+        "lane_id": "fpp_lane3", "channel_id": "fpp_3d_stack",
+        "direction": "bidirectional", "bandwidth_bps": 4000000000,
+        "registered": true, "requires_clock_lane": false,
+        "connects": { "dies": ["die0","die2"], "dwr_segments": ["dwr_die0","dwr_die2"] },
+        "mutual_exclusion_group": "fpp_lane3_dir"
+      },
+      {
+        "lane_id": "fpp_lane4", "channel_id": "fpp_3d_stack",
+        "direction": "bidirectional", "bandwidth_bps": 4000000000,
+        "registered": true, "requires_clock_lane": false,
+        "connects": { "dies": ["die0","die2"], "dwr_segments": ["dwr_die0","dwr_die2"] },
+        "mutual_exclusion_group": "fpp_lane4_dir"
+      },
+      {
+        "lane_id": "fpp_lane5", "channel_id": "fpp_3d_stack",
+        "direction": "bidirectional", "bandwidth_bps": 4000000000,
+        "registered": true, "requires_clock_lane": false,
+        "connects": { "dies": ["die0","die2"], "dwr_segments": ["dwr_die0","dwr_die2"] },
+        "mutual_exclusion_group": "fpp_lane5_dir"
+      },
+      {
+        "lane_id": "fpp_lane6", "channel_id": "fpp_3d_stack",
+        "direction": "bidirectional", "bandwidth_bps": 4000000000,
+        "registered": true, "requires_clock_lane": false,
+        "connects": { "dies": ["die0","die2"], "dwr_segments": ["dwr_die0","dwr_die2"] },
+        "mutual_exclusion_group": "fpp_lane6_dir"
+      },
+      {
+        "lane_id": "fpp_lane7", "channel_id": "fpp_3d_stack",
+        "direction": "bidirectional", "bandwidth_bps": 4000000000,
+        "registered": true, "requires_clock_lane": false,
+        "connects": { "dies": ["die0","die2"], "dwr_segments": ["dwr_die0","dwr_die2"] },
+        "mutual_exclusion_group": "fpp_lane7_dir"
+      }
+    ]
+  },
+  "test_objects": [
+    {
+      "_v4_comment": "v4: task-based model. Each test_object generates mandatory tasks based on its hardware type and test_types field. die0 HAS FPP.",
+      "object_id": "core0_die0",
+      "object_type": "core",
+      "die_id": "die0",
+      "area_mm2": 2.5,
+      "scan": {
+        "enabled": true,
+        "chain_count": 16,
+        "max_chain_length_bits": 200000,
+        "pattern_count": 100,
+        "requires_capture": true,
+        "response_bits_per_pattern": 200000
+      },
+      "bist": { "enabled": false },
+      "_comment_test_types": "v4 mandatory tasks: INTEST (internal scan). FPP available on this die.",
+      "test_types": ["INTEST"],
+      "transport_options": ["serial", "fpp"],
+      "supported_recipes": ["S", "F"],
+      "power": {
+        "shift_power_w": 1.5,
+        "capture_power_w": 2.5,
+        "access_power_w": 0.12
+      },
+      "thermal_region": "thermal_die0",
+      "required_resources": {
+        "dwr_segments": ["dwr_die0"],
+        "preferred_fpp_channel": "fpp_3d_stack"
+      }
+    },
+    {
+      "_v4_comment": "Second core on die0. Each generates independent INTEST task. FPP available.",
+      "object_id": "core1_die0",
+      "object_type": "core",
+      "die_id": "die0",
+      "area_mm2": 2.0,
+      "scan": {
+        "enabled": true,
+        "chain_count": 16,
+        "max_chain_length_bits": 180000,
+        "pattern_count": 80,
+        "requires_capture": true,
+        "response_bits_per_pattern": 180000
+      },
+      "bist": { "enabled": false },
+      "test_types": ["INTEST"],
+      "transport_options": ["serial", "fpp"],
+      "supported_recipes": ["S", "F"],
+      "power": {
+        "shift_power_w": 1.3,
+        "capture_power_w": 2.2,
+        "access_power_w": 0.10
+      },
+      "thermal_region": "thermal_die0",
+      "required_resources": {
+        "dwr_segments": ["dwr_die0"],
+        "preferred_fpp_channel": "fpp_3d_stack"
+      }
+    },
+    {
+      "_v4_comment": "Memory on die0 with BIST. Has its own per-die engine (bist_eng_die0). BIST task runs locally, releasing TAP.",
+      "object_id": "mem0_die0",
+      "object_type": "memory",
+      "die_id": "die0",
+      "area_mm2": 1.8,
+      "scan": { "enabled": false },
+      "bist": {
+        "enabled": true,
+        "engine_id": "bist_eng_die0",
+        "config_bits": 96,
+        "local_cycles": 600000,
+        "readout_bits": 128,
+        "bist_clock_hz": 100000000
+      },
+      "test_types": ["BIST"],
+      "transport_options": ["serial"],
+      "supported_recipes": ["B"],
+      "power": {
+        "shift_power_w": 0.0,
+        "capture_power_w": 0.0,
+        "access_power_w": 0.08,
+        "bist_power_w": 3.2
+      },
+      "thermal_region": "thermal_die0",
+      "required_resources": {
+        "dwr_segments": ["dwr_die0"],
+        "bist_engine": "bist_eng_die0"
+      }
+    },
+    {
+      "_v4_comment": "Core on die1 with INTEST. die1 does NOT have FPP -- serial TAP only.",
+      "object_id": "core2_die1",
+      "object_type": "core",
+      "die_id": "die1",
+      "area_mm2": 2.2,
+      "scan": {
+        "enabled": true,
+        "chain_count": 8,
+        "max_chain_length_bits": 160000,
+        "pattern_count": 120,
+        "requires_capture": true,
+        "response_bits_per_pattern": 160000
+      },
+      "bist": { "enabled": false },
+      "test_types": ["INTEST"],
+      "transport_options": ["serial"],
+      "supported_recipes": ["S"],
+      "power": {
+        "shift_power_w": 1.4,
+        "capture_power_w": 2.3,
+        "access_power_w": 0.11
+      },
+      "thermal_region": "thermal_die1",
+      "required_resources": {
+        "dwr_segments": ["dwr_die1"]
+      }
+    },
+    {
+      "_v4_comment": "Memory on die1 with BIST. Uses its own engine bist_eng_die1. Can run simultaneously with die0 BIST.",
+      "object_id": "mem1_die1",
+      "object_type": "memory",
+      "die_id": "die1",
+      "area_mm2": 1.5,
+      "scan": { "enabled": false },
+      "bist": {
+        "enabled": true,
+        "engine_id": "bist_eng_die1",
+        "config_bits": 96,
+        "local_cycles": 500000,
+        "readout_bits": 128,
+        "bist_clock_hz": 100000000
+      },
+      "test_types": ["BIST"],
+      "transport_options": ["serial"],
+      "supported_recipes": ["B"],
+      "power": {
+        "shift_power_w": 0.0,
+        "capture_power_w": 0.0,
+        "access_power_w": 0.07,
+        "bist_power_w": 2.8
+      },
+      "thermal_region": "thermal_die1",
+      "required_resources": {
+        "dwr_segments": ["dwr_die1"],
+        "bist_engine": "bist_eng_die1"
+      }
+    },
+    {
+      "_v4_comment": "Core on die2. Two cores here. FPP available on this die.",
+      "object_id": "core3a_die2",
+      "object_type": "core",
+      "die_id": "die2",
+      "area_mm2": 2.3,
+      "scan": {
+        "enabled": true,
+        "chain_count": 8,
+        "max_chain_length_bits": 190000,
+        "pattern_count": 90,
+        "requires_capture": true,
+        "response_bits_per_pattern": 190000
+      },
+      "bist": { "enabled": false },
+      "test_types": ["INTEST"],
+      "transport_options": ["serial", "fpp"],
+      "supported_recipes": ["S", "F"],
+      "power": {
+        "shift_power_w": 1.45,
+        "capture_power_w": 2.4,
+        "access_power_w": 0.11
+      },
+      "thermal_region": "thermal_die2",
+      "required_resources": {
+        "dwr_segments": ["dwr_die2"],
+        "preferred_fpp_channel": "fpp_3d_stack"
+      }
+    },
+    {
+      "_v4_comment": "Second core on die2. No BIST on die2.",
+      "object_id": "core3b_die2",
+      "object_type": "core",
+      "die_id": "die2",
+      "area_mm2": 2.0,
+      "scan": {
+        "enabled": true,
+        "chain_count": 8,
+        "max_chain_length_bits": 170000,
+        "pattern_count": 75,
+        "requires_capture": true,
+        "response_bits_per_pattern": 170000
+      },
+      "bist": { "enabled": false },
+      "test_types": ["INTEST"],
+      "transport_options": ["serial", "fpp"],
+      "supported_recipes": ["S", "F"],
+      "power": {
+        "shift_power_w": 1.25,
+        "capture_power_w": 2.1,
+        "access_power_w": 0.10
+      },
+      "thermal_region": "thermal_die2",
+      "required_resources": {
+        "dwr_segments": ["dwr_die2"],
+        "preferred_fpp_channel": "fpp_3d_stack"
+      }
+    },
+    {
+      "_v4_comment": "Core on die3. No BIST on the top die. die3 does NOT have FPP -- serial TAP only.",
+      "object_id": "core4_die3",
+      "object_type": "core",
+      "die_id": "die3",
+      "area_mm2": 2.1,
+      "scan": {
+        "enabled": true,
+        "chain_count": 4,
+        "max_chain_length_bits": 150000,
+        "pattern_count": 65,
+        "requires_capture": true,
+        "response_bits_per_pattern": 150000
+      },
+      "bist": { "enabled": false },
+      "test_types": ["INTEST"],
+      "transport_options": ["serial"],
+      "supported_recipes": ["S"],
+      "power": {
+        "shift_power_w": 1.2,
+        "capture_power_w": 2.0,
+        "access_power_w": 0.09
+      },
+      "thermal_region": "thermal_die3",
+      "required_resources": {
+        "dwr_segments": ["dwr_die3"]
+      }
+    },
+    {
+      "_v4_comment": "IJTAG instrument on die3. Uses serial-only access. Instrument access adds IJTAG tasks.",
+      "object_id": "instr0_die3",
+      "object_type": "instrument",
+      "die_id": "die3",
+      "area_mm2": 0.05,
+      "instrument": {
+        "network_depth": 2,
+        "address_bits": 16,
+        "readout_bits": 32,
+        "requires_readback": true
+      },
+      "power": { "access_power_w": 0.04 },
+      "thermal_region": "thermal_die3",
+      "supported_recipes": ["S"],
+      "test_types": ["IJTAG"],
+      "transport_options": ["serial"],
+      "required_resources": {
+        "instrument_network": "instr_die3"
+      }
+    }
+  ],
+  "interconnects": [
+    {
+      "link_id": "link_die0_die1",
+      "source_die": "die0",
+      "target_die": "die1",
+      "link_type": "hybrid_bond",
+      "test_mode": "DWR_EXTEST",
+      "dwr_segments": ["dwr_die0", "dwr_die1"],
+      "route_resource": "hbt_die0_die1",
+      "estimated_test_bits": 8192,
+      "power_w": 0.3
+    },
+    {
+      "link_id": "link_die1_die2",
+      "source_die": "die1",
+      "target_die": "die2",
+      "link_type": "hybrid_bond",
+      "test_mode": "DWR_EXTEST",
+      "dwr_segments": ["dwr_die1", "dwr_die2"],
+      "route_resource": "hbt_die1_die2",
+      "estimated_test_bits": 10240,
+      "power_w": 0.35
+    },
+    {
+      "link_id": "link_die2_die3",
+      "source_die": "die2",
+      "target_die": "die3",
+      "link_type": "hybrid_bond",
+      "test_mode": "DWR_EXTEST",
+      "dwr_segments": ["dwr_die2", "dwr_die3"],
+      "route_resource": "hbt_die2_die3",
+      "estimated_test_bits": 11264,
+      "power_w": 0.38
+    }
+  ],
+  "resource_groups": {
+    "serial_access_groups": [
+      {
+        "group_id": "serial_access_path",
+        "capacity": 1,
+        "members": ["ptap0", "stap_die1", "stap_die2", "stap_die3"]
+      }
+    ],
+    "fpp_capacity_groups": [
+      {
+        "group_id": "fpp_3d_stack_lanes",
+        "capacity": 8,
+        "members": ["fpp_lane0","fpp_lane1","fpp_lane2","fpp_lane3","fpp_lane4","fpp_lane5","fpp_lane6","fpp_lane7"]
+      }
+    ],
+    "dwr_conflict_groups": [
+      { "group_id": "dwr_group_die0", "capacity": 1, "members": ["dwr_die0"] },
+      { "group_id": "dwr_group_die1", "capacity": 1, "members": ["dwr_die1"] },
+      { "group_id": "dwr_group_die2", "capacity": 1, "members": ["dwr_die2"] },
+      { "group_id": "dwr_group_die3", "capacity": 1, "members": ["dwr_die3"] }
+    ],
+    "_v4_comment_bist": "PER-DIE BIST engines. Capacity=1 per engine means each engine services one target at a time, but different dies can run BIST simultaneously.",
+    "bist_engine_groups": [
+      {
+        "group_id": "bist_eng_die0",
+        "capacity": 1,
+        "members": ["mem0_die0"]
+      },
+      {
+        "group_id": "bist_eng_die1",
+        "capacity": 1,
+        "members": ["mem1_die1"]
+      }
+    ],
+    "power_domains": [
+      {
+        "domain_id": "pdn_package",
+        "max_power_w": 30.0,
+        "dies": ["die0", "die1", "die2", "die3"]
+      }
+    ],
+    "thermal_regions": [
+      { "region_id": "thermal_die0", "die_id": "die0", "max_temperature_c": 85.0 },
+      { "region_id": "thermal_die1", "die_id": "die1", "max_temperature_c": 85.0 },
+      { "region_id": "thermal_die2", "die_id": "die2", "max_temperature_c": 85.0 },
+      { "region_id": "thermal_die3", "die_id": "die3", "max_temperature_c": 85.0 }
+    ]
+  },
+  "thermal_adjacency": [
+    {
+      "source_region": "thermal_die0", "target_region": "thermal_die1",
+      "coupling_type": "vertical", "coupling_weight": 0.6,
+      "avoid_concurrent_high_power": true
+    },
+    {
+      "source_region": "thermal_die1", "target_region": "thermal_die2",
+      "coupling_type": "vertical", "coupling_weight": 0.62,
+      "avoid_concurrent_high_power": true
+    },
+    {
+      "source_region": "thermal_die2", "target_region": "thermal_die3",
+      "coupling_type": "vertical", "coupling_weight": 0.64,
+      "avoid_concurrent_high_power": true
+    }
+  ],
+  "benchmark_source": {
+    "milestone": "v4",
+    "source": "v4_corrected_physical_model",
+    "scale": "medium",
+    "die_count": 4,
+    "topology": "3d_stack",
+    "description": "Representative 4-die 3D stack with per-die BIST engines. FPP only on die0+die2 (50% dies). Demonstrates TAP time-multiplexing with simultaneous BIST execution across dies."
+  }
+}

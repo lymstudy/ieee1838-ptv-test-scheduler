@@ -1127,7 +1127,16 @@
         ],
         "preferred_fpp_channel": "fpp_m18",
         "bist_engine": "shared_m18_bist_engine"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "m18_mem01_die1",
@@ -1168,7 +1177,16 @@
         ],
         "preferred_fpp_channel": "fpp_m18",
         "bist_engine": "shared_m18_bist_engine"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "m18_mem02_die2",
@@ -1209,7 +1227,16 @@
         ],
         "preferred_fpp_channel": "fpp_m18",
         "bist_engine": "shared_m18_bist_engine"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "m18_mem03_die3",
@@ -1250,7 +1277,16 @@
         ],
         "preferred_fpp_channel": "fpp_m18",
         "bist_engine": "shared_m18_bist_engine"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "m18_mem04_die4",
@@ -1291,7 +1327,16 @@
         ],
         "preferred_fpp_channel": "fpp_m18",
         "bist_engine": "shared_m18_bist_engine"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "m18_mem05_die5",
@@ -1332,7 +1377,16 @@
         ],
         "preferred_fpp_channel": "fpp_m18",
         "bist_engine": "shared_m18_bist_engine"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "m18_mem06_die6",
@@ -1373,7 +1427,16 @@
         ],
         "preferred_fpp_channel": "fpp_m18",
         "bist_engine": "shared_m18_bist_engine"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "m18_mem07_die7",
@@ -1414,7 +1477,16 @@
         ],
         "preferred_fpp_channel": "fpp_m18",
         "bist_engine": "shared_m18_bist_engine"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "m18_mem08_die8",
@@ -1455,7 +1527,16 @@
         ],
         "preferred_fpp_channel": "fpp_m18",
         "bist_engine": "shared_m18_bist_engine"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "m18_mem09_die9",
@@ -1496,7 +1577,16 @@
         ],
         "preferred_fpp_channel": "fpp_m18",
         "bist_engine": "shared_m18_bist_engine"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "m18_mem10_die10",
@@ -1537,7 +1627,16 @@
         ],
         "preferred_fpp_channel": "fpp_m18",
         "bist_engine": "shared_m18_bist_engine"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     },
     {
       "object_id": "m18_mem11_die11",
@@ -1578,7 +1677,16 @@
         ],
         "preferred_fpp_channel": "fpp_m18",
         "bist_engine": "shared_m18_bist_engine"
-      }
+      },
+      "_comment_test_types": "v3",
+      "test_types": [
+        "BIST",
+        "INTEST"
+      ],
+      "transport_options": [
+        "fpp",
+        "serial"
+      ]
     }
   ],
   "interconnects": [],

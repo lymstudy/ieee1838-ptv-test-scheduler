@@ -1,7 +1,26 @@
 {
   "permissions": {
     "allow": [
-      "Bash(pdftotext -layout -f 1 -l 20 \"/d/studydoc/master/research/newIEEE1838TestAccessScheduling/docs/data/open3dbench_2503.12946.pdf\" -)"
+      "Bash(pdftotext -layout -f 1 -l 20 \"/d/studydoc/master/research/newIEEE1838TestAccessScheduling/docs/data/open3dbench_2503.12946.pdf\" -)",
+      "Bash(python experiments/generate_revised_figure7_topology.py)",
+      "Bash(python experiments/generate_revised_figure6_occupancy.py)",
+      "Bash(python -c \"import sys; sys.path.insert\\(0,'.'\\); from src.schedulers import greedy_schedule; print\\('import OK'\\)\")",
+      "Bash(python experiments/generate_revised_figure9_baseline_comparison.py)",
+      "Bash(python experiments/run_resource_pressure_sweep.py)",
+      "Bash(ls experiments/__init__.py)",
+      "Bash(ls experiments/run_m11_algorithm_study.py)",
+      "Bash(python -c \"import runpy; m=runpy.run_path\\('experiments/run_m11_algorithm_study.py'\\); print\\('keys:', [k for k in m if not k.startswith\\('_'\\)][:10]\\)\")",
+      "Bash(python -c \"import sys; sys.path.insert\\(0, 'experiments'\\); import importlib.util as u; s=u.spec_from_file_location\\('m11','experiments/run_m11_algorithm_study.py'\\); m=u.module_from_spec\\(s\\); s.loader.exec_module\\(m\\); print\\(dir\\(m\\)\\)\")",
+      "Bash(python -c \"import experiments; print\\(experiments.__file__\\)\")",
+      "Bash(python -c \"import experiments\")",
+      "Bash(python -c \"import experiments; from experiments.run_m11_algorithm_study import _fastest_recipe_rows; print\\('OK', _fastest_recipe_rows\\)\")",
+      "Bash(python -c \"import experiments; print\\(type\\(experiments.__path__\\)\\)\")",
+      "Bash(python -c ' *)",
+      "Bash(mkdir -p /d/studydoc/master/research/TESTSCHEDULE/data /d/studydoc/master/research/TESTSCHEDULE/configs /d/studydoc/master/research/TESTSCHEDULE/results)",
+      "Bash(python -c \"import scheduler; print\\('Import OK'\\); print\\('StackThermalSimulator:', scheduler.StackThermalSimulator\\); print\\('greedy_schedule:', scheduler.greedy_schedule\\); print\\('pure_serial_schedule:', scheduler.pure_serial_schedule\\)\")"
+    ],
+    "additionalDirectories": [
+      "D:\\studydoc\\master\\research\\TESTSCHEDULE"
     ]
   }
 }

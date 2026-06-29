@@ -23,7 +23,7 @@
 
 - 本项目研究 IEEE 1838-compatible test access resources 上的建模与调度，不声称 IEEE 1838 标准定义调度算法。
 - DWR 表示 Die Wrapper Register。
-- FPP 是可选高带宽数据通路，不是零成本资源，也不是万能控制路径。
+- FPP（Flexible Parallel Port）是 IEEE 1838-2019 标准的可选组件（Clause 7, optional），使用独立物理 lane，通过 TAP 配置。FPP 不是零成本资源，也不是万能控制路径。
 - BIST 本地执行阶段可以释放 PTAP，但仍可能占用本地 BIST engine、功耗域和热区域。
 - 没有落地代码、输入文件、实验脚本和结果文件支撑的内容，只能写成计划或假设，不能写成已完成结果。
 

@@ -1,0 +1,965 @@
+--- PAGE 1 ---
+Microelectronics Reliability 134 (2022) 114551
+Available online 24 May 2022
+0026-2714/© 2022 Elsevier Ltd. All rights reserved.Power-aware test scheduling framework for IEEE 1687 multi-power domain 
+networks using formal techniques☆ 
+Payam Habibya,*, Sebastian Huhna,b, Rolf Drechslera,b 
+aCyber-Physical Systems, DFKI GmbH, 28359 Bremen, Germany 
+bInstitute of Computer Science, University of Bremen, 28359 Bremen, Germany   
+ARTICLE INFO  
+Keywords: 
+IEEE 1687 Std. 
+IJTAG 
+ILP optimization 
+Test scheduling 
+Multi-power domains 
+Power-safe testing 
+Pseudo-Boolean optimization 
+Reconfigurable scan networks ABSTRACT  
+The IEEE 1687 Std. (IJTAG) introduces an efficient access methodology based on reconfigurable scan networks to 
+address the ever-increasing complexity of the latest system-on-chips. By invoking this new methodology, the 
+overall test time can considerably be reduced by shortening the scan chains' length without sacrificing the test 
+quality. IJTAG allows for designing highly complex test networks compromising the latest test structure that 
+enables to achieve the high test quality, as required by today's customers' applications. Besides the time overhead 
+induced by the required network (re-)configuration, the access sequence of the instruments itself greatly affects 
+the overall test time. Furthermore, the power characteristics of the complex test facilities have to be taken into 
+account to avoid effects like IR drop during the later test application that is even more critical in highly multi- 
+power domain networks. Consequently, the IJTAG methodology strictly requires an effective test scheduler that 
+considers the individual instruments' constraints and is compatible with recent multi-power domain chip designs. 
+This work proposes two novel power-aware test scheduling approaches based on pseudo-Boolean optimization 
+and integer linear programming techniques that are both seamlessly integrated into a fully-automated test 
+scheduling framework for IJTAG test networks even with multiple power domains. The first proposed optimi -
+zation scheme allows for determining a local optimal test schedule, applicable to networks with more than one 
+thousand instruments since the required run-time is manageable. Furthermore, the second optimization scheme 
+determines a global optimal test scheduler, which is most suitable for mid-sized networks in which it is clearly 
+outperforming any other existing technique.   
+1.Introduction 
+The state-of-the-art System-on-Chips (SoCs) embrace a large number 
+of heterogeneous embedded components like digital-signal processors, 
+sensors, communication and interface modules. The steadily increasing 
+complexity of these chips has created a growing demand for effective 
+infrastructures that enable efficient access methodologies for test, 
+debug, and monitoring. Following this demand, IEEE 1687 Std. (IJTAG) 
+has introduced new reconfigurable scan networks to tackle the challenge 
+of long scan chains by adding programmable components such as 
+Segment Insertion Bits (SIBs) and ScanMux Control Bits (SCBs) to the 
+IJTAG test network (1). Despite the extensive test capabilities provided 
+by this reconfigurable scan network, further technical challenges like IR 
+drop (2,3) have to be addressed since, otherwise, the parallel test of all 
+concurrently accessible instruments is impossible. The higher complexity of this problem in multi-power domain SOCs emphasizes the 
+urgent need for more effective access management. 
+In an IJTAG network, any on-chip module that holds only a client 
+interface and is accessed by an external controller, is referred to as an 
+instrument . The required configuration data for SIBs and SCBs is trans -
+ferred serially along with the test data during every Capture-Shift-Update 
+(CSU) cycle. In every CSU cycle, all instruments of the current active 
+chain receive the new data from Scan-In (SI) port and at the same time 
+shift their individual data to Scan-Out (SO) port of the chip. 
+In order to eliminate the time penalty due to excessive configuration 
+data, SIBs enable the creation of hierarchical scan chain designs. More 
+precisely, SIBs can include or exclude a segment of the network that is 
+connected to their host interface. This provides more efficient access to 
+different parts of the SoC in comparison to the legacy daisy scan chains. 
+Subsequently, a faster instrument access mechanism significantly 
+☆This document resulted from the research project funded by the AI initiative of the Free Hanseatic City of Bremen. 
+*Corresponding author. 
+E-mail addresses: payam.habiby@dfki.de (P. Habiby), huhn@uni-bremen.de (S. Huhn), drechsler@uni-bremen.de (R. Drechsler).  
+Contents lists available at ScienceDirect 
+Microelectronics Reliability 
+u{�~zkw! s{yo|kro>! ÐÐÐ1ow�o �to~1m{y2w{m k�o2ytm~{~o w!
+https://doi.org/10.1016/j.microrel.2022.114551 
+Received 7 January 2022; Received in revised form 11 April 2022; Accepted 1 May 2022   
+--- PAGE 2 ---
+Microelectronics Reliability 134 (2022) 114551
+2reduces the test cost since these costs are strongly affected by the overall 
+test time. This concept is further described in (4) by introducing a 
+method for calculating the overall instrument access time. 
+This paper heavily exploits formal techniques to develop a power- 
+aware fully-automated test scheduling framework for IEEE 1687 
+multi-power domain networks. At first, a Boolean Satisfiability (SAT)- 
+based model is presented, which is applicable for arbitrary IJTAG test 
+network architectures comprising SIBs, ScanMuxes, and SCBs. The 
+optimization of test scheduling by considering multiple power domains 
+is implemented by employing incremental Pseudo-Boolean Optimization 
+(PBO) techniques. Various experiments clearly prove that this approach 
+can be applied to networks containing over one thousand instruments 
+without any concerns regarding the resulting CPU run-time. On top of 
+this SAT-based approach, a novel Integer Linear Programming (ILP) model 
+is proposed, which allows determining even global optimal test se-
+quences for IJTAG test networks. The proposed models are processed by 
+formal solving engines yielding power-safe tests and, hence, allowing for 
+a significant test cost reduction. 
+The remainder of this paper discusses the structure and evaluation of 
+the proposed framework as follows: Section 2 briefly reviews related 
+works regarding the instrument access in IJTAG networks. Section 3 
+provides a comprehensive description of the background that is needed 
+to make this paper self-contained – including a review on SAT- and ILP- 
+based techniques and IJTAG test networks. Afterwards, the general idea 
+and the general flow of the proposed test schedulers are described in 
+Section 4. The conducted experimental results are summarized and 
+discussed in Section 5. Finally, conclusions are drawn in Section 6. 
+2.Related work 
+Several techniques have been proposed to improve different aspects 
+of the IJTAG networks (5–17). A hybrid scheduling scheme is presented 
+in (6) to create a purely SIB-based network with minimized SIB pro-
+gramming overhead. A new structure for SIB is proposed in (7) to in-
+crease the bandwidth of the IJTAG network. This idea is further 
+enhanced in (8) to create a scalable broadcast design that reduces the 
+test time by sending identical data to the replicated cores. Other works 
+like (11,18) have improved the access time without applying any 
+structural modifications. In (9,19) , the authors have exploited the 
+Boolean satisfiability problem to optimize the instrument access time for 
+scan pattern retargeting in reconfigurable scan networks that do not 
+include SIBs. This approach has been further improved by introducing 
+an upper bound calculation method in (11). 
+Due to the power, temperature, and other resource limitation, the 
+simultaneous test of all concurrently accessible instruments is not 
+feasible, and therefore the use of an instrument access scheduling scheme is inevitable. Optimization of the test time by using power 
+constrained scheduling is investigated in (5,12,13) . A session-less test 
+schedule about sorting the instrument based on the number of test 
+patterns and resource conflicts is introduced in (12). The method pro-
+posed in (13) uses a modified multi-bit SIB to follow a parallel sched -
+uling approach based on an exhaustive search over all possible solutions. 
+Typically, the embedded cores in the network require to be accessed a 
+different number of times. The sequence and number of access in each 
+test session considerably affect the overall test duration and, hence, an 
+effective test scheduler has a major contribution to the reduction of final 
+test cost. 
+Generally, modern SoCs are divided into multiple power domains, 
+which can be powered on or off selectively to manage the total power 
+dissipation and avoid overheating (20). This important feature has not 
+been considered in any test scheduler for IJTAG networks in the litera -
+ture so far. However, for modern test schedulers, it is essential to 
+consider the resulting power characteristics of the resulting test set, as 
+being addressed by this work. Although IJTAG provides more flexible 
+access to the instruments, the implementation of multiple power do-
+mains along with the hierarchical structure of the network, non-linear 
+constraints, and the existence of different concurrency groups as dis-
+cussed in (14) poses new challenges against test scheduling. In work 
+(14), a graph-based model of IJTAG networks has been proposed to 
+detect the concurrently accessible instruments in multi-power domain 
+networks. The access and power constraints are exploited to prune the 
+search tree during the exhaustive search based on dynamic program -
+ming. Despite the promising results, using this method in large networks 
+requires intensive computations. 
+In contrast to any other existing related work, this paper proposes a 
+power-aware fully-automated test scheduler framework for IJTAG 
+multi-power domain networks by heavily exploiting formal techniques 
+while considering the instrument-specific power constraints to, in the 
+end, determine highly effective but power-safe tests. 
+3.Background 
+This section presents the required preliminaries for the comprehen -
+sion of this work. In particular, a brief introduction to IJTAG networks 
+and the formal techniques – like the SAT problem and ILP-based 
+modeling – are given. 
+3.1. IJTAG networks 
+The basic structure of IJTAG networks and their reconfiguration 
+mechanism is described in this section. Fig. 1 presents an exemplary 
+IJTAG network, which provides reconfigurable access to the instruments 
+SIB1SIB2
+SIB3I2
+SIB4
+SIB5Controller
+0SCB0
+1
+Power domain 1
+Power domain 2SI
+SOI1
+I3
+I4SIB1
+SIB4
+SIB5I4Controller
+1SCB0
+1SI
+SO
+(a) (b)Fig. 1.Reconfigurable instrument access in IJTAG network.  P. Habiby et al.                                                                                                                                                                                                                                  
+--- PAGE 3 ---
+Microelectronics Reliability 134 (2022) 114551
+3I1 to I4. These instruments are connected to the network through parallel 
+Test Data Registers (TDRs), which are divided into two power domains 
+indicated by different colors. The test data is shifted to the TDRs serially 
+and then transferred concurrently via parallel data ports to the in-
+struments. The ScanMux sensitizes one of two branches to create a chain 
+between SI and SO. SIBs operate as 1-bit programmable switches that are 
+closed by resetting them to 0 as soon as their client segment does not 
+require further access. By this, a shorter path is provided for accessing 
+the rest of the network's instruments. 
+In Fig. 1(a), it is assumed that I1 and I2 are both accessible in the 
+initial state by setting the SCB to 0 and SIB1, SIB2, and SIB3 to 1. In other 
+words, the active chain is {SI → SIB1 → SIB2 → I1 → SIB3 → I2 → SCB → 
+SO}. Assuming that only I4 is required to be accessed in the next session, 
+changing the value of SCB to 1 and setting SIB4 and SIB5 to 0 and 1 
+creates the new active chain {SI → SIB4 → SIB5 → I4 → SCB → SO}, as 
+shown in Fig. 1(b).1 The configuration data for the next session is always 
+concatenated into the current test data and shifted through the active 
+chain. During the capture operation, the data is loaded to TDRs from the 
+corresponding instruments. In the next phase, the content of all TDRs is 
+transferred to the SO port and the new data is simultaneously shifted 
+from SI in. Finally, the instruments receive the new data through an 
+update signal. 
+The IJTAG standard introduces two languages that are used to build 
+up the underlying network structure and to reflect the required test data 
+retargeting. First, the Instrument Connectivity Language (ICL) that de-
+scribes the network structure on an abstract level without revealing the 
+functional logic of the design. Secondly, the Procedural Description Lan-
+guage (PDL) defining the sequence of operations, as required for 
+accessing an instrument. In this paper, the ICL netlist is utilized to create 
+a Boolean network description, which is subsequently used to analyze 
+the network for obtaining an optimized access schedule. 
+3.2. Boolean satisfiability 
+The SAT problem attempts to determine whether a set of variable 
+assignments of a given Boolean function exists such that the function is 
+satisfied, i.e., is evaluated to TRUE . If such an assignment exists, the 
+function is considered to be satisfiable (sat) and otherwise unsatisfiable 
+(unsat) (21). A lot of research work has been spent on the development 
+of powerful SAT solving algorithms yielding well-engineered SAT 
+solvers like clasp (22), MiniSAT (23), SLIME (24), and ManySAT (25). 
+This is since the SAT problem has recently been utilized to address 
+various research questions effectively in domains like the structural test 
+generation (26). 
+In the Boolean algebra, a literal }x is either a Boolean variable (x) or 
+its negation x. A disjunction of literals ↕n
+i1}xi forms a clause. A SAT 
+instance is a Boolean function ΦBGn→G�where G�is the set of Boolean 
+values 0 and 1. Φ is a conjunction of clauses and is typically represented 
+as Conjunctive Normal Form (CNF). An exemplary SAT instance is pre-
+sented in Example 1. 
+Example 1.Let Φx1↕x2↕x3⋅x1↕x3⋅x3. Then, x11, x21, 
+x30 is a satisfying assignment. 
+A Boolean function ΨBGn→ℝ with weighted literals is called a 
+Pseudo-Boolean (PB) function and the corresponding PB-SAT problem is 
+defined as follows: 
+̂n 1
+i1wi⋅}xi≽wnwithwi∃ℝ (1) 
+This expression is used as a constraint in PBO problems. PBO in-
+corporates an objective function F during the solving process such that a solution does not only satisfies the constraints but also optimizes the 
+solution with respect to a given F. Such an objective function is typi-
+cally expressed as the arithmetic sum of all PB co-factors as follows: 
+Fx1C…Cxk̂k
+i1wi⋅}xiwithwi∃ℝ (2) 
+An exemplary PBO instance is given in Example 2. 
+Example 2.Let Ψx12x23x3≽3⋅2x13x2F4and F
+x1x2x3. Then, x10, x21, x30 is a solution to the PBO problem 
+that satisfies Ψ while minimizing F. 
+A PBO-based SAT instance can be solved using modern PBO solvers 
+that even support multiple objective functions. Several PBO-based ap-
+proaches like (26–28) have already employed these solvers for the 
+optimization of different testing aspects successfully. 
+3.3. Integer linear programming 
+Integer linear programming has been extensively used for solving 
+many practical problems such as the traveling salesman, the matching 
+problem, the quadratic assignment or the set covering problem (29). ILP 
+defines an optimization problem with linear objective function, subject 
+to a set of linear constraints that include integer variables: 
+minimize\
+maximizecTx
+subjectto Ax≼bwithx∃�(3)  
+Where x is a vector of unknown values referred to as decision variables 
+that are restricted to the set of integers. A [aij]m×n is generally a matrix 
+with aij ∃ℝ and creates the constraints bounded to the b ∃ℝm. An ILP 
+problem in which the integer variables are restricted to be 0 or 1 is called 
+a 0  1 ILP problem. Example 3 shows the solution to an exemplary ILP 
+instance. 
+Example 3.The optimal solution of max{x y} subject to  x y ≽1, 
+ 8x 9y ≼10 with xCy∃��is (x, y) (1,2). This solution both 
+satisfies the inequalities and provides the maximum value for the 
+objective function, as shown in Fig. 2. 
+Once the problem is formulated as an ILP model, different highly 
+specialized ILP solvers can be invoked to efficiently solve it to opti-
+mality. The next section describes how the proposed methods exploit the 
+PBO and ILP techniques to formulate the instrument access based on the 
+extracted model of the IJTAG network. 
+4.Proposed test scheduling optimization 
+This section proposes two optimization methods for performing the 
+test scheduling in IJTAG networks while considering multiple power 
+domains. By this, it is ensured that the resulting test set contains only 
+power-safe tests. More precisely, the first proposed technique of this 
+Fig. 2.Integer linear programming example.  
+1 For the sake of a comprehensive presentation, the CSU signals are not 
+shown in Fig. 1. P. Habiby et al.                                                                                                                                                                                                                                  
+--- PAGE 4 ---
+Microelectronics Reliability 134 (2022) 114551
+4work exploits an incremental PBO-based approach for minimizing the 
+instrument scheduling time by determining local optimal test sessions 
+successively. On top of this, an enhanced approach has been developed 
+by taking advantage of ILP-based techniques to determine a global 
+optimal test schedule – without the need for any incremental calcula -
+tions. The proposed PBO method allows calculating the resulting test 
+schedule in relatively low run-time and, despite the local optimality, the 
+results show less than 10% mean absolute percentage error (MAPE) in 
+comparison to the global optima. 
+4.1. PBO-based scheduling model 
+Both proposed test scheduling methods are applicable on arbitrary 
+IJTAG networks comprising SIBs, ScanMuxes, SCBs, TDRs, and 
+branching nodes. Every instrument requires a number of accesses that 
+has to be fulfilled during the test process. The power consumption of 
+each instrument, the number of power domains, and their power limits 
+are considered as the input data to the scheduler. The inclusion or 
+exclusion of instruments in/from a specific test session is well suitable 
+for being mapped to the SAT problem, as done in this work. On top of 
+this, the Boolean model is enriched by PB aspects to reflect the integer 
+constraints regarding the power and number of accesses as well. Thus, 
+the evaluation of this pseudo-Boolean function allows assessing these 
+criteria of a determined test schedule. Finally, for not just assessing a test 
+schedule but for determining a (local) optimal one, a PBO function ΨB
+Gn→ℝ has been introduced, which allows optimizing a test schedule 
+while considering the given power and access constraints. 
+The proposed PBO-based scheduling approach can be divided into 
+the following four main steps:  
+1. Extracting the Boolean representation of the network from the ICL 
+file. More precisely, three main IJTAG building blocks have been 
+developed allowing for generating the overall SAT instance out of a 
+given ICL description.  
+2. Introducing the power constraints as PB components wit respect to 
+the given instruments' power consumption and the predefined power 
+domain limits. 
+3.Adding the objective function to maximize the number of concur -
+rently active instruments in every test session. 
+4.The incremental invocation of the SAT solver to provide an opti-
+mized access to the available instruments and subsequent masking of 
+the fully covered instruments of currently optimized session to 
+exclude them from the subsequent invocations. 
+An overview of the proposed scheduling scheme is depicted in Fig. 3. 
+It is assumed that seven instruments w1 to w7 which are shown as boxes, 
+are required to be tested during the minimum possible time. This is 
+achieved by organizing the boxes over a minimized number of strips 
+which represent the CSUs. The instruments of Fig. 3 are divided into two 
+power domains indicated with different colors with the power limits Pmax1 and Pmax2. The number of boxes equals the number of required 
+access to the corresponding instrument. For example, three boxes of w4 
+in Fig. 3 indicate three given accesses in the test pattern. The height of 
+each box represents its power consumption. The horizontal axis is 
+divided into CSU units. A set of successive CSUs, that contains the same 
+selection of instruments, is called a (test) session, as indicated by S1 to S5 
+in Fig. 3. For instance, the first three successive strips contain the same 
+set of boxes forming the first session. The control signals are applied 
+through the control circuitry during each CSU. These control signals are 
+omitted from the Figures for a cleaner presentation. The corresponding 
+control signals are created by the IJTAG-embedding EDA tool and driven 
+by a controller. Thus, no dependencies between these signals exist over 
+different sessions and CSUs. Every session in this scheme represents a 
+scan chain that can be reordered due to their independence. The last CSU 
+of every session contains the SIB configuration data required for creating 
+the next scan chain. Over the scheduled strips, the sum of instruments' 
+power consumption does not violate the corresponding power limit. This 
+is shown with dashed and solid lines for domains j1 and j2, respectively. 
+The power consumption of the scan chain elements are not considered 
+since they are negligible compared with instruments' power consump -
+tion. The proposed scheduler tries to allocate the boxes to the strips such 
+that the number of introduced CSUs are minimized. 
+4.1.1. Boolean representation of IJTAG networks 
+Every complex IJTAG network is constructed of several constitutive 
+elements connected in one of the three different types, namely branches, 
+merging points, and parallel connections. A complete network model is 
+realized by combining the CNF model of these three building blocks, 
+which can be identified by analyzing the network graph, as introduced 
+in (14). The process starts by reading the ICL netlist and extracting a 
+graph in which every path represents a scan chain starting from SI and 
+ending at SO. This is assumed to be a directed acyclic graph as the IEEE 
+1687 Std. deprecates the creation of loops, for instance, by classifying 
+the loop-containing SIB-design as a “bad SIB topology ”. After classifying 
+the network structures, the resulting CNF is added to the PBO instance as 
+a constraint. Fig. 4 shows the graph representation of the network, as 
+given in Fig. 1. Despite the graph model of work (14), SIBs are defined 
+with one node in order to reduce the number of clauses in the resulting 
+CNF expression. A Boolean variable is assigned to each node of the 
+power domain j 1
+power domain j 2Power
+CSUpower limit
+12 3 4 5 6 7
+S1 S2 S3 S4 S5 SessionFig. 3.Scheduling optimization problem.  
+SIB1
+SIB2
+SIB3
+SIB4
+SIB5I1
+I2
+I3
+I4
+BCSx uMS SOSIFig. 4.The graph model of the IJTAG network of Fig. 1.  
+(a) (b) (c)0  0  0  0  1  1  1  1
+0  0  1  1  0  0  1  1
+0  1  0  1  0  1  0  1
+1  0  0  1  0  1  0  00     0
+0     1
+1     0
+1     11
+0
+1
+10  0  0  0  1  1  1  1
+0  0  1  1  0  0  1  1
+0  1  0  1  0  1  0  1
+1  0  0  0  0  1  1  0
+Fig. 5.Structures used for IJTAG network modeling.  P. Habiby et al.                                                                                                                                                                                                                                  
+--- PAGE 5 ---
+Microelectronics Reliability 134 (2022) 114551
+5graph. A logical value 0 implies that the corresponding node is not 
+included in the active chain and, therefore, is not accessible. A variable 
+with value 1 indicates that the node is located on an active chain. The 
+CNF model of the network defines all potential scan chains between SI 
+and SO. Fig. 5 shows the main building blocks and their truth table that 
+are used to model the structure of IJTAG networks. 
+4.1.1.1. Modeling the SIBs. Fig. 5.a shows the SIB s hosting the sub- 
+network x that can be of any type of network element. On the client 
+side, a SIB works as a switch enabling the access to a hierarchy. Thus, as 
+long as it is not activated, the sub-network is not accessible. On the other 
+hand, an activated SIB can decide on switching the hierarchy ON or OFF. 
+This can be expressed as the following CNF clause: 
+Φs↕:x (4) 
+The connections between TDRs and instruments follow the same 
+model since they are connected in parallel and data transfer is control -
+lable by control signals. In case of disabling the instruments, TDRs 
+remain connected to the network to ensure the flow of data to other 
+elements. In addition to the host ports, SIBs have two other ports for 
+connecting the rest of the network as normal elements, whose behavior 
+is modeled by the other building blocks. 
+4.1.1.2. Modeling the branches. Fig. 5.b is a generalized model for plain 
+chains and branches that are used in (19) for retargeting purposes. Plain 
+chains can be considered as a special case of branches in which the 
+source element has only one successor. The Boolean model of a branch 
+should characterize three main features that are summarized in the truth 
+table of Fig. 5.b. Firstly, only one active chain can exist at a time since 
+the IEEE 1687 Std. allows only one serial path between SI and SO during 
+a CSU. This requirement is satisfied by invalidating the states in which 
+both x2 and x3 are set to True. This is achieved by the clause 
+:x2↕:x3B (5) 
+The second feature concerns the state that the source node x1 is being 
+activated. In this case, one of the branches has to be included on the 
+current chain to provide the data flow to the next level. The related 
+clause is given by 
+:x1↕x2↕x3B (6) 
+The last feature addresses the activation of one of the successors in a 
+branching node. In such states, the data has to be provided by a pre-
+decessor, which is the source node x1 here. The CNF clause associated 
+with this feature is 
+x1↕:x2‖x1↕:x3B (7) 
+Finally, the generalized CNF representation of a branching node with 
+n  1 successors is the conjunction of the extracted Boolean clauses as 
+follows: 
+Φ:x1↕x2…↕xn‖‖
+iCj∃⊔2BBn⊓&iℑj 
+:xi↕:xj)
+‖‖n
+i2x1↕:xi (8) 
+In the special case with n2, only one successor exists, this circum -
+stance creates in conjunction with the source node a so called plain 
+chain. Such a plain chain does not include any branching or merging 
+points and all elements on such a chain have the same activation con-
+dition: either all of them are accessible or none of them are being acti-
+vated. The defining CNF for two adjacent nodes on plain chain is 
+reduced to a bi-implication: 
+Φx1↔x2x1↕:x2‖:x1↕x2 (9)  
+4.1.1.3. Modeling the merging nodes. The last building blocks consti -
+tuting the IJTAG network are merging points. Contrary to the branches, 
+here, several paths meet and lead to one output successor. This typically 
+applies where the ScanMuxes are inserted. The truth table of Fig. 5. d shows the different possible assignments to the elements of a merging 
+node with two predecessors. Two inputs of the multiplexer cannot be 
+activated simultaneously and, hence, this circumstance is reflected by 
+the first clause of the CNF. Furthermore, the selection of either of the 
+inputs results in the activation of the output. As the last feature, when 
+the output is on an active chain, one of the predecessor nodes has to be 
+on the same chain to ensure the flow of data. These three aspects are 
+satisfied by the following Boolean expression: 
+Φ:x1↕:x2‖:x2↕x3‖:x1↕x3‖x1↕x2↕:x3 (10) 
+The generalized CNF representation for a merging node with n  1 
+predecessors is expressed as follows: 
+1B0%Φx1↕x2…↕:xn‖‖
+iCj∃⊔1BBn 1⊓&iℑj 
+:xi↕:xj)
+‖‖n 1
+i1xi↕:xn (11) 
+The overall Boolean network model is progressively constructed by 
+conjugating the newly extracted CNF clauses to the SAT instance. 
+4.1.2. Power constraints 
+The power domain constraint implies that the sum of the power 
+consumption of the concurrently activated instruments on the current 
+scan chain during a CSU should not exceed the power limit of the power 
+domain: 
+̂
+pi∃CSU npi≼Pmax (12) 
+In a multi-power domain network, this criterion applies to all power 
+domains. Assuming that the instruments of the network are powered by j 
+different power domains while each of them has the following attributes: 
+The maximum power limit Pmax, j and the power constraint Cj that is 
+defined by adding the power consumption pi of each instrument as a PB 
+co-factor to the corresponding Boolean variable xi such that activation of 
+the instrument introduces its power consumption to be considered in 
+Cj. Consequently, the following overall power constraint has to be 
+satisfied by the valid solution: 
+‖
+C1BBj⌊̂
+i∃Ij⌊
+pi⋅xi⌋
+≼PmaxCj⌋
+(13)  
+where Ij is the set of accessible instruments powered by domain j. 
+4.1.3. Objective function 
+The PB objective function F is defined over every session and 
+maximizes the allocated power consumption in every strip by piling up 
+the available instruments in the earliest stages so that the number of 
+achieved CSUs are minimized. Assuming that Ii(ai, pi) is the i-th instru -
+ment with ai number of accesses and power consumption pi, the objec -
+tive function is implemented by accumulating the Boolean variables xi 
+that are weighted by PB co-factors pi: 
+Fx1C…CxN̂N
+i1pi⋅xi (14) 
+The already covered instruments are masked from the next iterations 
+by setting the corresponding variables to 0. 
+4.1.4. Incremental invocation 
+The proposed scheduler follows the progressive optimization 
+approach described in Algorithm 1 over the successive test sessions. In 
+Fig. 3, it is assumed that the CSU strips are initially empty and all in-
+strument boxes are available in a pool. The first set of instruments are 
+allocated to the first CSU such that the maximum power consumption is 
+obtained while considering the concurrent accessibility of the elements. 
+This is the case about w1, w3, and w4. This selection remains unchanged 
+over the first three CSUs creating the first test session. By completing the 
+access to w3 and w4, the session is closed, and these instruments are P. Habiby et al.                                                                                                                                                                                                                                  
+--- PAGE 6 ---
+Microelectronics Reliability 134 (2022) 114551
+6excluded from the future schedules by deactivating their corresponding 
+literals. On the other hand, the remaining access required by w1 is 
+considered in the subsequent iterations. By this, in every run of the PBO 
+solver, the optimization problem is updated with new instrument access 
+requirements. This process continues until the instrument access pool is 
+empty and, hence, no further elements have to be scheduled. The access 
+to at least one instrument is completely fulfilled in every session and, 
+hence, the next session has to process a reduced instrument pool only. 
+Therefore, by assuming N as the number of instruments, this algorithm 
+provides the upper bound N for the maximum number of iterations. 
+Accordingly, the largest search space is explored in the first session with 
+2N Boolean decisions. The search space is constrained by power con-
+straints and further bounded by a minimum number of N Boolean 
+clauses of the CNF definition. 
+Algorithm 1.PBO-based scheduling. 
+4.2. ILP-based optimization model 
+In the previously proposed PBO-based method, the PBO solver de-
+cides on the value of pure Boolean decision variables yielding a rather 
+fast solving process. However, to create a global optimization scheme for 
+the test scheduling, new integer decision variables are introduced to 
+decide on the number of CSUs in each test session. This circumstance 
+forms an integer linear programming problem that can be solved over a 
+single run of an ILP solver, as described in Algorithm 2. The computa -
+tional cost of this algorithm depends on three main factors. Assuming N 
+as the number of instruments, the objective function will have N integer 
+variables. Considering the Boolean variables for instruments, the solver 
+determines the value of a total of N2 N decision variables. This search 
+space is constrained by N ⋅ D equations defining the power constraint 
+where D represents the number of power domains. The next factor that 
+heavily constrains the search space concerns the inequalities that define 
+the structural constraint of the given network. The number of in-
+equalities grows linearly with the number of edges in the network's 
+graph. 
+Algorithm 2.ILP-based scheduling.  
+4.2.1. Objective function 
+In the global optimization approach, the goal of the optimization is 
+minimizing the overall number of required CSUs to cover all in-
+struments. However, instead of formulating multiple local objective 
+functions, only one objective function is created for all possible test 
+sessions. Therefore, new Boolean decision variables are introduced to 
+every hypothetical test session. In the worst-case scenario, every in-
+strument is accessed separately through an individual scan chain. Thus, 
+in an IJTAG network with n instruments, a maximum of n sessions for 
+the entire scheduling process is expected. Considering this value as an 
+upper bound, the decision matrix for such a network is represented as 
+follows: 
+instB1instB2…instBn
+M⎫
+⎬⎬⎭x11 x12 … x1n
+⋮
+xn1xn2… xnn⎩
+⎪⎪⎨session 1
+⋮
+session n 
+Each row of matrix M represents a test session over which the 
+Boolean decision variable xij indicates the inclusion of the corresponding 
+instrument or its exclusion from the i-th scan chain according to the 
+solver's decision. On the other hand, every column of M reflects the 
+engagement of the related instrument over different scan configurations 
+in the final optimized solution. All the elements of column j have an 
+identical number of given accesses, power consumption, and power 
+domain, namely Aj, pj, and dj. In other words, all elements of a column 
+refer to the same instrument, although on different sessions. The iden-
+tical number of CSUs is applied to all active instruments of a row which 
+provides them with the same number of accesses. Accordingly, an 
+integer decision variable ai representing the number of fulfilled accesses 
+is introduced to row i of matrix M. As the scheduler tries to cover all 
+instruments via the minimum number of CSUs or accesses, the objective 
+function is defined as follows: 
+Min̂n
+i1ai (15) 
+This objective function guarantees that the ILP solver optimizes the 
+instrument access scheduling to provide a minimized overall test time. P. Habiby et al.                                                                                                                                                                                                                                  
+--- PAGE 7 ---
+Microelectronics Reliability 134 (2022) 114551
+74.2.2. ILP constraints 
+Three constraints described below outline the optimization envi-
+ronment. The first one addresses the network structure and restricts the 
+search space to concurrently accessible elements. The next constraint 
+considers the power limit of different domains, and the last one fulfills 
+the number of required access for each instrument. 
+Structural constraints investigate whether the concurrently acti-
+vated elements can create a path between SI and SO. The CNF repre -
+sentation, as already discussed in Section 4.1.1 , is used to generate the 
+equivalent ILP constraint by transforming every CNF clause to an ILP 
+inequality. Example 4 shows this process for two successive elements x1 
+and x2. 
+Example 4. 
+Φx1↕:x2‖:x1↕x2⇒ x1 x2≽0
+ x1x2≽0  
+The created inequalities imply that both Boolean variables x1 and x2 
+should have the same value and this correctly mimics the behavior 
+described by the CNF. 
+Power constraints are defined in the same way as done for their 
+counterparts in PBO method. Assuming pij as the power consumption of 
+the j-th instrument of the i-th row of the decision matrix M, and Pmax, k as 
+the power limit of the k-th power domain, the following power 
+constraint applies to every row of M: 
+̂
+xj∃kpj⋅xij≼PmaxCkwith1≼k≼K1≼i≼n (16) 
+This guarantees that the overall power consumption of active in-
+struments on a chain does not exceed the related power domain's limit. 
+When considering all rows of the decision matrix, the total number of 
+created power constraints equals n ×k. 
+Access constraints ensure the complete access coverage for every 
+instruments over the different sessions. Every access is performed over 
+one CSU. Assuming that ai represents the number of access to the in-
+struments in i-th session, and Aj is the required access of j-th instrument 
+in decision matrix, the access constraint is defined as 
+̂n
+i1ai⋅xijAjwith1≼j≼naiCAj∃�B (17) 
+Since both ai and xij are decision variables, this results in a non-linear 
+constraint that cannot be resolved directly through linear algorithms. 
+Therefore, the Glover's method proposed in (30) is used to linearize this 
+equation by considering yij xij ⋅ ai and adding the following assump -
+tions as alternative linear constraints: 
+̂n
+i1yijAjwith1≼j≼nCyiCAj∃�
+0≼yij≼AxijCai A 
+1 xij)
+≼yij≼ai(18)  
+Where A is the maximum number of given accesses among all in-
+struments. These inequalities represent an n ×n matrix M with yij as its 
+elements: 
+M⎫
+⎭y11… y1n
+⋮⋱
+yn1… ynn⎩
+⎨B
+Depending on the value of xij, the value of yij is either 0 or ai. 
+The described constraints define an ILP optimization environment 
+over which the available powerful ILP solvers are able to solve the in-
+strument scheduling problem using the proposed objective function. 
+5.Experimental results 
+This section presents the experimental evaluation of the proposed 
+test schedulers which orchestrate PBO-based and ILP-based techniques to determine an improved power-safe test schedule for IEEE 1687 multi- 
+power domain scan networks. The frameworks are written in C, and 
+all experiments have been conducted on a machine holding an Intel Xeon 
+E3-1270 processor and 32GB of main memory. The developments of this 
+work allow the generation of PBO and ILP optimization instances from 
+an arbitrary ICL description, which are then processed by clasp (v. 3.1.4) 
+(22) PBO solver and CPLEX (31) as an ILP solver. 
+The experiments are applied to the ITC'16 benchmark set (32) net-
+works, as listed in Table 1. Number of nodes and edges provide a general 
+overview of the network scale and correspond to the graph model ob-
+tained while processing the ICL netlist. The rightmost columns report 
+the number of Boolean variables and CNF clauses extracted by the 
+framework based on the structural building blocks described in Section 
+4.1.1 . ITC’ 16 has classified the benchmark networks into three groups Table 1 
+IJTAG Benchmark networks' structural modeling results.  
+Benchmark network #(nodes, 
+edges) #instruments #variables #clauses 
+Class Name 
+B Mingle (27, 39) 8 35  62 
+BasicSCB (33, 42) 5 39  101 
+TreeFlat (38, 61) 11 38  107 
+C q12710 (52, 78) 23 75  102 
+a586710 (93, 124) 22 115  270 
+t512505 (289, 447) 128 417  576 
+p22810 (520, 789) 242 762  1038 
+p34392 (284, 380) 73 357  836 
+p93791 (1763, 2358) 550 2313  5266 
+A TrapOrFlap (42, 61) 12 45  90 
+N17D3 (52, 66) 27 79  144 
+N32D6 (79, 101) 44 123  216 
+N73D14 (155, 200) 90 245  426 
+N132D4 (293, 371) 172 465  825 
+NE600P150 (1597, 1997) 793 2183  3940 
+NE1200P430 (3253, 4063) 1629 4502  8202  
+01
+010 1
+Power domain Power domain Power domain 
+Fig. 6.Mingle network from ITC'16 Benchmark.  P. Habiby et al.                                                                                                                                                                                                                                  
+--- PAGE 8 ---
+Microelectronics Reliability 134 (2022) 114551
+8of basic, classic, and advanced, which are indicated by ‘B’, ‘C’, and ‘A’ in 
+Table 1. Despite being relatively small as is shown in Fig. 6, the Mingle 
+network is a complex instance of the ITC’16 benchmark set since it 
+contains all structural features like branching and merging points, SIBs, 
+SCBs, and parallel branches. Consequently, the result of test scheduling 
+for this network is presented in detail. The other networks follow the 
+same procedure and a summary of their results are reported in Table 4. 
+Table 2 shows the scenario created for the evaluation of the test 
+scheduling for the Mingle network. The whole network is divided into 
+three power domains indicated with different colors in Fig. 6. The eight 
+wrapped instruments w1 to w8 are allocated to power domains j2 and j3 
+with a power limit 140. For the sake of a more comprehensible pre-
+sentation, the limit for the power domain j1 is not taken into account. 
+The number of required access for each instrument and their power 
+consumption has been randomly generated by the framework since they 
+are not provided in ICL netlist. Note that these values can be adopted 
+from any arbitrary power simulation or analyzing tool. 
+According to the scenario of Table 2, the proposed framework 
+scheduled a total of 165 instrument accesses in 90 CSUs without 
+violating the power domains' limits. In the incremental PBO method, an 
+extra option of successive access scheduling can be introduced, as pre-
+sented in Fig. 7. That is, the solver is conducted to schedule the in-
+struments such that they are accessed in successive sessions. Albeit re- 
+ordering the sessions in a non-successive schedule is allowed which typically results in shorter overall access time. 
+The experimental evaluation of non-successive scheduling for the 
+Mingle network with the same power configuration is given in Table 3 
+comparing the number of required CSUs using PBO and ILP methods. All 
+considered scenarios with randomly generated accesses in Table 3 show 
+the capability of the PBO method to estimate the optimal overall test 
+time in CSUs. Accordingly, for evaluating the efficiency of the proposed 
+method, different scenarios with a random number of access and power 
+consumption, as shown in Table 4, have been applied to other bench -
+mark networks. Each network is divided into three power domains. The 
+sum of power consumption for each domain and their power limits are 
+given in the table. Due to the page limitation, the column ⋃accesses 
+shows the sum of required accesses for each network instead of 
+mentioning every number of accesses separately. The number of CSUs 
+over which all instruments can be covered is reported for both PBO and 
+ILP methods in the next two columns. Comparing these columns shows a 
+promising estimation of the global optimal value by the PBO-scheduler 
+in a short CPU run-time which is reported in the rightmost columns for 
+both methods. 
+Despite providing the optimal solution, the run-time of the ILP 
+method is considerably higher than the one of the PBO-based approach. 
+Consequently, for the networks with more than 800 CNF clauses, it takes 
+several hours to solve the problem. These cases are indicated by ∞ in the 
+last column. However, since the real integrated circuits use several test 
+channels instead of one large IJTAG network, the use of the ILP sched -
+uler can still be extended to larger circuits. On the other hand, the 
+experimental results clearly prove that the PBO-based test scheduler is 
+capable of processing even large IJTAG network structures with multi- 
+power domains representing industrial-relevant benchmark candi -
+dates. Besides this, the proposed PBO scheduler allows for determining 
+highly effective but power-safe test schedules. 
+6.Conclusion 
+This paper proposed two novel PBO-based and ILP-based test 
+scheduling optimization schemes for multi-power domain IJTAG Table 2 
+Scheduling scenario for Mingle network.  
+Instrument Domain Power #accesses 
+w1  2  85  32 
+w2  2  115  18 
+w3  3  93  20 
+w4  3  110  12 
+w5  2  76  10 
+w6  2  134  25 
+w7  3  125  35 
+w8  3  100  13  
+Power Domain Power Domain Power ConstraintPower
+12 25 32 43 67 75 80 90 #CSU140
+134
+110
+S. 1 S. 7 Sessions S. 2 S. 3 S. 4 S. 5 S. 6 S. 8
+Fig. 7.Result of the successive test scheduling for Mingle network.  
+Table 3 
+Test scheduling in Mingle network.  
+Scenario #accesses #CSUs 
+w1 w2 w3 w4 w5 w6 w7 w8 PBO ILP  
+1  27  12  33  22  18  29  40  19  114  114  
+2  28  36  42  19  22  17  10  50  123  121  
+3  34  53  42  29  37  19  36  58  165  165  
+4  43  71  117  58  52  90  48  53  289  276  
+5  119  227  175  163  284  111  324  98  817  817  
+6  342  294  460  611  370  394  436  229  1736  1736  P. Habiby et al.                                                                                                                                                                                                                                  
+--- PAGE 9 ---
+Microelectronics Reliability 134 (2022) 114551
+9networks that are seamlessly integrated into a fully-automated power- 
+aware test scheduling framework. More precisely, in the first step, a 
+seamless SAT model for complex IJTAG network structures had been 
+designed, which was next exploited to establish two optimization ap-
+proaches based on pseudo-Boolean and ILP optimization techniques. 
+The entire framework had been implemented in Cthat support the 
+IJTAG's inter-connectivity language. The PBO-based scheduler uses the 
+clasp solver to provide a local optimal solution for even large networks 
+with over one thousand instruments forming industrial representative 
+benchmark candidates. On the other hand, the ILP-based scheduler uses 
+the CPLEX ILP solver yielding a global optimal that is practical for small 
+to middle-sized networks and was employed as an evaluation means for 
+the performance of the PBO-based scheduler. In the end, both schedulers 
+allow for determining highly effective but power-safe tests and, by this, 
+contributes to reduced test costs when testing complex and power- 
+critical SoC designs. 
+Declaration of competing interest 
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence 
+the work reported in this paper. 
+References 
+[1]IEEE Standard for Access and Control of Instrumentation Embedded Within a 
+Semiconductor Device, IEEE Std.1687, 2014, pp. 1–283. 
+[2]H. Dhotre, S. Eggersglü ß, K. Chakrabarty, R. Drechsler, Machine learning-based 
+prediction of test power, in: IEEE European Test Symposium, 2019, pp. 1–6. 
+[3]H. Dhotre, S. Eggersglü ß, R. Drechsler, Cluster-based localization of IR-drop in test 
+application considering parasitic elements, in: IEEE Latin American Test 
+Symposium, 2019, pp. 1–4. 
+[4]F.G. Zadegan, U. Ingelsson, G. Carlsson, E. Larsson, “Access time analysis for IEEE 
+p1687, ”, IEEE Transactions on Computers 61 (10) (2012) 1459 –1472 . 
+[5]V. Mures ¸an, X. Wang, V. Mures ¸an, M. Vl˚adut¸iu, Greedy tree growing heuristics on 
+block-test scheduling under power constraints, J. Electron. Test. 20 (2004) 61–78. 
+[6]S.S. Nuthakki, R. Karmakar, S. Chattopadhyay, K. Chakrabarty, Optimization of the 
+IEEE 1687 access network for hybrid access schedules, in: IEEE VLSI Test 
+Symposium, 2016, pp. 1–6. 
+[7]S. Gupta, A. Crouch, J. Dworak, D. Engels, Increasing IJTAG bandwidth and 
+managing security through parallel locking-SIBs, in: IEEE International Test 
+Conference, 2017, pp. 1–10. 
+[8]S. Gupta, J. Wu, J. Dworak, Efficient parallel testing: a configurable and scalable 
+broadcast network design using IJTAG, in: IEEE VLSI Test Symposium, 2018, 
+pp. 1–6. Table 4 
+Results of non-successive test scheduling for ITC'16 benchmark networks using PBO and ILP methods.  
+Network Power domain ⋃accesses #CSU #chains run-time [s] 
+ID ⋃power Limit PBO ILP PBO ILP PBO ILP 
+Mingle 1 27 20 200 114 114 8 8 0.019 0.73 
+2 410 140 
+3 428 140 
+BasicSCB 1 34 30 88 52 52 5 5 0.012 0.52 
+2 328 180 
+3 473 180 
+TreeFlat 1 13 30 158 30 26 8 10 0.020 42.0 
+2 530 330 
+3 412 290 
+TrapOrFlap 1 27 40 153 49 46 11 12 0.05 5.70 
+2 521 190 
+3 490 180 
+q12710 1 52 55 377 191 191 21 22 0.094 1.14 
+2 1177 160 
+3 1274 170 
+a586710 1 65 70 279 54 45 19 16 0.23 6.52 
+2 771 265 
+3 1281 385 
+t512505 1 130 30 1684 476 427 110 92 3.215 1685.21 
+2 4458 190 
+3 5040 180 
+p22810 1 244 30 3090 805 – 214 – 12.654 ∞ 
+2 9110 190 
+3 8974 180 
+p34392 1 350 90 953 96 96 48 21 3.41 824.33 
+2 2742 400 
+3 2327 450 
+p93791 1 552 600 7122 255 – 231 – 180.54 ∞ 
+2 2169 1200 
+3 20,388 1100 
+N17D3 1 53 55 488 174 173 27 24 0.087 1803.53 
+2 1378 200 
+3 1066 150 
+N32D6 1 79 100 655 119 117 35 37 0.223 1801.13 
+2 1478 200 
+3 1812 250 
+N73D14 1 94 100 900 120 120 12 12 0.843 1309.42 
+2 3444 300 
+3 3468 300 
+N132D4 1 367 250 2453 361 – 137 – 5.008 ∞ 
+2 7059 300 
+3 6487 300 
+NE600P150 1 795 500 10,524 188 – 184 – 159.622 ∞ 
+2 29,101 2200 
+3 29,441 2300 
+NE1200P430 1 1631 700 21,187 282 – 274 – 555.825 ∞ 
+2 63,040 3100 
+3 59,358 3300  P. Habiby et al.                                                                                                                                                                                                                                  
+--- PAGE 10 ---
+Microelectronics Reliability 134 (2022) 114551
+10[9]R. Baranowski, M.A. Kochte, H. Wunderlich, Scan pattern retargeting and merging 
+with reduced access time, in: IEEE European Test Symposium, 2013, pp. 1–7. 
+[10] M.A. Kochte, R. Baranowski, H. Wunderlich, Trustworthy reconfigurable access to 
+on-chip infrastructure, in: IEEE International Test Conference in Asia, 2017, 
+pp. 119–124. 
+[11] R. Krenz-Baath, F.G. Zadegan, E. Larsson, Access time minimization in IEEE 1687 
+networks, in: IEEE International Test Conference, 2015, pp. 1–10. 
+[12] F.G. Zadegan, U. Ingelsson, G. Asani, G. Carlsson, E. Larsson, Test scheduling in an 
+IEEE p1687 environment with resource and power constraints, in: IEEE Asian Test 
+Symposium, 2011, pp. 525–531. 
+[13] S. Keshavarz, A. Nekooei, Z. Navabi, Preemptive multi-bit IJTAG testing with 
+reconfigurable infrastructure, in: IEEE International Symposium on Defect and 
+Fault Tolerance in VLSI and Nanotechnology Systems, 2014, pp. 293–298. 
+[14] P. Habiby, S. Huhn, R. Drechsler, Power-aware test scheduling for IEEE 1687 
+networks with multiple power domains, in: IEEE International Symposium on 
+Defect and Fault Tolerance in VLSI and Nanotechnology Systems, 2020, pp. 1–6. 
+[15] P. Habiby, S. Huhn, R. Drechsler, Optimization-based test scheduling for IEEE 1687 
+multi-power domain networks using boolean satisfiability, in: International 
+Conference on Design Technology of Integrated Systems in Nanoscale Era, 2021, 
+pp. 1–4. 
+[16] F.G. Zadegan, D. Nikolov, E. Larsson, On-chip fault monitoring using self- 
+reconfiguring IEEE 1687 networks, IEEE Transactions on Computers 67 (2) (2018) 
+237–251. 
+[17] M.A. Ansari, J. Jung, D. Kim, S. Park, Time-multiplexed 1687-network for test cost 
+reduction, IEEE Transactions on Computer-Aided Design of Integrated Circuits and 
+Systems 37 (8) (2018) 1681 –1691 . 
+[18] R. Cantoro, M. Palena, P. Pasini, M.S. Reorda, Test time minimization in 
+reconfigurable scan networks, IEEE Asian Test Symposium (2016) 119–124. 
+[19] R. Baranowski, M.A. Kochte, H.-J. Wunderlich, “Reconfigurable scan networks: 
+Modeling, verification, and optimal pattern generation, ”, ACM Transactions on 
+Design Automation of Electronic Systems 20 (2) (2015) . 
+[20] Z. Moudallal, F.N. Najm, Power scheduling with active RC power grids, IEEE 
+Transactions on Very Large Scale Integration Systems 27 (2) (2019) 444–457. 
+[21] A. Biere, M. Heule, H. Maaren, T. Walsh, Handbook of Satisfiability, ser. Frontiers 
+in AI and Applications. 185, IOS Press, 2009 . 
+[22] M. Gebser, B. Kaufmann, A. Neumann, T. Schaub, Conflict-driven answer set 
+solving, in: International Joint Conference on AI 7, 2007, pp. 386–392. 
+[23] N. Sorensson, N. Een, Minisat v1. 13-a sat solver with conflict-clause minimization, 
+SAT 2005 (53) (2005) 1–2. 
+[24] O. Riveros, Slime: a minimal heuristic to boost SAT solving, SAT RACE (2019) 38. 
+[25] Y. Hamadi, S. Jabbour, L. Sais, ManySAT: a parallel SAT solver, J. Satisfiability 
+Boolean Model. Comput. 6 (4) (2010) 245–262. 
+[26] S. Eggersglü ß, K. Schmitz, R. Krenz-Bååth, R. Drechsler, On optimization-based 
+ATPG and its application for highly compacted test sets, IEEE Trans. Comput. 
+Aided Des. Integr. Circuits Syst. 35 (12) (2016) 2104 –2117 . 
+[27] M. Sauer, B. Becker, I. Polian, PHAETON: A SAT-based framework for timing- 
+aware path sensitization, IEEE Transaction on Computers (99) (2015) 1. 
+[28] S. Huhn, S. Eggersglü ß, K. Chakrabarty, R. Drechsler, Optimization of retargeting 
+for IEEE 1149.1 TAP controllers with embedded compression, in: Design, 
+Automation & Test in Europe Conference & Exhibition, 2017, pp. 578–583. 
+[29] D.-S. Chen, R.G. Batson, Y. Dang, Applied Integer Programming: Modeling and 
+Solution, John Wiley & Sons, 2011 . 
+[30] F. Glover, Improved linear integer programming formulations of nonlinear integer 
+programs, Manag. Sci. 22 (4) (1975) 455–460. [31] IBM, ILOG CPLEX Optimization Studio [Online]. Available, 2021, https://www. 
+ibm.com/docs/en/icos/20.1.0?topic cplex . 
+[32] IEEE 1687 Std. benchmark networks [Online]. Available, 2016, https://gitlab. 
+com/IJTAG/benchmarks .  
+Payam Habiby received his B.S. and M.S. degrees in electrical 
+engineering from the University of Guilan, Rasht in 2007 and 
+2012 respectively. After receiving his master's degree, he was 
+with NIOC as an electronics engineer until 2019. He is currently 
+a researcher at the German Research Center for Artificial In-
+telligence (DFKI) and a Ph.D. candidate at the University of 
+Bremen in the Group of Computer Architecture with Prof. 
+Drechsler. His research interests include Design for Testability, 
+embedded test & repair, and formal techniques of test 
+optimization.  
+Sebastian Huhn received the B.S. and M.S. degrees and the 
+Dr.-Ing. doctorate degrees in computer engineering from the 
+University of Bremen, Bremen, Germany, in 2012, 2014, and 
+2020, respectively. He is currently a PostDoc in the Group of 
+Computer Architecture at this university and a Senior 
+Researcher at the German Research Center for Artificial Intel-
+ligence, Bremen. His current research interests include design 
+for test, reliability, and debug, in particular, novel test gener -
+ation, test interfaces and pattern retargeting techniques. Be-
+sides this, he is interested in formal techniques, formal 
+reliability analysis & enhancement of complex systems and 
+circuits.  
+Rolf Drechsler received the Diploma and Dr. phil. nat. degrees 
+in computer science from the JohannWolfgang Goethe Uni-
+versity in Frankfurt am Main, Germany, in 1992 and 1995, 
+respectively. He worked at the Institute of Computer Science, 
+Albert-Ludwigs University, Freiburg im Breisgau, Germany, 
+from 1995 to 2000, and at the Corporate Technology Depart -
+ment, Siemens AG, Munich, Germany, from 2000 to 2001. 
+Since October 2001, Rolf Drechsler is Full Professor and Head 
+of the Group of Computer Architecture, Institute of Computer 
+Science, at the University of Bremen, Germany. In 2011, he 
+additionally became the Director of the Cyber-Physical Systems 
+Group at the German Research Center for Artificial Intelligence 
+(DFKI) in Bremen. His current research interests include the 
+development and design of data structures and algorithms with a focus on circuit and 
+system design. He is an IEEE Fellow. P. Habiby et al.                                                                                                                                                                                                                                  
